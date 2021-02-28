@@ -1,0 +1,200 @@
+- id: '1606159513933'
+  name: Living Room Lights Bright
+  entities:
+    light.living_room_candle:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 217
+      color_temp: 454
+      friendly_name: Living Room Candle
+      supported_features: 43
+      state: 'on'
+    light.living_room_ceiling_sofa:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 255
+      color_temp: 305
+      friendly_name: Living Room Ceiling Sofa
+      supported_features: 43
+      state: 'on'
+    light.living_room_ceiling_table:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 255
+      color_temp: 314
+      friendly_name: Living Room Ceiling Table
+      supported_features: 43
+      state: 'on'
+    light.living_room_lamp:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 153
+      color_temp: 366
+      friendly_name: Living Room Lamp
+      supported_features: 43
+      state: 'on'
+    light.living_room_spot_1:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 255
+      color_temp: 351
+      friendly_name: Living Room Spot 1
+      supported_features: 43
+      state: 'on'
+    light.living_room_spot_2:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 255
+      color_temp: 347
+      friendly_name: Living Room Spot 2
+      supported_features: 43
+      state: 'on'
+- id: '1606168421546'
+  name: Living Room Lights Cosy
+  entities:
+    light.living_room_ceiling_sofa:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 163
+      color_temp: 454
+      friendly_name: Living Room Ceiling Sofa
+      supported_features: 43
+      state: 'on'
+    light.living_room_ceiling_table:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 112
+      color_temp: 454
+      friendly_name: Living Room Ceiling Table
+      supported_features: 43
+      state: 'on'
+    light.living_room_candle:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 89
+      color_temp: 454
+      friendly_name: Living Room Candle
+      supported_features: 43
+      state: 'on'
+    light.living_room_lamp:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 156
+      color_temp: 454
+      friendly_name: Living Room Lamp
+      supported_features: 43
+      state: 'on'
+    light.living_room_spot_1:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 48
+      color_temp: 454
+      friendly_name: Living Room Spot 1
+      supported_features: 43
+      state: 'on'
+    light.living_room_spot_2:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 33
+      color_temp: 454
+      friendly_name: Living Room Spot 2
+      supported_features: 43
+      state: 'on'
+- id: '1606168548437'
+  name: Living Room Lights Relax
+  entities:
+    light.living_room_ceiling_sofa:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 138
+      color_temp: 343
+      friendly_name: Living Room Ceiling Sofa
+      supported_features: 43
+      state: 'on'
+    light.living_room_ceiling_table:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 189
+      color_temp: 393
+      friendly_name: Living Room Ceiling Table
+      supported_features: 43
+      state: 'on'
+    light.living_room_candle:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 133
+      color_temp: 430
+      friendly_name: Living Room Candle
+      supported_features: 43
+      state: 'on'
+    light.living_room_spot_1:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 138
+      color_temp: 422
+      friendly_name: Living Room Spot 1
+      supported_features: 43
+      state: 'on'
+    light.living_room_spot_2:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 128
+      color_temp: 321
+      friendly_name: Living Room Spot 2
+      supported_features: 43
+      state: 'on'
+    light.living_room_lamp:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 99
+      color_temp: 454
+      friendly_name: Living Room Lamp
+      supported_features: 43
+      state: 'on'
+- id: '1606176422456'
+  name: Living Room Lights Eating
+  entities:
+    light.living_room_ceiling_sofa:
+      min_mireds: 153
+      max_mireds: 454
+      friendly_name: Living Room Ceiling Sofa
+      supported_features: 43
+      state: 'off'
+    light.living_room_ceiling_table:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 255
+      color_temp: 387
+      friendly_name: Living Room Ceiling Table
+      supported_features: 43
+      state: 'on'
+    light.living_room_candle:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 28
+      color_temp: 301
+      friendly_name: Living Room Candle
+      supported_features: 43
+      state: 'on'
+    light.living_room_spot_1:
+      min_mireds: 153
+      max_mireds: 454
+      friendly_name: Living Room Spot 1
+      supported_features: 43
+      state: 'off'
+    light.living_room_spot_2:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 41
+      color_temp: 347
+      friendly_name: Living Room Spot 2
+      supported_features: 43
+      state: 'on'
+    light.living_room_lamp:
+      min_mireds: 153
+      max_mireds: 454
+      brightness: 130
+      color_temp: 366
+      friendly_name: Living Room Lamp
+      supported_features: 43
+      state: 'on'

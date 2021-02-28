@@ -1,0 +1,172 @@
+light:
+  - platform: group
+    name: Living Room Ceiling Lights
+    entities:
+      - light.living_room_ceiling_sofa
+      - light.living_room_ceiling_table
+      - light.living_room_spot_1
+      - light.living_room_spot_2
+
+  - platform: group
+    name: Living Room Lamps
+    entities:
+      - light.living_room_lamp
+      - light.living_room_candle
+
+  - platform: group
+    name: Living Room Lights
+    entities:
+      - light.living_room_ceiling_lights
+      - light.living_room_lamps
+
+sensor:
+  - platform: template
+    sensors:
+      living_room_lights_warmth:
+        friendly_name: "Living Room Lights Warmth"
+        value_template: "{{ state_attr('light.living_room_lights', 'color_temp') | int | round(0) }}"
+
+  - platform: template
+    sensors:
+      living_room_lights_brightness:
+        friendly_name: "Living Room Lights Brightness"
+        value_template: "{{ state_attr('light.living_room_lights', 'brightness') | int | round(0) }}"
+
+script:
+  living_room_off:
+    alias: Living Room Off
+    description: "Turn off lights in sequence"
+    icon: "mdi:power"
+    fields:
+      gap:
+        description: "Gap in seconds"
+        example: "0.6"
+    sequence:
+      - service: light.turn_off
+        data:
+          entity_id: light.living_room_candle
+      - delay:
+          seconds: "{{ gap | float }}"
+      - service: light.turn_off
+        data:
+          entity_id: light.living_room_ceiling_sofa
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_off
+        data:
+          entity_id: light.living_room_spot_1
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_off
+        data:
+          entity_id: light.living_room_ceiling_table
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_off
+        data:
+          entity_id: light.living_room_spot_2
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_off
+        data:
+          entity_id: light.living_room_lamp
+
+  living_room_on_warm:
+    alias: Living Room On Warm
+    description: "Turn on warm lights in sequence"
+    icon: "mdi:weather-sunny"
+    fields:
+      gap:
+        description: "Gap in seconds"
+        example: "0.6"
+    sequence:
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_candle
+          brightness: 255
+          color_temp: 450
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_ceiling_sofa
+          brightness: 255
+          color_temp: 450
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_spot_1
+          brightness: 255
+          color_temp: 450
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_ceiling_table
+          brightness: 255
+          color_temp: 450
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_spot_2
+          brightness: 255
+          color_temp: 450
+      - delay:
+          seconds: "{{ gap | float  }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp
+          brightness: 255
+          color_temp: 450
+
+  living_room_on_cold:
+    alias: Living Room On Cold
+    description: "Turn on cold lights in sequence"
+    icon: "mdi:snowflake"
+    fields:
+      gap:
+        description: "Gap in seconds"
+        example: "0.6"
+    sequence:
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_candle
+          brightness: 255
+          color_temp: 150
+      - delay:
+          seconds: "{{ gap | float }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_ceiling_sofa
+          brightness: 255
+          color_temp: 150
+      - delay:
+          seconds: "{{ gap | float }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_spot_1
+          brightness: 255
+          color_temp: 150
+      - delay:
+          seconds: "{{ gap | float }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_ceiling_table
+          brightness: 255
+          color_temp: 150
+      - delay:
+          seconds: "{{ gap | float }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_spot_2
+          brightness: 255
+          color_temp: 150
+      - delay:
+          seconds: "{{ gap | float }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp
+          brightness: 255
+          color_temp: 150

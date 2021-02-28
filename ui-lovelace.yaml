@@ -1,0 +1,524 @@
+button_card_templates:
+  scene_button:
+    show_name: true
+    color: var(--paper-item-icon-color)
+    size: 35%
+    styles:
+      card:
+        - border-radius: var(--ha-card-border-radius)
+        - margin-top: 16px
+        - --mdc-ripple-color: white
+        - --mdc-ripple-press-opacity: 0.5
+
+  scene_bulbs:
+    show_name: false
+    size: 50%
+    color_type: icon
+    color: auto-no-temperature
+    show_label: true
+    hold_action:
+      action: more-info
+
+  scene_ccts:
+    template: scene_bulbs
+    show_name: true
+
+title: Smart Bothy
+views:
+  - path: default_view
+    title: Home
+    cards:
+      - type: weather-forecast
+        entity: weather.portree
+
+      - type: "custom:github-flexi-card"
+        title: Card-level entity properties
+        secondary_info: "Released {latest_release_tag}"
+        url: true
+        attribute_urls: true
+        attributes:
+          - views
+          - stargazers
+          - open_issues
+          - clones
+          - forks
+          - open_pull_requests
+        entities:
+          - sensor.github_demos
+          - sensor.github_pithy
+          - sensor.github_assembly_guides
+          - sensor.github_smart_bothy
+
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: entities
+            entities:
+              - entity: input_boolean.service_reload_ha
+              - entity: input_boolean.service_restart_ha
+          - type: "custom:home-feed-card"
+            card_id: main_feed
+            title: false
+            id_filter: ^.*
+            more_info_on_tap: true
+            state_color: true
+            show_empty: false
+
+          - type: custom:mini-graph-card
+            entities:
+              - sensor.youtube_followers
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: binary_sensor.living_room_motion
+                name: Living room
+              - entity: binary_sensor.bathroom_motion
+                name: Bathroom
+                color: green
+              - entity: binary_sensor.bedroom_motion
+                name: Bedroom
+            name: Motion last hour
+            hours_to_show: 1
+            points_per_hour: 60
+            update_interval: 30
+            aggregate_func: max
+            line_width: 2
+            smoothing: false
+            state_map:
+              - value: "off"
+                label: Clear
+              - value: "on"
+                label: Detected
+
+  - path: living_room
+    title: Living Room
+    icon: mdi:sofa-outline
+    panel: true
+    cards:
+      - type: grid
+        cards:
+          - type: custom:light-entity-card
+            entity: light.living_room
+            persist_features: true
+            hide_header: true
+
+          - type: custom:mini-graph-card
+            entities:
+              - sensor.tv_pithy_screen_temperature
+              - sensor.hms_living_room_temperature
+              - sensor.living_room_average_temperature
+
+  - path: bedroom
+    title: Bedroom
+    icon: mdi:bed-outline
+    panel: false
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: input_text.bedroom_last_scene
+                template: scene_button
+                name: Bright
+                icon: mdi:weather-sunny
+                state:
+                  - value: "Bright"
+                    icon: mdi:check-circle-outline
+                    styles:
+                      card:
+                        - background: var(--ha-card-background)
+                        - filter: opacity(70%)
+                  - operator: "default"
+                    color: var(--paper-item-icon-color)
+                    styles:
+                      card:
+                        - background: "none"
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.bedroom_scene_bright
+
+              - type: custom:button-card
+                entity: input_text.bedroom_last_scene
+                template: scene_button
+                name: Relax
+                icon: mdi:sofa-outline
+                state:
+                  - value: "Relax"
+                    icon: mdi:check-circle-outline
+                    styles:
+                      card:
+                        - background: var(--ha-card-background)
+                        - filter: opacity(70%)
+                  - operator: "default"
+                    color: var(--paper-item-icon-color)
+                    styles:
+                      card:
+                        - background: "none"
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.bedroom_scene_relax
+
+              - type: custom:button-card
+                entity: input_text.bedroom_last_scene
+                template: scene_button
+                name: Cosy
+                icon: mdi:bed-single-outline
+                state:
+                  - value: "Cosy"
+                    icon: mdi:check-circle-outline
+                    styles:
+                      card:
+                        - background: var(--ha-card-background)
+                        - filter: opacity(70%)
+                  - operator: "default"
+                    color: var(--paper-item-icon-color)
+                    styles:
+                      card:
+                        - background: "none"
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.bedroom_scene_cosy
+
+              - type: custom:button-card
+                entity: input_text.bedroom_last_scene
+                template: scene_button
+                name: "Off"
+                icon: mdi:power
+                state:
+                  - value: "Off"
+                    icon: mdi:check-circle-outline
+                    styles:
+                      card:
+                        - background: var(--ha-card-background)
+                        - filter: opacity(70%)
+                  - operator: "default"
+                    color: var(--paper-item-icon-color)
+                    styles:
+                      card:
+                        - background: "none"
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.bedroom_scene_off
+
+          - type: custom:light-entity-card
+            entity: light.bedroom
+            persist_features: true
+            hide_header: true
+            full_width_sliders: true
+
+          - type: entities
+            entities:
+              - type: divider
+
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: light.bedroom_lamp
+                template: scene_ccts
+                name: Lamp
+
+              - type: custom:button-card
+                entity: light.bedroom_candle
+                template: scene_ccts
+                name: Bedside
+
+              - type: custom:button-card
+                entity: light.bedroom_filament_1
+                template: scene_bulbs
+                label: >
+                  [[[
+                    var bri = states['light.bedroom_filament_1'].attributes.brightness;
+                    return (bri ? bri : '0');
+                  ]]]
+
+              - type: custom:button-card
+                entity: light.bedroom_filament_2
+                template: scene_bulbs
+                label: >
+                  [[[
+                    var bri = states['light.bedroom_filament_2'].attributes.brightness;
+                    return (bri ? bri : '0');
+                  ]]]
+
+              - type: custom:button-card
+                entity: light.bedroom_filament_3
+                template: scene_bulbs
+                label: >
+                  [[[
+                    var bri = states['light.bedroom_filament_3'].attributes.brightness;
+                    return (bri ? bri : '0');
+                  ]]]
+
+              - type: custom:button-card
+                entity: light.bedroom_filament_4
+                template: scene_bulbs
+                label: >
+                  [[[
+                    var bri = states['light.bedroom_filament_4'].attributes.brightness;
+                    return (bri ? bri : '0');
+                  ]]]
+
+          - type: entities
+            entities:
+              - entity: input_boolean.bedroom_filament_animation
+                type: custom:multiple-entity-row
+                name: Filament Bulbs Animation
+                state_header: Run
+                toggle: true
+                state_color: true
+                tap_action:
+                  action: toggle
+                entities:
+                  - entity: input_boolean.bedroom_filament_animation_editing
+                    name: Edit
+                    toggle: true
+
+          - type: vertical-stack
+            cards:
+              - type: custom:state-switch
+                entity: input_boolean.bedroom_filament_animation_editing
+                transition: flip
+                default: "off"
+                states:
+                  "on":
+                    type: vertical-stack
+                    cards:
+                      - type: horizontal-stack
+                        cards:
+                          - type: entities
+                            entities:
+                              - type: "section"
+                                label: Brightness
+                              - type: custom:slider-entity-row
+                                entity: input_number.bedroom_brightness_maximum
+                                name: hide_state
+                                full_row: true
+                              - type: custom:slider-entity-row
+                                entity: input_number.bedroom_brightness_minimum
+                                name: hide_state
+                                full_row: true
+
+                          - type: entities
+                            entities:
+                              - type: "section"
+                                label: Transitions
+                              - type: custom:slider-entity-row
+                                entity: input_number.bedroom_transition_maximum
+                                full_row: true
+                              - type: custom:slider-entity-row
+                                entity: input_number.bedroom_transition_minimum
+                                full_row: true
+
+                      - type: entities
+                        entities:
+                          - type: "section"
+                            label: Fade Away Delay
+                          - type: custom:slider-entity-row
+                            entity: input_number.bedroom_transition_off
+                            full_row: true
+
+          - type: entities
+            entities:
+              - type: divider
+
+          - type: custom:mini-graph-card
+            entities:
+              - sensor.hms_bedroom_light_level
+            hours_to_show: 2
+            points_per_hour: 20
+            line_color: var(--accent-color)
+            show:
+              name: false
+              icon: false
+              labels: false
+              name_adaptive_color: false
+
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: "custom:simple-thermostat"
+            entity: climate.bedroom
+            step_size: 1
+            step_layout: row
+            show_header: false
+            control:
+              preset:
+                away: true
+                none:
+                  name: Home
+
+          - type: entities
+            entities:
+              - type: divider
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.bedroom_average_temperature
+                name: Average
+              - entity: sensor.bedroom_bedside_temperature
+                name: Bedside
+              - entity: sensor.hms_bedroom_temperature
+                name: Hue Motion
+            hours_to_show: 2
+            points_per_hour: 30
+            line_width: 3
+            name: Temperature Data
+            show:
+              name: true
+              icon: true
+              state: true
+              labels: true
+              labels_secondary: true
+              extrema: true
+              average: true
+
+  - path: config
+    title: Config
+    icon: mdi:head-cog-outline
+    panel: false
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: entities
+                entities:
+                  - input_text.bedroom_last_scene
+
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                filter:
+                  include:
+                    - domain: binary_sensor
+                      attributes:
+                        device_class: motion
+                sort:
+                  method: last_changed
+                  count: 5
+
+  - path: trendsClimate
+    title: Climate
+    icon: mdi:chart-timeline
+    panel: true
+    cards:
+      - type: history-graph
+        entities:
+          - sensor.bedroom_average_humidity
+          - sensor.living_room_average_humidity
+          - sensor.bedroom_average_temperature
+          - sensor.living_room_average_temperature
+        hours_to_show: 24
+
+  - path: machines
+    title: Machines
+    icon: mdi:chart-timeline-variant
+    panel: false
+    cards:
+      - card:
+          title: Octoprint ERROR
+          type: entities
+        filter:
+          include:
+            - entity_id: binary_sensor.prusa_mk3s_printing
+              state: "on"
+        show_empty: false
+        show_header_toggle: false
+        type: "custom:auto-entities"
+      - entities:
+          - icon: "mdi:printer-3d"
+            name: OctoPrint
+            type: weblink
+            url: "http://octopi.local"
+        show_header_toggle: false
+        type: entities
+      - aspect_ratio: 50%
+        camera_image: camera.prusa_mk3s
+        entity: camera.prusa_mk3s
+        image: "http://octopi.local/webcam/?action=snapshot"
+        show_name: false
+        show_state: false
+        type: picture-entity
+      - entities:
+          - entity: sensor.prusa_mk3s_job_percentage
+          - entity: sensor.prusa_mk3s_time_remaining_format
+          - entity: sensor.prusa_mk3s_time_elapsed_format
+        title: Job
+        type: entities
+      - entities:
+          - entity: sensor.prusa_mk3s_current_state
+          - entity: binary_sensor.prusa_mk3s_printing
+          - entity: binary_sensor.prusa_mk3s_printing_error
+        title: Status
+        type: entities
+
+      - entities:
+          - entity: sensor.prusa_mk3s_actual_bed_temp
+            name: Current Temp
+            color: orange
+          - entity: sensor.prusa_mk3s_target_bed_temp
+            color: skyblue
+            name: Target Temp
+        hours_to_show: 2
+        line_width: 3
+        color_thresholds:
+          - value: 35
+            color: white
+          - value: 40
+            color: green
+          - value: 49
+            color: orange
+          - value: 70
+            color: red
+        show:
+          labels: hover
+          legend: false
+          name_adaptive_color: false
+        icon: "mdi:temperature-celsius"
+        name: Bed Temp
+        type: "custom:mini-graph-card"
+      - entities:
+          - entity: sensor.prusa_mk3s_actual_tool0_temp
+            name: Current Temp
+            color: orange
+          - entity: sensor.prusa_mk3s_target_tool0_temp
+            color: darkred
+            name: Target Temp
+        hours_to_show: 2
+        line_width: 3
+        color_thresholds:
+          - value: 35
+            color: white
+          - value: 179
+            color: green
+          - value: 220
+            color: orange
+          - value: 300
+            color: red
+        show:
+          labels: hover
+          legend: false
+          name_adaptive_color: false
+        icon: "mdi:temperature-celsius"
+        name: Hotend Temp
+        type: "custom:mini-graph-card"

@@ -1,0 +1,107 @@
+light:
+  - platform: neopixelbus
+    type: GRB
+    pin: RX
+    num_leds: 16
+    id: ${deviceName}_neopixel
+    name: "${deviceUpper} Ring"
+    effects:
+      - addressable_rainbow:
+          name: Rainbow
+      - addressable_color_wipe:
+          name: Colour Wipe
+      - addressable_scan:
+          name: Knight Rider
+      - addressable_twinkle:
+      - addressable_fireworks:
+      - addressable_random_twinkle:
+          name: Occasional Twinkle
+          twinkle_probability: 1%
+          progress_interval: 50ms
+      - addressable_lambda:
+          name: "Climate Display"
+          update_interval: 50ms
+          lambda: |-
+            it.all() = ESPColor::BLACK;
+
+            // GET THE UPDATED CLIMATE SETPOINT VALUE
+            int climate = id(climate_setpoint).state;
+
+            // MAP THAT VALUE AGAINST THE 16 LEDS (RANGE 10 - 30 DEG C)
+            // FROM ARDUINO MAP FUNCTION: return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+            int outRange = (climate - 10) * (it.size() - 1) / (30 - 10) + 1; 
+
+            // INVERT IT TO GO CLOCKWISE
+            outRange = it.size() - outRange;
+
+            int red = 0;
+            int blue = 0;
+            for (int i = it.size() - 1; i > outRange - 1; i--) {
+              red = (15 - i) * 16;
+              blue = i * 16;
+              
+              it[i] = ESPColor(red, 0, blue);
+            }
+      - automation:
+          name: Alarm Sequence
+          sequence:
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 100%
+                blue: 100%
+            - delay: 100ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 100%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 100%
+                blue: 100%
+            - delay: 100ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms

@@ -1,0 +1,24 @@
+- addressable_lambda:
+    name: "Climate Display"
+    update_interval: 50ms
+    lambda: |-
+      it.all() = ESPColor::BLACK;
+
+      // GET THE UPDATED CLIMATE SETPOINT VALUE
+      int climate = id(climate_setpoint).state;
+
+      // MAP THAT VALUE AGAINST THE 16 LEDS (RANGE 10 - 30 DEG C)
+      // FROM ARDUINO MAP FUNCTION: return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+      int outRange = (climate - 10) * (it.size() - 1) / (30 - 10) + 1; 
+
+      // INVERT IT TO GO CLOCKWISE
+      outRange = it.size() - outRange;
+
+      int red = 0;
+      int blue = 0;
+      for (int i = it.size() - 1; i > outRange - 1; i--) {
+        red = (15 - i) * 16;
+        blue = i * 16;
+        
+        it[i] = ESPColor(red, 0, blue);
+      }

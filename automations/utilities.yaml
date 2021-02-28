@@ -1,0 +1,47 @@
+- id: "1609565208892"
+  alias: Door Bell
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: input_boolean.doorbell_signal
+      to: "on"
+      from: "off"
+  condition: []
+  action:
+    - service: esphome.living_room_pithy_pixel_alert_doorbell
+      data: {}
+    - service: esphome.living_room_screen_alert_doorbell
+      data: {}
+    - service: esphome.tv_pithy_pixel_alert_doorbell
+      data: {}
+    - service: esphome.tv_pithy_screen_alert_doorbell
+      data: {}
+    - delay: 1s
+    - condition: state
+      entity_id: input_boolean.doorbell_signal
+      state: "off"
+  mode: single
+
+- id: "1609165208891"
+  alias: Dinner Bell
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dinner_signal
+      to: "on"
+      from: "off"
+  condition: []
+  action:
+    - service: esphome.living_room_pithy_pixel_alert_dinnertime
+      data: {}
+    - service: esphome.living_room_screen_alert_dinnertime
+      data: {}
+    - service: esphome.tv_pithy_pixel_alert_dinnertime
+      data: {}
+    - service: esphome.tv_pithy_screen_alert_dinnertime
+      data: {}
+    - delay: "1"
+    - condition: state
+      entity_id: input_boolean.dinner_signal
+      state: "off"
+  mode: single

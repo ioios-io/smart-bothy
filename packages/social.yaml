@@ -1,0 +1,27 @@
+sensor:
+  - platform: github
+    access_token: !secret github_access_token
+    repositories:
+      - path: "ioios-io/demos"
+        name: Demos
+      - path: "ioios-io/pithy"
+        name: Pithy
+      - path: "ioios-io/smart_bothy"
+        name: Smart Bothy
+      - path: "ioios-io/assembly"
+        name: Assembly Guides
+
+  - platform: socialblade
+    channel_id: UCdC93Xn3LtoHuwq3kBAZL6A
+
+  - platform: template
+    sensors:
+      youtube_followers:
+        friendly_name: "YouTube Followers"
+        value_template: "{{ states('sensor.social_blade') | int }}"
+        icon_template: mdi:youtube
+
+      youtube_views:
+        friendly_name: "YouTube Total Views"
+        value_template: "{{ state_attr('sensor.social_blade', 'total_views') | int  }}"
+        icon_template: mdi:youtube-subscription

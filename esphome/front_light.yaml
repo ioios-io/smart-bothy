@@ -1,0 +1,55 @@
+substitutions:
+  boardPlatform: ESP8266
+  boardName: esp01_1m
+  
+  devicename: front_light
+  deviceUpper: Front Light
+  
+<<: !include ../esphomeCommon/header.yaml
+<<: !include ../esphomeCommon/api.yaml
+
+sensor:
+  - platform: wifi_signal
+    name: ESP Signal ${deviceUpper}
+    update_interval: 60s
+
+  - platform: uptime
+    name: ESP Uptime ${deviceUpper}
+    update_interval: 20s
+    
+status_led:
+  pin:
+    number: GPIO13
+    inverted: true
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO00
+    id: reset
+    internal: true
+    filters:
+      - invert:
+      - delayed_off: 10ms
+
+  - platform: gpio
+    name: "Kitchen Switch"
+    pin: 
+      number: GPIO04
+      inverted: true
+    id: switch_1
+    <<: !include ../esphomeCommon/lightswitchLivingRoom.yaml
+
+output:
+  - platform: gpio
+    id: light_relay
+    pin: GPIO12
+
+light:
+  - platform: binary
+    id: $devicename
+    name: ${deviceUpper}
+    output: light_relay
+    
+switch:
+  - platform: restart
+    name: "ESP Restart ${deviceUpper}"

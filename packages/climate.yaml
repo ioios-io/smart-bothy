@@ -1,0 +1,116 @@
+climate:
+  - platform: generic_thermostat
+    name: Living Room
+    heater: switch.living_room_heater
+    target_sensor: sensor.living_room_average_temperature
+    min_temp: 10
+    max_temp: 30
+    target_temp: 20
+    cold_tolerance: 0
+    hot_tolerance: 0
+    min_cycle_duration:
+      seconds: 120
+    keep_alive:
+      minutes: 3
+    away_temp: 14
+    precision: 0.1
+
+  - platform: generic_thermostat
+    name: Bedroom
+    heater: switch.bedroom_heater
+    target_sensor: sensor.bedroom_average_temperature
+    min_temp: 10
+    max_temp: 30
+    target_temp: 16
+    cold_tolerance: 0
+    hot_tolerance: 0
+    min_cycle_duration:
+      seconds: 30
+    keep_alive:
+      minutes: 3
+    away_temp: 14
+    precision: 0.1
+
+binary_sensor:
+  - platform: template
+    sensors:
+      living_room_climate_heating:
+        friendly_name: "Living Room Climate Heating"
+        device_class: heat
+        value_template: >-
+          {{ ( state_attr('climate.living_room', 'hvac_action') | string ) == "heating" }}
+        icon_template: >-
+          {% if ( state_attr('climate.living_room', 'hvac_action') | string ) == "heating" %}
+            mdi:radiator
+          {% else %}
+            mdi:radiator-disabled
+          {% endif %}
+
+      bedroom_climate_heating:
+        friendly_name: "Bedroom Climate Heating"
+        device_class: heat
+        value_template: >-
+          {{ ( state_attr('climate.bedroom', 'hvac_action') | string ) == "heating" }}
+        icon_template: >-
+          {% if ( state_attr('climate.bedroom', 'hvac_action') | string ) == "heating" %}
+            mdi:radiator
+          {% else %}
+            mdi:radiator-disabled
+          {% endif %}
+
+sensor:
+  - platform: min_max
+    name: Living Room Average Temperature
+    type: mean
+    round_digits: 1
+    entity_ids:
+      - sensor.hms_living_room_temperature
+      - sensor.tv_pithy_screen_temperature
+
+  - platform: min_max
+    name: Living Room Average Humidity
+    type: mean
+    round_digits: 0
+    entity_ids:
+      - sensor.living_room_pithy_pixel_humidity
+
+  - platform: min_max
+    name: Bedroom Average Temperature
+    type: mean
+    round_digits: 1
+    entity_ids:
+      - sensor.bedroom_bedside_temperature
+      - sensor.hms_bedroom_temperature
+
+  - platform: min_max
+    name: Bedroom Average Humidity
+    type: mean
+    round_digits: 0
+    entity_ids:
+      - sensor.bedroom_bedside_humidity
+
+  - platform: template
+    sensors:
+      living_room_climate_setpoint:
+        friendly_name: "Living Room Climate Setpoint"
+        device_class: temperature
+        value_template: "{{ state_attr('climate.living_room', 'temperature') | int | round(0) }}"
+        icon_template: "mdi:thermometer-plus"
+
+      living_room_climate_temperature:
+        friendly_name: "Living Room Climate Current Temperature"
+        device_class: temperature
+        value_template: "{{ state_attr('climate.living_room', 'current_temperature') | float | round(1) }}"
+
+  - platform: template
+    sensors:
+      bedroom_climate_setpoint:
+        friendly_name: "Bedroom Climate Setpoint"
+        device_class: temperature
+        value_template: "{{ state_attr('climate.bedroom', 'temperature') | int | round(0) }}"
+        icon_template: "mdi:thermometer-plus"
+
+      bedroom_climate_temperature:
+        friendly_name: "Bedroom Climate Current Temperature"
+        device_class: temperature
+        value_template: "{{ state_attr('climate.bedroom', 'current_temperature') | float | round(1) }}"

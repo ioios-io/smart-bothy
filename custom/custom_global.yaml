@@ -1,0 +1,30 @@
+"sensor.*_average_temperature":
+  icon: "mdi:thermometer-lines"
+
+"sensor.*_average_humidity":
+  icon: "mdi:water-percent"
+
+"sensor.*_battery_percent":
+  unit_of_measurement: "%"
+  device_class: battery
+
+"light.*_filament_*":
+  icon: "mdi:lightbulb-group-outline"
+
+"sensor.*_lights_warmth":
+  icon: "mdi:invert-colors"
+
+"sensor.*_lights_brightness":
+  icon: "mdi:brightness-5"
+
+"script.*_scene_bright":
+  icon: "mdi:white-balance-sunny"
+
+"script.*_scene_relax":
+  icon: "mdi:sofa-outline"
+
+"script.*_scene_cosy":
+  icon: "mdi:bed-double-outline"
+
+"script.*_scene_off":
+  icon: "mdi:power"

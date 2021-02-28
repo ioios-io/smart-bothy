@@ -1,0 +1,363 @@
+substitutions:
+  # UNIQUE NAME FOR THE DEVICE
+  deviceName: bedroom_pithy_pixel
+  deviceUpper: Bedroom Pithy Pixel
+
+  # ENTITY MAPPING FOR THE DIFFERENT FUNCTIONS
+  climate: bedroom # ID OF THERMOSTAT IN HA
+
+  # CUSTOM OPTIONS
+  alertTimeout: '10' # NUMBER OF SECONDS THE ALERTS WILL BE SHOWN
+  climateLower: '10' # CLIMATE LOWER LIMIT
+  climateUpper: '30' # CLIMATE UPPER LIMIT
+  
+  # SWITCH MAPPING. SELECT THE SWITCH FOR EACH ACTION
+  switchMenu: ${encoderSwitch}
+  switchAction: ${sideSwitch}
+  
+  # WIFI AND OTHER CREDENTIALS. USE SECRETS WHERE POSSIBLE
+  wifiPass: !secret wifiPass
+  wifiSSID: !secret wifiSSID
+  passOTA: !secret passOTA
+  passESPH: !secret passESPH
+  
+  # ESP DECLARATION
+  boardPlatform: ESP8266
+  boardName: d1_mini
+  
+  # PIN MAPPING. DEFAULTS TO ioios.io PITHY AND COUNTER DEVICES
+  encoderPinA: D5
+  encoderPinB: D6
+  encoderSwitch: D7
+  i2cData: D1
+  i2cClock: D2
+  pirSensor: D3
+  sideSwitch: TX
+  neoPixels: RX
+
+###############################################################################
+# WHOA WHERE ARE YOU GOING? GO STEADY BEYOND HERE, THIS IS THE BREAKABLE BIT! #
+###############################################################################
+
+esphome:
+  name: $deviceName
+  platform: $boardPlatform
+  board: $boardName
+  on_boot:
+    priority: 250
+    then:
+      - binary_sensor.template.publish:
+          id: api_connected
+          state: OFF
+      - wait_until:
+          api.connected
+      - delay: 5s
+      - binary_sensor.template.publish:
+          id: api_connected
+          state: ON
+
+wifi:
+  ssid: ${wifiSSID}
+  password: ${wifiPass}
+
+captive_portal:
+logger:
+ota:
+  password: ${passOTA}
+  
+i2c:
+  sda: ${i2cData}
+  scl: ${i2cClock}
+  scan: True
+  frequency: 200MHz
+  id: bus_a
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+    
+api:
+  password: ${passESPH} 
+  services:
+    - service: alert_doorbell
+      then:
+        - script.execute: lastAction
+        - light.turn_on:
+            id: ${deviceName}_neopixel
+            brightness: 60%
+            effect: "Rainbow"
+
+    - service: alert_dinnertime
+      then:
+        - script.execute: lastAction
+        - light.turn_on:
+            id: ${deviceName}_neopixel
+            brightness: 60%
+            effect: "Alarm Sequence"
+
+globals:
+  - id: lastAct
+    type: int
+    initial_value: '0'
+    
+  - id: uptimeSecs
+    type: int
+    initial_value: '0'
+    
+  - id: oneShot
+    type: int
+    initial_value: '0'
+    
+interval:
+  - interval: 1sec
+    then:
+      - lambda: 'id(uptimeSecs) += 1;'
+      - if:
+          condition: 
+              lambda: 'return (id(uptimeSecs) > (id(lastAct) + ${alertTimeout})) && id(oneShot) == 1;'
+          then:
+            - logger.log: "Turning Off Neopixels"
+            - lambda: 'id(oneShot) = 0;'
+            - light.turn_off:
+                id: ${deviceName}_neopixel
+
+script:
+  - id: lastAction
+    then:
+      - lambda: 'id(oneShot) = 1;'
+      - lambda: 'id(lastAct) = id(uptimeSecs);'
+      
+switch:
+  - platform: restart
+    name: "ESP Restart ${deviceUpper}"
+    
+sensor:
+  - platform: wifi_signal
+    name: ESP Signal ${deviceUpper}
+    update_interval: 60s
+
+  - platform: uptime
+    name: ESP Uptime ${deviceUpper}
+    update_interval: 60s
+    on_value:
+      then:
+        - globals.set:
+            id: uptimeSecs
+            value: !lambda |- 
+              return x;
+    
+  - platform: sht3xd
+    temperature:
+      name: "${deviceUpper} Temperature"
+      id: ${deviceName}_temperature
+    humidity:
+      name: "${deviceUpper} Humidity"
+      id: ${deviceName}_humidity
+    address: 0x44
+    update_interval: 15s
+
+  - platform: homeassistant
+    id: climate_current
+    entity_id: sensor.${climate}_climate_temperature
+    internal: true
+
+  - platform: homeassistant
+    id: climate_setpoint
+    entity_id: sensor.${climate}_climate_setpoint
+    internal: true
+    on_value:
+      then:
+        - sensor.rotary_encoder.set_value:
+            id: rotary_dial
+            value: !lambda 'return x;'
+        - light.turn_on:
+            id: ${deviceName}_neopixel
+            brightness: 60%
+            effect: "Climate Display"
+        - script.execute: lastAction
+
+  - platform: rotary_encoder
+    id: rotary_dial
+    pin_a:
+      number: ${encoderPinA}
+      inverted: true
+      mode: INPUT_PULLUP
+    pin_b:
+      number: ${encoderPinB}
+      inverted: true
+      mode: INPUT_PULLUP
+    filters:
+      - debounce: 0.2s
+    resolution: 1
+    min_value: ${climateLower}
+    max_value: ${climateUpper}
+    on_value:
+      then:
+        - homeassistant.service:
+            service: climate.set_temperature
+            data_template:
+              entity_id: climate.${climate}
+              temperature: "{{ climate_target | int }}"
+            variables:
+              climate_target: !lambda 'return id(rotary_dial).state;'
+              
+text_sensor:
+  - platform: homeassistant
+    id: climate_state
+    entity_id: climate.${climate}
+    internal: true
+    
+binary_sensor:
+  - platform: template
+    id: api_connected
+
+  - platform: homeassistant
+    id: climate_output
+    entity_id: binary_sensor.${climate}_climate_heating
+    internal: true
+
+  - platform: gpio
+    pin:
+      number: ${switchAction}
+      inverted: true
+      mode: INPUT_PULLUP
+    name: Switch ${deviceUpper}
+    internal: true
+    on_click:
+      then:
+        if:
+          condition:
+            lambda: 'return id(climate_state).state == "off";'
+          then:
+            - homeassistant.service:
+                service: climate.turn_on
+                data:
+                  entity_id: climate.${climate}
+          else:
+            - homeassistant.service:
+                service: climate.turn_off
+                data:
+                  entity_id: climate.${climate}    
+
+  - platform: gpio
+    pin:
+      number: ${switchMenu}
+      inverted: true
+      mode: INPUT_PULLUP
+    name: Switch ${deviceUpper}
+    internal: true
+    on_click:
+      then:
+        - light.turn_on:
+            id: ${deviceName}_neopixel
+            brightness: 60%
+            effect: "Climate Display"
+        - script.execute: lastAction
+        
+light:
+  - platform: neopixelbus
+    type: GRB
+    pin: RX
+    num_leds: 16
+    id: ${deviceName}_neopixel
+    name: "${deviceUpper} Ring"
+    effects:
+      - addressable_rainbow:
+          name: Rainbow
+      - addressable_color_wipe:
+          name: Colour Wipe
+      - addressable_scan:
+          name: Knight Rider
+      - addressable_twinkle:
+      - addressable_fireworks:
+      - addressable_random_twinkle:
+          name: Occasional Twinkle
+          twinkle_probability: 1%
+          progress_interval: 50ms
+      - addressable_lambda:
+          name: "Climate Display"
+          update_interval: 50ms
+          lambda: |-
+            it.all() = ESPColor::BLACK;
+            
+            // GET THE UPDATED CLIMATE SETPOINT VALUE
+            int climate = id(climate_setpoint).state;
+            
+            // MAP THAT VALUE AGAINST THE 16 LEDS (RANGE 10 - 30 DEG C)
+            // FROM ARDUINO MAP FUNCTION: return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+            int outRange = (climate - 10) * (it.size() - 1) / (30 - 10) + 1; 
+            
+            // INVERT IT TO GO CLOCKWISE
+            outRange = it.size() - outRange;
+            
+            int red = 0;
+            int blue = 0;
+            for (int i = it.size() - 1; i > outRange - 1; i--) {
+              red = (15 - i) * 16;
+              blue = i * 16;
+              
+              it[i] = ESPColor(red, 0, blue);
+            }
+      - automation:
+          name: Alarm Sequence
+          sequence:
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 100%
+                blue: 100%
+            - delay: 100ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 100%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 100%
+                blue: 100%
+            - delay: 100ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms

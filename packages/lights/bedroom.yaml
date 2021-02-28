@@ -1,0 +1,215 @@
+light:
+  - platform: group
+    name: Bedroom Filaments
+    entities:
+      - light.bedroom_filament_1
+      - light.bedroom_filament_2
+      - light.bedroom_filament_3
+      - light.bedroom_filament_4
+
+  - platform: group
+    name: Bedroom Lights
+    entities:
+      - light.bedroom_candle
+      - light.bedroom_lamp
+      - light.bedroom_filaments
+
+sensor:
+  - platform: template
+    sensors:
+      bedroom_lights_warmth:
+        friendly_name: "Bedroom Lights Warmth"
+        value_template: "{{ state_attr('light.bedroom_lights', 'color_temp') | int | round(0) }}"
+
+      bedroom_lights_brightness:
+        friendly_name: "Bedroom Lights Brightness"
+        value_template: "{{ state_attr('light.bedroom_lights', 'brightness') | int | round(0) }}"
+
+input_text:
+  bedroom_last_scene:
+    name: Last Scene Selected
+    initial: Unknown
+
+script:
+  bedroom_scene_bright:
+    alias: Bedroom Bright Scene Extras
+    description: "Scene functions beyond light settings"
+    sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.bedroom_last_scene
+          value: Bright
+      - service: light.turn_on
+        data:
+          entity_id: light.bedroom_candle
+          brightness: 200
+          color_temp: 350
+          transition: 5
+      - service: light.turn_on
+        data:
+          entity_id: light.bedroom_lamp
+          brightness: 200
+          color_temp: 300
+          transition: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.bedroom_filament_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_brightness_maximum
+          value: 80
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_brightness_minimum
+          value: 70
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_maximum
+          value: 60
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_minimum
+          value: 10
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.bedroom_filament_animation
+
+  bedroom_scene_relax:
+    alias: Bedroom Relax Scene Extras
+    description: "Scene functions beyond light settings"
+    sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.bedroom_last_scene
+          value: Relax
+      - service: light.turn_on
+        data:
+          entity_id: light.bedroom_candle
+          brightness: 100
+          color_temp: 380
+          transition: 5
+      - service: light.turn_on
+        data:
+          entity_id: light.bedroom_lamp
+          brightness: 100
+          color_temp: 350
+          transition: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.bedroom_filament_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_brightness_maximum
+          value: 50
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_brightness_minimum
+          value: 30
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_maximum
+          value: 30
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_minimum
+          value: 10
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.bedroom_filament_animation
+
+  bedroom_scene_cosy:
+    alias: Bedroom Cosy Scene Extras
+    description: "Scene functions & light settings"
+    sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.bedroom_last_scene
+          value: Cosy
+      - service: light.turn_on
+        data:
+          entity_id: light.bedroom_candle
+          brightness: 40
+          color_temp: 450
+          transition: 10
+      - service: light.turn_on
+        data:
+          entity_id: light.bedroom_lamp
+          brightness: 60
+          color_temp: 450
+          transition: 6
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.bedroom_filament_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_brightness_maximum
+          value: 4
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_brightness_minimum
+          value: 0
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_maximum
+          value: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_minimum
+          value: 1
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.bedroom_filament_animation
+
+  bedroom_scene_off:
+    alias: Bedroom Off Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.bedroom_last_scene
+          value: "Off"
+      - service: light.turn_on
+        data:
+          entity_id: light.bedroom_candle
+          brightness: 0
+          color_temp: 450
+          transition: 13
+      - service: light.turn_on
+        data:
+          entity_id: light.bedroom_lamp
+          brightness: 0
+          color_temp: 450
+          transition: 10
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_off
+          value: 5
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.bedroom_filament_animation

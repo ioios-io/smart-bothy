@@ -1,0 +1,43 @@
+binary_sensor:
+  - platform: template
+    sensors:
+      living_room_motion:
+        friendly_name: "Living Room Motion"
+        device_class: motion
+        delay_off:
+          seconds: 70
+        value_template: >-
+          {{ is_state('binary_sensor.pir_kitchen_screen', 'on')
+             or is_state('binary_sensor.hms_living_room_motion', 'on') }}
+
+      bedroom_motion:
+        friendly_name: "Bedroom Motion"
+        device_class: motion
+        delay_off:
+          seconds: 30
+        value_template: >-
+          {{ is_state('binary_sensor.pir_bedroom_detect', 'on')
+             or is_state('binary_sensor.hms_bedroom_motion', 'on') }}
+
+      bathroom_motion:
+        friendly_name: "Bathroom Motion"
+        device_class: motion
+        delay_off:
+          seconds: 20
+        value_template: >-
+          {{ is_state('binary_sensor.hms_bathroom_motion', 'on') }}
+
+sensor:
+  - platform: template
+    sensors:
+      hms_bathroom_battery_percent:
+        friendly_name: "HMS Bathroom Battery Level"
+        value_template: '{{state_attr("binary_sensor.hms_bathroom_motion", "battery_level")}}'
+
+      hms_bedroom_battery_percent:
+        friendly_name: "HMS Bedroom Battery Level"
+        value_template: '{{state_attr("binary_sensor.hms_bedroom_motion", "battery_level")}}'
+
+      hms_living_room_battery_percent:
+        friendly_name: "HMS Living Room Battery Level"
+        value_template: '{{state_attr("binary_sensor.hms_living_room_motion", "battery_level")}}'

@@ -1,0 +1,87 @@
+light:
+  - platform: neopixelbus
+    type: GRB
+    pin: RX
+    num_leds: 3
+    id: ${deviceName}_neopixel
+    name: "${deviceUpper} Stripe"
+    effects:
+      - addressable_rainbow:
+          name: Rainbow
+          speed: 3
+          width: 50
+      - addressable_color_wipe:
+          name: Colour Wipe
+          reverse: True
+          add_led_interval: 200ms
+      - addressable_scan:
+          name: Knight Rider
+          move_interval: 200ms
+          scan_width: 1
+      - addressable_random_twinkle:
+          name: Occasional Twinkle
+          twinkle_probability: 3%
+          progress_interval: 80ms
+      - automation:
+          name: Alarm Sequence
+          sequence:
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 0%
+                blue: 0%
+            - delay: 400ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 100%
+                blue: 100%
+            - delay: 100ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 100%
+            - delay: 200ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 100%
+                green: 100%
+                blue: 100%
+            - delay: 100ms
+            - light.addressable_set:
+                id: ${deviceName}_neopixel
+                red: 0%
+                green: 0%
+                blue: 0%
+            - delay: 200ms
