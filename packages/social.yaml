@@ -3,25 +3,131 @@ sensor:
     access_token: !secret github_access_token
     repositories:
       - path: "ioios-io/demos"
-        name: Demos
+        name: Github Demos
       - path: "ioios-io/pithy"
-        name: Pithy
+        name: Github Pithy
       - path: "ioios-io/smart-bothy"
-        name: Smart Bothy
+        name: Github Smart Bothy
       - path: "ioios-io/assembly"
-        name: Assembly Guides
+        name: Github Assembly Guides
 
   - platform: socialblade
     channel_id: UCdC93Xn3LtoHuwq3kBAZL6A
 
   - platform: template
     sensors:
-      youtube_followers:
+      trend_youtube_followers:
         friendly_name: "YouTube Followers"
         value_template: "{{ states('sensor.social_blade') | int }}"
-        icon_template: mdi:youtube
 
-      youtube_views:
+      trend_youtube_total_views:
         friendly_name: "YouTube Total Views"
         value_template: "{{ state_attr('sensor.social_blade', 'total_views') | int  }}"
-        icon_template: mdi:youtube-subscription
+
+  # LONG TERM TREND SENSORS FOR GITHUB REPO: DEMOS
+  - platform: template
+    sensors:
+      trend_github_demos_total_views:
+        friendly_name: "Repo: Demos Total Views"
+        value_template: "{{ state_attr('sensor.github_demos', 'views') | int  }}"
+
+      trend_github_demos_unique_views:
+        friendly_name: "Repo: Demos Unique Views"
+        value_template: "{{ state_attr('sensor.github_demos', 'views_unique') | int  }}"
+
+      trend_github_demos_total_clones:
+        friendly_name: "Repo: Demos Total Clones"
+        value_template: "{{ state_attr('sensor.github_demos', 'clones') | int  }}"
+
+      trend_github_demos_unique_clones:
+        friendly_name: "Repo: Demos Unique Clones"
+        value_template: "{{ state_attr('sensor.github_demos', 'clones_unique') | int  }}"
+
+      trend_github_demos_followers:
+        friendly_name: "Repo: Demos Followers"
+        value_template: "{{ state_attr('sensor.github_demos', 'stargazers') | int  }}"
+
+      trend_github_demos_forks:
+        friendly_name: "Repo: Demos Forks"
+        value_template: "{{ state_attr('sensor.github_demos', 'forks') | int  }}"
+
+  # LONG TERM TREND SENSORS FOR GITHUB REPO: PITHY
+  - platform: template
+    sensors:
+      trend_github_pithy_total_views:
+        friendly_name: "Repo: Pithy Total Views"
+        value_template: "{{ state_attr('sensor.github_pithy', 'views') | int  }}"
+
+      trend_github_pithy_unique_views:
+        friendly_name: "Repo: Pithy Unique Views"
+        value_template: "{{ state_attr('sensor.github_pithy', 'views_unique') | int  }}"
+
+      trend_github_pithy_total_clones:
+        friendly_name: "Repo: Pithy Total Clones"
+        value_template: "{{ state_attr('sensor.github_pithy', 'clones') | int  }}"
+
+      trend_github_pithy_unique_clones:
+        friendly_name: "Repo: Pithy Unique Clones"
+        value_template: "{{ state_attr('sensor.github_pithy', 'clones_unique') | int  }}"
+
+      trend_github_pithy_followers:
+        friendly_name: "Repo: Pithy Followers"
+        value_template: "{{ state_attr('sensor.github_pithy', 'stargazers') | int  }}"
+
+      trend_github_pithy_forks:
+        friendly_name: "Repo: Pithy Forks"
+        value_template: "{{ state_attr('sensor.github_pithy', 'forks') | int  }}"
+
+  # LONG TERM TREND SENSORS FOR GITHUB REPO: ASSEMBLY GUIDES
+  - platform: template
+    sensors:
+      trend_github_assembly_guides_total_views:
+        friendly_name: "Repo: Assembly Guides Total Views"
+        value_template: "{{ state_attr('sensor.github_assembly_guides', 'views') | int  }}"
+
+      trend_github_assembly_guides_unique_views:
+        friendly_name: "Repo: Assembly Guides Unique Views"
+        value_template: "{{ state_attr('sensor.github_assembly_guides', 'views_unique') | int  }}"
+
+      trend_github_assembly_guides_total_clones:
+        friendly_name: "Repo: Assembly Guides Total Clones"
+        value_template: "{{ state_attr('sensor.github_assembly_guides', 'clones') | int  }}"
+
+      trend_github_assembly_guides_unique_clones:
+        friendly_name: "Repo: Assembly Guides Unique Clones"
+        value_template: "{{ state_attr('sensor.github_assembly_guides', 'clones_unique') | int  }}"
+
+      trend_github_assembly_guides_followers:
+        friendly_name: "Repo: Assembly Guides Followers"
+        value_template: "{{ state_attr('sensor.github_assembly_guides', 'stargazers') | int  }}"
+
+      trend_github_assembly_guides_forks:
+        friendly_name: "Repo: Assembly Guides Forks"
+        value_template: "{{ state_attr('sensor.github_assembly_guides', 'forks') | int  }}"
+
+  # LONG TERM TREND SENSORS FOR GITHUB REPO: SMART BOTHY
+  - platform: template
+    sensors:
+      trend_github_smart_bothy_total_views:
+        friendly_name: "Repo: Smart Bothy Total Views"
+        value_template: "{{ state_attr('sensor.github_smart_bothy', 'views') | int  }}"
+
+      trend_github_smart_bothy_unique_views:
+        friendly_name: "Repo: Smart Bothy Unique Views"
+        value_template: "{{ state_attr('sensor.github_smart_bothy', 'views_unique') | int  }}"
+
+      trend_github_smart_bothy_total_clones:
+        friendly_name: "Repo: Smart Bothy Total Clones"
+        value_template: "{{ state_attr('sensor.github_smart_bothy', 'clones') | int  }}"
+
+      trend_github_smart_bothy_unique_clones:
+        friendly_name: "Repo: Smart Bothy Unique Clones"
+        value_template: "{{ state_attr('sensor.github_smart_bothy', 'clones_unique') | int  }}"
+
+      trend_github_smart_bothy_followers:
+        friendly_name: "Repo: Smart Bothy Followers"
+        value_template: "{{ state_attr('sensor.github_smart_bothy', 'stargazers') | int  }}"
+
+      trend_github_smart_bothy_forks:
+        friendly_name: "Repo: Smart Bothy Forks"
+        value_template: "{{ state_attr('sensor.github_smart_bothy', 'forks') | int  }}"

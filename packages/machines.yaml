@@ -76,3 +76,30 @@ sensor:
               {{ minutes }} minutes
             {%- endif -%}
           {%- endif -%}
+input_boolean:
+  printer1_cool_down:
+    name: Printer 1 Cool Down Period
+    initial: off
+    icon: mdi:printer-3d-nozzle-alert
+
+automation:
+  - id: "15838379610"
+    alias: Notification From 3D Printer After Cooldown
+    trigger:
+      - entity_id: binary_sensor.prusa_mk3s_printing
+        from: "on"
+        platform: state
+        to: "off"
+    condition: []
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.printer1_cool_down
+      - wait_template: "{{ states('sensor.prusa_mk3s_actual_tool0_temp') | int < 40 }}"
+      - data:
+          message: The print is now ready for collection.
+          title: Prusa MK3S Print Cooled Down
+          notification_id: printer1_cooled
+        service: persistent_notification.create
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.printer1_cool_down
+    mode: single

@@ -31,6 +31,70 @@ views:
       - type: weather-forecast
         entity: weather.portree
 
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: custom:state-switch
+            entity: sensor.prusa_mk3s_current_state
+            states:
+              Operational:
+                type: vertical-stack
+                cards:
+                  - type: entities
+                    entities:
+                      - entity: sensor.prusa_mk3s_current_state
+                        name: "Printer 1: MK3S"
+                      - type: custom:template-entity-row
+                        entity: input_boolean.printer1_cool_down
+                        name: "Cooling Down"
+                        state: "{{ states('sensor.prusa_mk3s_actual_tool0_temp') }}{{ state_attr('sensor.prusa_mk3s_actual_tool0_temp', 'unit_of_measurement') }}"
+                        condition: "{{is_state('input_boolean.printer1_cool_down', 'on')}}"
+
+                  - type: picture-entity
+                    entity: sensor.prusa_mk3s_current_state
+                    camera_image: camera.prusa_mk3s
+                    camera_view: live
+
+              Printing:
+                type: vertical-stack
+                cards:
+                  - type: picture-glance
+                    camera_view: live
+                    entities:
+                      - entity: sensor.prusa_mk3s_job_percentage
+
+                      - entity: sensor.prusa_mk3s_time_remaining
+                      - entity: sensor.prusa_mk3s_time_elapsed
+                    camera_image: camera.prusa_mk3s
+
+                  - type: "custom:elapsed-time-card"
+                    format: Time Left
+                    time_format: 1h 5m
+                    time_today: sensor.prusa_mk3s_time_remaining
+                    icon: camera-timer
+
+                  - type: "custom:mini-graph-card"
+                    entities:
+                      - entity: sensor.prusa_mk3s_actual_tool0_temp
+                        name: Hot-End Current
+                      - entity: sensor.prusa_mk3s_target_tool0_temp
+                        name: Hot-End Target
+                      - entity: sensor.prusa_mk3s_actual_bed_temp
+                        name: Bed Current
+                      - entity: sensor.prusa_mk3s_target_bed_temp
+                        name: Bed Target
+                    hours_to_show: 1
+                    line_width: 3
+                    show:
+                      labels: hover
+                      legend: false
+                      name_adaptive_color: false
+                    icon: "mdi:thermometer"
+                    name: Temperatures
+
       - type: "custom:github-flexi-card"
         title: Card-level entity properties
         secondary_info: "Released {latest_release_tag}"
@@ -47,7 +111,7 @@ views:
           - sensor.github_demos
           - sensor.github_pithy
           - sensor.github_assembly_guides
-          - sensor.github_smart-bothy
+          - sensor.github_smart_bothy
 
       - type: custom:stack-in-card
         mode: vertical
@@ -435,90 +499,11 @@ views:
     icon: mdi:chart-timeline-variant
     panel: false
     cards:
-      - card:
-          title: Octoprint ERROR
-          type: entities
-        filter:
-          include:
-            - entity_id: binary_sensor.prusa_mk3s_printing
-              state: "on"
-        show_empty: false
-        show_header_toggle: false
-        type: "custom:auto-entities"
-      - entities:
-          - icon: "mdi:printer-3d"
-            name: OctoPrint
-            type: weblink
-            url: "http://octopi.local"
-        show_header_toggle: false
-        type: entities
-      - aspect_ratio: 50%
-        camera_image: camera.prusa_mk3s
-        entity: camera.prusa_mk3s
-        image: "http://octopi.local/webcam/?action=snapshot"
-        show_name: false
-        show_state: false
-        type: picture-entity
-      - entities:
-          - entity: sensor.prusa_mk3s_job_percentage
-          - entity: sensor.prusa_mk3s_time_remaining_format
-          - entity: sensor.prusa_mk3s_time_elapsed_format
-        title: Job
-        type: entities
-      - entities:
-          - entity: sensor.prusa_mk3s_current_state
-          - entity: binary_sensor.prusa_mk3s_printing
-          - entity: binary_sensor.prusa_mk3s_printing_error
-        title: Status
-        type: entities
-
-      - entities:
-          - entity: sensor.prusa_mk3s_actual_bed_temp
-            name: Current Temp
-            color: orange
-          - entity: sensor.prusa_mk3s_target_bed_temp
-            color: skyblue
-            name: Target Temp
-        hours_to_show: 2
-        line_width: 3
-        color_thresholds:
-          - value: 35
-            color: white
-          - value: 40
-            color: green
-          - value: 49
-            color: orange
-          - value: 70
-            color: red
-        show:
-          labels: hover
-          legend: false
-          name_adaptive_color: false
-        icon: "mdi:temperature-celsius"
-        name: Bed Temp
-        type: "custom:mini-graph-card"
-      - entities:
-          - entity: sensor.prusa_mk3s_actual_tool0_temp
-            name: Current Temp
-            color: orange
-          - entity: sensor.prusa_mk3s_target_tool0_temp
-            color: darkred
-            name: Target Temp
-        hours_to_show: 2
-        line_width: 3
-        color_thresholds:
-          - value: 35
-            color: white
-          - value: 179
-            color: green
-          - value: 220
-            color: orange
-          - value: 300
-            color: red
-        show:
-          labels: hover
-          legend: false
-          name_adaptive_color: false
-        icon: "mdi:temperature-celsius"
-        name: Hotend Temp
-        type: "custom:mini-graph-card"
+      - type: "custom:button-text-card"
+        large: true
+        entity: binary_sensor.prusa_mk3s_printing
+        title: Printer 1 Active
+        background_color: "#14A819"
+        font_color: "#fff"
+        hide_condition: |
+          [[[ return entity.state === "off" ]]]

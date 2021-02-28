@@ -28,3 +28,19 @@
 
 "script.*_scene_off":
   icon: "mdi:power"
+
+# GENERAL TRENDS
+"sensor.trend_*_total_views":
+  icon: "mdi:eye"
+"sensor.trend_*_unique_views":
+  icon: "mdi:eye-outline"
+"sensor.trend_*_followers":
+  icon: "mdi:account-arrow-right"
+
+# GITHUB SPECIFIC TRENDS
+"sensor.trend_*_forks":
+  icon: "mdi:source-fork"
+"sensor.trend_*_total_clones":
+  icon: "mdi:cloud-download"
+"sensor.trend_*_unique_clones":
+  icon: "mdi:cloud-download-outline"

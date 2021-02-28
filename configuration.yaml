@@ -103,7 +103,8 @@ lovelace:
       type: module
     - url: /hacsfiles/lovelace-home-feed-card/lovelace-home-feed-card.js
       type: module
-
+    - url: /hacsfiles/ha-lovelace-elapsed-time-card/elapsed-time-card.js
+      type: module
 # Text to speech
 tts:
   - platform: google_translate
