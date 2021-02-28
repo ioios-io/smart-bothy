@@ -41,13 +41,9 @@ lovelace:
   resources:
     - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
       type: module
-    - url: /hacsfiles/lovelace-battery-entity-row/battery-entity-row.js
-      type: module
     - url: /hacsfiles/lovelace-github-entity-row/github-entity-row.js
       type: module
     - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
-      type: module
-    - url: /hacsfiles/entity-attributes-card/entity-attributes-card.js
       type: module
     - url: /hacsfiles/state-attribute-element/state-attribute-element.js
       type: module
@@ -65,13 +61,9 @@ lovelace:
       type: module
     - url: /hacsfiles/battery-state-card/battery-state-card.js
       type: module
-    - url: /hacsfiles/secondaryinfo-entity-row/secondaryinfo-entity-row.js
-      type: module
     - url: /hacsfiles/lovelace-media-art-background/media-art-background.js
       type: module
     - url: /hacsfiles/github-flexi-card/github-flexi-card.js
-      type: module
-    - url: /hacsfiles/lovelace-thermostat-dark-card/thermostat-dark-card.js
       type: module
     - url: /hacsfiles/mini-media-player/mini-media-player-bundle.js
       type: module
