@@ -16,11 +16,6 @@ stream:
 http:
 dhcp:
 history:
-input_boolean:
-input_datetime:
-input_number:
-input_select:
-input_text:
 map:
 sun:
 frontend:
@@ -113,12 +108,17 @@ lovelace:
 tts:
   - platform: google_translate
 
-automation manual: !include_dir_merge_list automations/
-automation ui: !include automations.yaml
+automation manual: !include_dir_merge_list deps/automations/
+automation ui: !include deps/automations.yaml
+script: !include_dir_merge_list deps/scripts/
+scene: !include_dir_merge_list deps/scenes/
 
-group: !include groups.yaml
-script: !include scripts.yaml
-scene: !include scenes.yaml
+input_boolean:
+input_datetime:
+input_number:
+input_select:
+input_text:
+group:
 
 sensor:
   - platform: template

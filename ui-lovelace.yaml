@@ -47,7 +47,7 @@ views:
           - sensor.github_demos
           - sensor.github_pithy
           - sensor.github_assembly_guides
-          - sensor.github_smart_bothy
+          - sensor.github_smart-bothy
 
       - type: custom:stack-in-card
         mode: vertical

@@ -5,8 +5,25 @@ substitutions:
   devicename: bedroom_detect
   deviceUpper: Bedroom Detect
 
-<<: !include ../esphomeCommon/header.yaml
-<<: !include ../esphomeCommon/api.yaml
+esphome:
+  name: $devicename
+  platform: $boardPlatform
+  board: $boardName
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_pass
+
+captive_portal:
+
+# Enable logging
+logger:
+  level: DEBUG
+ota:
+  password: !secret ota_pass
+
+api:
+  password: !secret api_pass
   
 switch:
   - platform: restart

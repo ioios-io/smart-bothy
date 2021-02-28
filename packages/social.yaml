@@ -6,7 +6,7 @@ sensor:
         name: Demos
       - path: "ioios-io/pithy"
         name: Pithy
-      - path: "ioios-io/smart_bothy"
+      - path: "ioios-io/smart-bothy"
         name: Smart Bothy
       - path: "ioios-io/assembly"
         name: Assembly Guides
