@@ -12,7 +12,7 @@ input_number:
     name: Bedroom Brightness Minimum
     min: 0
     max: 99
-    initial: 20
+    initial: 40
     mode: slider
     icon: mdi:white-balance-iridescent
     unit_of_measurement: "%"
