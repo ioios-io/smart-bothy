@@ -21,7 +21,7 @@ input_number:
     name: Bedroom Transition Maximum
     min: 1
     max: 60
-    initial: 5
+    initial: 4
     mode: slider
     icon: mdi:clock-out
     unit_of_measurement: "s"
