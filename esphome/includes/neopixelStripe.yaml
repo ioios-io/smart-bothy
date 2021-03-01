@@ -1,7 +1,7 @@
 light:
   - platform: neopixelbus
     type: GRB
-    pin: RX
+    pin: ${neoPixels}
     num_leds: 3
     id: ${deviceName}_neopixel
     name: "${deviceUpper} Stripe"

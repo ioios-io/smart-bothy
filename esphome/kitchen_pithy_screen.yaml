@@ -13,7 +13,7 @@ substitutions:
   climateLower: '10' # CLIMATE LOWER LIMIT
   climateUpper: '30' # CLIMATE UPPER LIMIT
   defaultScreen: Climate # VALUES COULD BE Media, Brightness, Warmth or Climate
-  defaultReturn: '15'
+  defaultReturn: '15' #
   
   # SWITCH MAPPING. SELECT THE SWITCH FOR EACH ACTION
   switchMenu: ${sideSwitch}
@@ -73,18 +73,20 @@ captive_portal:
 logger:
 ota:
   password: ${passOTA}
-  
+  safe_mode: true
+  num_attempts: 2
+
 i2c:
   sda: ${i2cData}
   scl: ${i2cClock}
-  scan: True
+  scan: true
   frequency: 200MHz
   id: bus_a
 
 time:
   - platform: homeassistant
     id: homeassistant_time
-    
+
 api:
   password: ${passESPH} 
   services:
@@ -487,12 +489,13 @@ binary_sensor:
     id: climate_output
     entity_id: binary_sensor.${climate}_climate_heating
     internal: true
-
+  
   - platform: gpio
+    id: pir_${deviceName}
     name: "PIR: ${deviceUpper}"
     pin: ${pirSensor}
     device_class: motion
-    
+
   - platform: gpio
     pin:
       number: ${switchAction}
