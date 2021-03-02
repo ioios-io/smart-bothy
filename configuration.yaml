@@ -2,11 +2,17 @@
 ## Home Assistant Core
 #################################################################
 homeassistant:
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - 192.168.0.0/24
   customize: !include custom/custom.yaml
   customize_glob: !include custom/custom_global.yaml
   packages: !include_dir_named packages/
 
 config:
+cloud:
 system_health:
 updater:
   reporting: false
@@ -34,7 +40,22 @@ person:
 timer:
 webhook:
 zeroconf:
-zone:
+
+zone: !include custom/zones.yaml
+
+automation manual: !include_dir_merge_list custom/automations/
+automation ui: !include custom/automations.yaml
+
+script: !include_dir_merge_list custom/scripts/
+
+scene: !include_dir_merge_list custom/scenes/
+
+input_boolean:
+input_datetime:
+input_number:
+input_select:
+input_text:
+group:
 
 lovelace:
   mode: yaml
@@ -97,21 +118,9 @@ lovelace:
       type: module
     - url: /hacsfiles/ha-lovelace-elapsed-time-card/elapsed-time-card.js
       type: module
-# Text to speech
+
 tts:
   - platform: google_translate
-
-automation manual: !include_dir_merge_list deps/automations/
-automation ui: !include deps/automations.yaml
-script: !include_dir_merge_list deps/scripts/
-scene: !include_dir_merge_list deps/scenes/
-
-input_boolean:
-input_datetime:
-input_number:
-input_select:
-input_text:
-group:
 
 sensor:
   - platform: template

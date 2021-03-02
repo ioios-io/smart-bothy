@@ -1,0 +1,105 @@
+ios:
+  push:
+    categories:
+      - name: Camera With Actions
+        identifier: "camera"
+        actions:
+          - identifier: "EASY"
+            title: "Easy"
+            activationMode: "background"
+            authenticationRequired: false
+            destructive: false
+          - identifier: "SECURE"
+            title: "Secure"
+            activationMode: "background"
+            authenticationRequired: true
+            destructive: true
+          - identifier: "SECUREOPEN"
+            title: "Secure & Open"
+            activationMode: "foreground"
+            authenticationRequired: true
+            destructive: true
+
+      - name: Alarm
+        identifier: "alarm"
+        actions:
+          - identifier: "SOUND_ALARM"
+            title: "Sound Alarm"
+            activationMode: "background"
+            authenticationRequired: true
+            destructive: true
+            behavior: "default"
+          - identifier: "SILENCE_ALARM"
+            title: "Silence Alarm"
+            activationMode: "background"
+            authenticationRequired: true
+            destructive: false
+            behavior: "textInput"
+            textInputButtonTitle: "Silencio!"
+            textInputPlaceholder: "Placeholder"
+
+notify:
+  - name: JOHN
+    platform: group
+    services:
+      - service: mobile_app_john_lumleys_iphone
+      - service: mobile_app_john_lumleys_ipad
+
+input_boolean:
+  notify_toggle_printers:
+    name: "Notification Toggle: Printers"
+    initial: on
+    icon: mdi:printer-3d-nozzle-alert-outline
+
+automation:
+  - alias: Printer 1 Cooldown
+    trigger:
+      - platform: state
+        entity_id: input_boolean.printer1_cool_down
+        from: "off"
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: input_boolean.notify_toggle_printers
+        state: "on"
+    action:
+      service: notify.JOHN
+      data:
+        title: "Prusa MK3S Finished Print"
+        message: "Beginning Cool Down Period"
+        data:
+          url: /lovelace/config
+          attachment:
+            content-type: jpeg
+          apns_headers:
+            apns-collapse-id: "printer_notifications"
+          push:
+            thread-id: "printer_notifications"
+            category: camera
+          entity_id: camera.prusa_mk3s
+
+  - alias: Printer 1 Cooldown Complete
+    trigger:
+      - platform: state
+        entity_id: input_boolean.printer1_cool_down
+        from: "on"
+        to: "off"
+    condition:
+      - condition: state
+        entity_id: input_boolean.notify_toggle_printers
+        state: "on"
+    action:
+      service: notify.JOHN
+      data:
+        title: "Prusa MK3S Cooled Down"
+        message: "Cool Down Period Complete"
+        data:
+          url: /lovelace/config
+          attachment:
+            content-type: jpeg
+          apns_headers:
+            apns-collapse-id: "printer_notifications"
+          push:
+            thread-id: "printer_notifications"
+            category: camera
+          entity_id: camera.prusa_mk3s
