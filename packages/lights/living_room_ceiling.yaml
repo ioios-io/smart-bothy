@@ -1,0 +1,297 @@
+input_number:
+  living_room_brightness_maximum:
+    name: Living Room Brightness Maximum
+    min: 1
+    max: 100
+    initial: 50
+    mode: slider
+    icon: mdi:white-balance-sunny
+    unit_of_measurement: "%"
+
+  living_room_brightness_minimum:
+    name: Living Room Brightness Minimum
+    min: 0
+    max: 99
+    initial: 40
+    mode: slider
+    icon: mdi:white-balance-iridescent
+    unit_of_measurement: "%"
+
+  living_room_warmth_maximum:
+    name: Living Room Warmth Maximum
+    min: 153
+    max: 465
+    initial: 420
+    mode: slider
+    icon: mdi:white-balance-sunny
+    unit_of_measurement: "%"
+
+  living_room_warmth_minimum:
+    name: Living Room Warmth Minimum
+    min: 153
+    max: 465
+    initial: 370
+    mode: slider
+    icon: mdi:white-balance-iridescent
+    unit_of_measurement: "%"
+
+  living_room_transition_maximum:
+    name: Living Room Transition Maximum
+    min: 2
+    max: 60
+    initial: 4
+    mode: slider
+    icon: mdi:clock-out
+    unit_of_measurement: "s"
+
+  living_room_transition_minimum:
+    name: Living Room Transition Minimum
+    min: 1
+    max: 20
+    initial: 1
+    mode: slider
+    icon: mdi:clock-in
+    unit_of_measurement: "s"
+
+  living_room_transition_off:
+    name: Living Room Transition To Off
+    min: 1
+    max: 1800
+    initial: 10
+    mode: slider
+    icon: mdi:clock-end
+    unit_of_measurement: "s"
+
+  living_room_transition_current:
+    name: Living Room Transition To Off
+    min: 1
+    max: 1800
+    initial: 10
+    mode: box
+    icon: mdi:clock-fast
+    unit_of_measurement: "s"
+
+input_boolean:
+  living_room_ceiling_animation:
+    name: Living Room Filament Animation Boolean
+    initial: off
+    icon: mdi:play-speed
+
+  living_room_ceiling_animation_editing:
+    name: Living Room Filament Animation Edit Mode Boolean
+    initial: off
+    icon: mdi:cogs
+
+automation:
+  - id: "194683523628"
+    alias: Living Room Animation
+    description: ""
+    trigger:
+      - platform: state
+        entity_id: input_boolean.living_room_ceiling_animation
+        from: "off"
+        to: "on"
+    condition: []
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation_editing
+      - service: script.living_room_ceiling_loop
+        data_template:
+          brightness_max: "{{ states('input_number.living_room_brightness_maximum') | int }}"
+          brightness_min: "{{ states('input_number.living_room_brightness_minimum') | int }}"
+          warmth_max: "{{ states('input_number.living_room_warmth_maximum') | int }}"
+          warmth_min: "{{ states('input_number.living_room_warmth_minimum') | int }}"
+          transition_max: "{{ states('input_number.living_room_transition_maximum') | int }}"
+          transition_min: "{{ states('input_number.living_room_transition_minimum') | int }}"
+    mode: single
+
+  - id: "157389653628"
+    alias: Living Room Animation Off
+    description: Switch off animation with input_boolean
+    trigger:
+      - platform: state
+        entity_id: input_boolean.living_room_ceiling_animation
+        from: "on"
+        to: "off"
+    condition: []
+    action:
+      - service: script.turn_off
+        data:
+          entity_id: script.living_room_ceiling_change
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation_editing
+      - delay: "1"
+      - service: script.living_room_ceiling_off
+        data_template:
+          transition_off: "{{ states('input_number.living_room_transition_off') | int }}"
+    mode: single
+
+  - id: "1864377792"
+    alias: Living Room Brightness Conformity
+    description: Ensures min stays below max
+    trigger:
+      - platform: template
+        value_template:
+          "{{ (states('input_number.living_room_brightness_minimum') | int
+          ) > (states('input_number.living_room_brightness_maximum') | int )}}"
+    condition: []
+    action:
+      - service: input_number.set_value
+        data_template:
+          value: '{{ (states("input_number.living_room_brightness_maximum")  | int ) - 1 }}'
+        entity_id: input_number.living_room_brightness_minimum
+    mode: single
+
+  - id: "1617532639792"
+    alias: Living Room Warmth Conformity
+    description: Ensures min stays below max
+    trigger:
+      - platform: template
+        value_template:
+          "{{ (states('input_number.living_room_warmth_minimum') | int
+          ) > (states('input_number.living_room_warmth_maximum') | int )}}"
+    condition: []
+    action:
+      - service: input_number.set_value
+        data_template:
+          value: '{{ (states("input_number.living_room_warmth_maximum")  | int ) - 1 }}'
+        entity_id: input_number.living_room_warmth_minimum
+    mode: single
+
+  - id: "1619564239791"
+    alias: Living Room Transition Conformity
+    description: Ensures min stays below max
+    trigger:
+      - platform: template
+        value_template: "{{ states('input_number.living_room_transition_minimum') > states('input_number.living_room_transition_maximum')}}"
+    condition: []
+    action:
+      - service: input_number.set_value
+        data_template:
+          value: '{{ (states("input_number.living_room_transition_maximum")  | int ) - 1 }}'
+        entity_id: input_number.living_room_transition_minimum
+    mode: single
+
+script:
+  living_room_ceiling_off:
+    description: "Turn Off Living Room Filament Bulbs"
+    fields:
+      transition_off:
+        description: "Off Transition Time in Seconds"
+        example: "10"
+    sequence:
+      - service: light.turn_on
+        data_template:
+          entity_id: "light.living_room_ceiling_1"
+          brightness: "0"
+          transition: "{{ transition_off | int }}"
+      - service: light.turn_on
+        data_template:
+          entity_id: "light.living_room_ceiling_2"
+          brightness: "0"
+          transition: "{{ transition_off | int }}"
+      - service: light.turn_on
+        data_template:
+          entity_id: "light.living_room_ceiling_3"
+          brightness: "0"
+          transition: "{{ transition_off | int }}"
+      - service: light.turn_on
+        data_template:
+          entity_id: "light.living_room_ceiling_4"
+          brightness: "0"
+          transition: "{{ transition_off | int }}"
+
+  living_room_ceiling_loop:
+    description: "Loop Living Room Filament Bulbs"
+    fields:
+      brightness_max:
+        description: "Maximum Random Brightness"
+        example: "90"
+      brightness_min:
+        description: "Minimum Random Brightness"
+        example: "5"
+      warmth_max:
+        description: "Maximum Random Warmth"
+        example: "465"
+      warmth_min:
+        description: "Minimum Random Warmth"
+        example: "153"
+      transition_max:
+        description: "Maximum Transition Time in Seconds"
+        example: "5"
+      transition_min:
+        description: "Minimum Transition Time in Seconds"
+        example: "1"
+    sequence:
+      - alias: "Repeat the sequence UNTIL the conditions are true"
+        repeat:
+          sequence:
+            - service: input_number.set_value
+              data_template:
+                entity_id: input_number.living_room_transition_current
+                value: "{{ range( transition_min, transition_max ) | random }}"
+            - service: script.living_room_ceiling_change
+              data_template:
+                brightness_max: "{{ brightness_max }}"
+                brightness_min: "{{ brightness_min }}"
+                warmth_max: "{{ warmth_max }}"
+                warmth_min: "{{ warmth_min }}"
+                transition_secs: "{{ states('input_number.living_room_transition_current') | int }}"
+            - delay:
+                milliseconds: 100
+          until:
+            - condition: state
+              entity_id: input_boolean.living_room_ceiling_animation
+              state: "off"
+
+  living_room_ceiling_change:
+    description: "Randomly Change Living Room Filament Bulbs"
+    fields:
+      brightness_max:
+        description: "Maximum Random Brightness %"
+        example: "90"
+      brightness_min:
+        description: "Minimum Random Brightness %"
+        example: "5"
+      warmth_max:
+        description: "Maximum Random Warmth Mireds"
+        example: "465"
+      warmth_min:
+        description: "Minimum Random Warmth Mireds"
+        example: "153"
+      transition_secs:
+        description: "Transistion Time in Seconds"
+        example: "2"
+    sequence:
+      - service: light.turn_on
+        target:
+          entity_id: "light.living_room_ceiling_1"
+        data_template:
+          brightness_pct: "{{ range( brightness_min, brightness_max ) | random }}"
+          color_temp: "{{ range( warmth_min, warmth_max ) | random }}"
+          transition: "{{ range( 0 , transition_secs ) | random }}"
+      - service: light.turn_on
+        target:
+          entity_id: "light.living_room_ceiling_2"
+        data_template:
+          brightness_pct: "{{ range( brightness_min , brightness_max ) | random }}"
+          color_temp: "{{ range( warmth_min, warmth_max ) | random }}"
+          transition: "{{ range( 0 , transition_secs ) | random }}"
+      - service: light.turn_on
+        target:
+          entity_id: "light.living_room_ceiling_3"
+        data_template:
+          brightness_pct: "{{ range( brightness_min , brightness_max ) | random }}"
+          color_temp: "{{ range( warmth_min, warmth_max ) | random }}"
+          transition: "{{ range( 0 , transition_secs ) | random }}"
+      - service: light.turn_on
+        target:
+          entity_id: "light.living_room_ceiling_4"
+        data_template:
+          brightness_pct: "{{ range( brightness_min , brightness_max ) | random }}"
+          color_temp: "{{ range( warmth_min, warmth_max ) | random }}"
+          transition: "{{ range( 0 , transition_secs ) | random }}"
+      - delay:
+          seconds: "{{ transition_secs | int }}"

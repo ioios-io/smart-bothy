@@ -19,7 +19,7 @@ input_number:
 
   bedroom_transition_maximum:
     name: Bedroom Transition Maximum
-    min: 1
+    min: 2
     max: 60
     initial: 4
     mode: slider
@@ -28,7 +28,7 @@ input_number:
 
   bedroom_transition_minimum:
     name: Bedroom Transition Minimum
-    min: 0
+    min: 1
     max: 20
     initial: 1
     mode: slider
@@ -46,7 +46,7 @@ input_number:
 
   bedroom_transition_current:
     name: Bedroom Transition To Off
-    min: 0
+    min: 1
     max: 1800
     initial: 10
     mode: box

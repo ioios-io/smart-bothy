@@ -165,11 +165,11 @@ script:
       - service: input_number.set_value
         data:
           entity_id: input_number.bedroom_brightness_maximum
-          value: 4
+          value: 8
       - service: input_number.set_value
         data:
           entity_id: input_number.bedroom_brightness_minimum
-          value: 0
+          value: 1
       - service: input_number.set_value
         data:
           entity_id: input_number.bedroom_transition_maximum
@@ -192,6 +192,10 @@ script:
         data:
           entity_id: input_text.bedroom_last_scene
           value: "Off"
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.bedroom_transition_off
+          value: 5
       - service: light.turn_on
         data:
           entity_id: light.bedroom_candle
@@ -204,10 +208,6 @@ script:
           brightness: 0
           color_temp: 450
           transition: 10
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.bedroom_transition_off
-          value: 5
       - delay:
           seconds: 1
       - service: input_boolean.turn_off

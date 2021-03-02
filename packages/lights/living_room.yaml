@@ -2,10 +2,10 @@ light:
   - platform: group
     name: Living Room Ceiling Lights
     entities:
-      - light.living_room_ceiling_sofa
-      - light.living_room_ceiling_table
-      - light.living_room_spot_1
-      - light.living_room_spot_2
+      - light.living_room_ceiling_1
+      - light.living_room_ceiling_2
+      - light.living_room_ceiling_3
+      - light.living_room_ceiling_4
 
   - platform: group
     name: Living Room Lamps
@@ -32,141 +32,215 @@ sensor:
         friendly_name: "Living Room Lights Brightness"
         value_template: "{{ state_attr('light.living_room_lights', 'brightness') | int | round(0) }}"
 
+input_text:
+  living_room_last_scene:
+    name: Last Scene Selected
+    initial: Unknown
+
 script:
-  living_room_off:
-    alias: Living Room Off
-    description: "Turn off lights in sequence"
-    icon: "mdi:power"
-    fields:
-      gap:
-        description: "Gap in seconds"
-        example: "0.6"
+  living_room_scene_bright:
+    alias: Living Room Bright Scene Extras
+    description: "Scene functions beyond light settings"
     sequence:
-      - service: light.turn_off
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_scene
+          value: Bright
+      - service: light.turn_on
         data:
           entity_id: light.living_room_candle
-      - delay:
-          seconds: "{{ gap | float }}"
-      - service: light.turn_off
-        data:
-          entity_id: light.living_room_ceiling_sofa
-      - delay:
-          seconds: "{{ gap | float  }}"
-      - service: light.turn_off
-        data:
-          entity_id: light.living_room_spot_1
-      - delay:
-          seconds: "{{ gap | float  }}"
-      - service: light.turn_off
-        data:
-          entity_id: light.living_room_ceiling_table
-      - delay:
-          seconds: "{{ gap | float  }}"
-      - service: light.turn_off
-        data:
-          entity_id: light.living_room_spot_2
-      - delay:
-          seconds: "{{ gap | float  }}"
-      - service: light.turn_off
+          brightness: 200
+          color_temp: 350
+          transition: 5
+      - service: light.turn_on
         data:
           entity_id: light.living_room_lamp
+          brightness: 200
+          color_temp: 300
+          transition: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_maximum
+          value: 80
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_minimum
+          value: 70
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_maximum
+          value: 300
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_minimum
+          value: 200
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_maximum
+          value: 60
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_minimum
+          value: 10
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
 
-  living_room_on_warm:
-    alias: Living Room On Warm
-    description: "Turn on warm lights in sequence"
-    icon: "mdi:weather-sunny"
-    fields:
-      gap:
-        description: "Gap in seconds"
-        example: "0.6"
+  living_room_scene_relax:
+    alias: Living Room Relax Scene Extras
+    description: "Scene functions beyond light settings"
     sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_scene
+          value: Relax
       - service: light.turn_on
         data:
           entity_id: light.living_room_candle
-          brightness: 255
-          color_temp: 450
-      - delay:
-          seconds: "{{ gap | float  }}"
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_ceiling_sofa
-          brightness: 255
-          color_temp: 450
-      - delay:
-          seconds: "{{ gap | float  }}"
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_spot_1
-          brightness: 255
-          color_temp: 450
-      - delay:
-          seconds: "{{ gap | float  }}"
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_ceiling_table
-          brightness: 255
-          color_temp: 450
-      - delay:
-          seconds: "{{ gap | float  }}"
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_spot_2
-          brightness: 255
-          color_temp: 450
-      - delay:
-          seconds: "{{ gap | float  }}"
+          brightness: 100
+          color_temp: 380
+          transition: 5
       - service: light.turn_on
         data:
           entity_id: light.living_room_lamp
-          brightness: 255
-          color_temp: 450
+          brightness: 100
+          color_temp: 350
+          transition: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_maximum
+          value: 50
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_minimum
+          value: 30
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_maximum
+          value: 400
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_minimum
+          value: 200
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_maximum
+          value: 30
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_minimum
+          value: 10
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
 
-  living_room_on_cold:
-    alias: Living Room On Cold
-    description: "Turn on cold lights in sequence"
-    icon: "mdi:snowflake"
-    fields:
-      gap:
-        description: "Gap in seconds"
-        example: "0.6"
+  living_room_scene_cosy:
+    alias: Living Room Cosy Scene Extras
+    description: "Scene functions & light settings"
     sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_scene
+          value: Cosy
       - service: light.turn_on
         data:
           entity_id: light.living_room_candle
-          brightness: 255
-          color_temp: 150
-      - delay:
-          seconds: "{{ gap | float }}"
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_ceiling_sofa
-          brightness: 255
-          color_temp: 150
-      - delay:
-          seconds: "{{ gap | float }}"
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_spot_1
-          brightness: 255
-          color_temp: 150
-      - delay:
-          seconds: "{{ gap | float }}"
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_ceiling_table
-          brightness: 255
-          color_temp: 150
-      - delay:
-          seconds: "{{ gap | float }}"
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_spot_2
-          brightness: 255
-          color_temp: 150
-      - delay:
-          seconds: "{{ gap | float }}"
+          brightness: 40
+          color_temp: 450
+          transition: 10
       - service: light.turn_on
         data:
           entity_id: light.living_room_lamp
-          brightness: 255
-          color_temp: 150
+          brightness: 60
+          color_temp: 450
+          transition: 6
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_maximum
+          value: 8
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_minimum
+          value: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_maximum
+          value: 465
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_minimum
+          value: 153
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_maximum
+          value: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_minimum
+          value: 1
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+
+  living_room_scene_off:
+    alias: Living Room Off Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_scene
+          value: "Off"
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 5
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_candle
+          brightness: 0
+          color_temp: 450
+          transition: 13
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp
+          brightness: 0
+          color_temp: 450
+          transition: 10
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation

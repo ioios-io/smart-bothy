@@ -23,106 +23,84 @@ button_card_templates:
     template: scene_bulbs
     show_name: true
 
+  admin_panel:
+    show_name: true
+    color: auto
+    color_type: card
+    size: 35%
+    styles:
+      card:
+        - background: var(--ha-card-background)
+        - border-radius: var(--ha-card-border-radius)
+        - margin-top: 16px
+    state:
+      - value: "on"
+        icon: mdi:check-circle-outline
+        color: var(--disabled-text-color)
+        styles:
+          card:
+            - background: var(--accent-color)
+            - filter: opacity(70%)
+      - operator: "default"
+        color: auto
+        styles:
+          card:
+            - background: var(--ha-card-background)
+
 title: Smart Bothy
 views:
   - path: default_view
     title: Home
     cards:
-      - type: weather-forecast
-        entity: weather.portree
-
       - type: custom:stack-in-card
         mode: vertical
         keep:
           border_radius: false
           background: false
         cards:
-          - type: custom:state-switch
-            entity: sensor.prusa_mk3s_current_state
-            states:
-              Operational:
-                type: vertical-stack
-                cards:
-                  - type: entities
-                    entities:
-                      - entity: sensor.prusa_mk3s_current_state
-                        name: "Printer 1: MK3S"
-                      - type: custom:template-entity-row
-                        entity: input_boolean.printer1_cool_down
-                        name: "Cooling Down"
-                        state: "{{ states('sensor.prusa_mk3s_actual_tool0_temp') }}{{ state_attr('sensor.prusa_mk3s_actual_tool0_temp', 'unit_of_measurement') }}"
-                        condition: "{{is_state('input_boolean.printer1_cool_down', 'on')}}"
+          - type: weather-forecast
+            entity: weather.portree
 
-                  - type: picture-entity
-                    entity: sensor.prusa_mk3s_current_state
-                    camera_image: camera.prusa_mk3s
-                    camera_view: live
-
-              Printing:
-                type: vertical-stack
-                cards:
-                  - type: picture-glance
-                    camera_view: live
-                    entities:
-                      - entity: sensor.prusa_mk3s_job_percentage
-
-                      - entity: sensor.prusa_mk3s_time_remaining
-                      - entity: sensor.prusa_mk3s_time_elapsed
-                    camera_image: camera.prusa_mk3s
-
-                  - type: "custom:elapsed-time-card"
-                    format: Time Left
-                    time_format: 1h 5m
-                    time_today: sensor.prusa_mk3s_time_remaining
-                    icon: camera-timer
-
-                  - type: "custom:mini-graph-card"
-                    entities:
-                      - entity: sensor.prusa_mk3s_actual_tool0_temp
-                        name: Hot-End Current
-                      - entity: sensor.prusa_mk3s_target_tool0_temp
-                        name: Hot-End Target
-                      - entity: sensor.prusa_mk3s_actual_bed_temp
-                        name: Bed Current
-                      - entity: sensor.prusa_mk3s_target_bed_temp
-                        name: Bed Target
-                    hours_to_show: 1
-                    line_width: 3
-                    show:
-                      labels: hover
-                      legend: false
-                      name_adaptive_color: false
-                    icon: "mdi:thermometer"
-                    name: Temperatures
-
-      - type: "custom:github-flexi-card"
-        title: Card-level entity properties
-        secondary_info: "Released {latest_release_tag}"
-        url: true
-        attribute_urls: true
-        attributes:
-          - views
-          - stargazers
-          - open_issues
-          - clones
-          - forks
-          - open_pull_requests
-        entities:
-          - sensor.github_demos
-          - sensor.github_pithy
-          - sensor.github_assembly_guides
-          - sensor.github_smart_bothy
-
-      - type: custom:stack-in-card
-        mode: vertical
-        keep:
-          border_radius: false
-          background: false
-        cards:
-          - type: entities
+          - type: map
+            aspect_ratio: 16:9
+            hours_to_show: 12
+            dark_mode: true
+            default_zoom: 10
             entities:
-              - entity: input_boolean.service_reload_ha
-              - entity: input_boolean.service_restart_ha
+              - device_tracker.john_lumleys_iphone
+              - zone.home
+              - zone.bridge
+
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: grid
+            columns: 5
+            cards:
+              - type: picture-entity
+                entity: camera.prusa_mk3s
+
+              - type: picture-entity
+                entity: camera.prusa_mk3s
+                camera_view: live
+
+              - type: custom:button-card
+                entity: input_boolean.notify_toggle_printers
+                template: admin_panel
+                name: Notify
+
+              - type: custom:button-card
+                entity: input_boolean.service_reload_ha
+                template: admin_panel
+                name: Reload
+
+              - type: custom:button-card
+                entity: input_boolean.service_restart_ha
+                template: admin_panel
+                name: Restart
           - type: "custom:home-feed-card"
             card_id: main_feed
             title: false
@@ -131,9 +109,70 @@ views:
             state_color: true
             show_empty: false
 
-          - type: custom:mini-graph-card
-            entities:
-              - sensor.youtube_followers
+          - type: custom:state-switch
+            entity: sensor.john_lumleys_iphone_ssid
+            states:
+              SKYFC5A7:
+                type: vertical-stack
+                cards:
+                  - type: entities
+                    entities:
+                      - type: custom:multiple-entity-row
+                        entity: sensor.john_lumleys_iphone_storage
+                        name: John's iPhone
+                        icon: mdi:cellphone-iphone
+                        show_state: false
+                        secondary_info:
+                          entity: sensor.john_lumleys_iphone_battery_state
+                          name: "Battery:"
+                        entities:
+                          - entity: sensor.john_lumleys_iphone_battery_level
+                            name: Battery
+                            unit: "%"
+                          - attribute: Total
+                            name: Storage
+                          - entity: sensor.john_lumleys_iphone_storage
+                            name: Free
+                            unit: "%"
+              "Not Connected":
+                type: vertical-stack
+                cards:
+                  - type: entities
+                    entities:
+                      - type: custom:multiple-entity-row
+                        entity: sensor.john_lumleys_iphone_storage
+                        name: John's iPhone
+                        icon: mdi:cellphone-iphone
+                        show_state: false
+                        secondary_info:
+                          entity: sensor.john_lumleys_iphone_battery_state
+                          name: "Battery:"
+
+          - type: custom:state-switch
+            entity: sensor.john_lumleys_ipad_ssid
+            states:
+              SKYFC5A7:
+                type: vertical-stack
+                cards:
+                  - type: entities
+                    entities:
+                      - type: custom:multiple-entity-row
+                        entity: sensor.john_lumleys_ipad_storage
+                        name: John's iPad
+                        icon: mdi:tablet-ipad
+                        show_state: false
+                        secondary_info:
+                          entity: sensor.john_lumleys_ipad_battery_state
+                          name: "Battery:"
+                        entities:
+                          - entity: sensor.john_lumleys_ipad_battery_level
+                            name: Battery
+                            unit: "%"
+                          - attribute: Total
+                            name: Storage
+                          - entity: sensor.john_lumleys_ipad_storage
+                            name: Free
+                            unit: "%"
 
           - type: custom:mini-graph-card
             entities:
@@ -160,20 +199,283 @@ views:
   - path: living_room
     title: Living Room
     icon: mdi:sofa-outline
-    panel: true
+    panel: false
     cards:
-      - type: grid
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
         cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: input_text.living_room_last_scene
+                template: scene_button
+                name: Bright
+                icon: mdi:weather-sunny
+                state:
+                  - value: "Bright"
+                    icon: mdi:check-circle-outline
+                    styles:
+                      card:
+                        - background: var(--ha-card-background)
+                        - filter: opacity(70%)
+                  - operator: "default"
+                    color: var(--paper-item-icon-color)
+                    styles:
+                      card:
+                        - background: "none"
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.living_room_scene_bright
+
+              - type: custom:button-card
+                entity: input_text.living_room_last_scene
+                template: scene_button
+                name: Relax
+                icon: mdi:sofa-outline
+                state:
+                  - value: "Relax"
+                    icon: mdi:check-circle-outline
+                    styles:
+                      card:
+                        - background: var(--ha-card-background)
+                        - filter: opacity(70%)
+                  - operator: "default"
+                    color: var(--paper-item-icon-color)
+                    styles:
+                      card:
+                        - background: "none"
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.living_room_scene_relax
+
+              - type: custom:button-card
+                entity: input_text.living_room_last_scene
+                template: scene_button
+                name: Cosy
+                icon: mdi:bed-single-outline
+                state:
+                  - value: "Cosy"
+                    icon: mdi:check-circle-outline
+                    styles:
+                      card:
+                        - background: var(--ha-card-background)
+                        - filter: opacity(70%)
+                  - operator: "default"
+                    color: var(--paper-item-icon-color)
+                    styles:
+                      card:
+                        - background: "none"
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.living_room_scene_cosy
+
+              - type: custom:button-card
+                entity: input_text.living_room_last_scene
+                template: scene_button
+                name: "Off"
+                icon: mdi:power
+                state:
+                  - value: "Off"
+                    icon: mdi:check-circle-outline
+                    styles:
+                      card:
+                        - background: var(--ha-card-background)
+                        - filter: opacity(70%)
+                  - operator: "default"
+                    color: var(--paper-item-icon-color)
+                    styles:
+                      card:
+                        - background: "none"
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.living_room_scene_off
+
           - type: custom:light-entity-card
             entity: light.living_room
             persist_features: true
             hide_header: true
+            full_width_sliders: true
+
+          - type: entities
+            entities:
+              - type: divider
+
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: light.living_room_lamp
+                template: scene_ccts
+                name: Lamp
+
+              - type: custom:button-card
+                entity: light.living_room_candle
+                template: scene_ccts
+                name: Bedside
+
+              - type: custom:button-card
+                entity: light.living_room_ceiling_1
+                template: scene_bulbs
+                label: >
+                  [[[
+                    var bri = states['light.living_room_ceiling_1'].attributes.brightness;
+                    return (bri ? bri : '0');
+                  ]]]
+
+              - type: custom:button-card
+                entity: light.living_room_ceiling_2
+                template: scene_bulbs
+                label: >
+                  [[[
+                    var bri = states['light.living_room_ceiling_2'].attributes.brightness;
+                    return (bri ? bri : '0');
+                  ]]]
+
+              - type: custom:button-card
+                entity: light.living_room_ceiling_3
+                template: scene_bulbs
+                label: >
+                  [[[
+                    var bri = states['light.living_room_ceiling_3'].attributes.brightness;
+                    return (bri ? bri : '0');
+                  ]]]
+
+              - type: custom:button-card
+                entity: light.living_room_ceiling_4
+                template: scene_bulbs
+                label: >
+                  [[[
+                    var bri = states['light.living_room_ceiling_4'].attributes.brightness;
+                    return (bri ? bri : '0');
+                  ]]]
+
+          - type: entities
+            entities:
+              - entity: input_boolean.living_room_ceiling_animation
+                type: custom:multiple-entity-row
+                name: Filament Bulbs Animation
+                state_header: Run
+                toggle: true
+                state_color: true
+                tap_action:
+                  action: toggle
+                entities:
+                  - entity: input_boolean.living_room_ceiling_animation_editing
+                    name: Edit
+                    toggle: true
+
+          - type: vertical-stack
+            cards:
+              - type: custom:state-switch
+                entity: input_boolean.living_room_ceiling_animation_editing
+                transition: flip
+                default: "off"
+                states:
+                  "on":
+                    type: vertical-stack
+                    cards:
+                      - type: horizontal-stack
+                        cards:
+                          - type: entities
+                            entities:
+                              - type: "section"
+                                label: Brightness
+                              - type: custom:slider-entity-row
+                                entity: input_number.living_room_brightness_maximum
+                                name: hide_state
+                                full_row: true
+                              - type: custom:slider-entity-row
+                                entity: input_number.living_room_brightness_minimum
+                                name: hide_state
+                                full_row: true
+
+                          - type: entities
+                            entities:
+                              - type: "section"
+                                label: Transitions
+                              - type: custom:slider-entity-row
+                                entity: input_number.living_room_transition_maximum
+                                full_row: true
+                              - type: custom:slider-entity-row
+                                entity: input_number.living_room_transition_minimum
+                                full_row: true
+
+                      - type: entities
+                        entities:
+                          - type: "section"
+                            label: Fade Away Delay
+                          - type: custom:slider-entity-row
+                            entity: input_number.living_room_transition_off
+                            full_row: true
+
+          - type: entities
+            entities:
+              - type: divider
 
           - type: custom:mini-graph-card
             entities:
-              - sensor.tv_pithy_screen_temperature
-              - sensor.hms_living_room_temperature
-              - sensor.living_room_average_temperature
+              - sensor.hms_living_room_light_level
+            hours_to_show: 2
+            points_per_hour: 20
+            line_color: var(--accent-color)
+            show:
+              name: false
+              icon: false
+              labels: false
+              name_adaptive_color: false
+
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: "custom:simple-thermostat"
+            entity: climate.living_room
+            step_size: 1
+            step_layout: row
+            show_header: false
+            control:
+              preset:
+                away: true
+                none:
+                  name: Home
+
+          - type: entities
+            entities:
+              - type: divider
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.living_room_average_temperature
+                name: Average
+              - entity: sensor.tv_pithy_screen_temperature
+                name: TV Pithy
+              - entity: sensor.hms_living_room_temperature
+                name: Hue Motion
+            hours_to_show: 2
+            points_per_hour: 30
+            line_width: 3
+            align_state: center
+            name: Temperature Data
+            show:
+              name: true
+              icon: true
+              state: true
+              labels: true
+              labels_secondary: true
+              extrema: true
+              average: true
 
   - path: bedroom
     title: Bedroom
@@ -445,6 +747,7 @@ views:
             hours_to_show: 2
             points_per_hour: 30
             line_width: 3
+            align_state: center
             name: Temperature Data
             show:
               name: true
@@ -468,6 +771,7 @@ views:
               - type: entities
                 entities:
                   - input_text.bedroom_last_scene
+                  - input_text.living_room_last_scene
 
               - type: custom:auto-entities
                 card:
@@ -481,29 +785,146 @@ views:
                   method: last_changed
                   count: 5
 
-  - path: trendsClimate
-    title: Climate
-    icon: mdi:chart-timeline
-    panel: true
-    cards:
-      - type: history-graph
-        entities:
-          - sensor.bedroom_average_humidity
-          - sensor.living_room_average_humidity
-          - sensor.bedroom_average_temperature
-          - sensor.living_room_average_temperature
-        hours_to_show: 24
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: custom:state-switch
+            entity: sensor.prusa_mk3s_current_state
+            states:
+              Operational:
+                type: vertical-stack
+                cards:
+                  - type: entities
+                    entities:
+                      - entity: sensor.prusa_mk3s_current_state
+                        name: "Printer 1: MK3S"
+                      - type: custom:template-entity-row
+                        entity: input_boolean.printer1_cool_down
+                        name: "Cooling Down"
+                        state: "{{ states('sensor.prusa_mk3s_actual_tool0_temp') }}{{ state_attr('sensor.prusa_mk3s_actual_tool0_temp', 'unit_of_measurement') }}"
+                        condition: "{{is_state('input_boolean.printer1_cool_down', 'on')}}"
 
-  - path: machines
-    title: Machines
-    icon: mdi:chart-timeline-variant
+                  - type: picture-entity
+                    entity: sensor.prusa_mk3s_current_state
+                    camera_image: camera.prusa_mk3s
+                    camera_view: live
+
+              Printing:
+                type: vertical-stack
+                cards:
+                  - type: picture-glance
+                    camera_view: live
+                    entities:
+                      - entity: sensor.prusa_mk3s_job_percentage
+
+                      - entity: sensor.prusa_mk3s_time_remaining
+                      - entity: sensor.prusa_mk3s_time_elapsed
+                    camera_image: camera.prusa_mk3s
+
+                  - type: "custom:elapsed-time-card"
+                    format: Time Left
+                    time_format: 1h 5m
+                    time_today: sensor.prusa_mk3s_time_remaining
+                    icon: camera-timer
+
+                  - type: "custom:mini-graph-card"
+                    entities:
+                      - entity: sensor.prusa_mk3s_actual_tool0_temp
+                        name: Hot-End Current
+                      - entity: sensor.prusa_mk3s_target_tool0_temp
+                        name: Hot-End Target
+                      - entity: sensor.prusa_mk3s_actual_bed_temp
+                        name: Bed Current
+                      - entity: sensor.prusa_mk3s_target_bed_temp
+                        name: Bed Target
+                    hours_to_show: 1
+                    line_width: 3
+                    show:
+                      labels: hover
+                      legend: false
+                      name_adaptive_color: false
+                    icon: "mdi:thermometer"
+                    name: Temperatures
+
+  - path: github
+    title: GitHub
+    icon: mdi:github
     panel: false
     cards:
-      - type: "custom:button-text-card"
-        large: true
-        entity: binary_sensor.prusa_mk3s_printing
-        title: Printer 1 Active
-        background_color: "#14A819"
-        font_color: "#fff"
-        hide_condition: |
-          [[[ return entity.state === "off" ]]]
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: "custom:github-flexi-card"
+            secondary_info: "Release: {latest_release_tag}"
+            url: true
+            compact_view: true
+            attribute_urls: true
+            attributes:
+              - views
+              - stargazers
+              - open_issues
+              - clones
+              - forks
+              - open_pull_requests
+            entities:
+              - sensor.github_demos
+              - sensor.github_pithy
+              - sensor.github_assembly_guides
+              - sensor.github_smart_bothy
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.trend_github_demos_unique_views
+                name: "GitHub: Demos"
+              - entity: sensor.trend_github_pithy_unique_views
+                name: "GitHub: Pithy"
+              - entity: sensor.trend_github_smart_bothy_unique_views
+                name: "GitHub: Smart Bothy"
+              - entity: sensor.trend_github_assembly_guides_unique_views
+                name: "GitHub: Assembly"
+            name: Total Views
+            hours_to_show: 168
+            points_per_hour: 0.25
+            line_width: 2
+
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.trend_github_demos_followers
+                name: "GitHub: Demos"
+              - entity: sensor.trend_github_pithy_followers
+                name: "GitHub: Pithy"
+              - entity: sensor.trend_github_smart_bothy_followers
+                name: "GitHub: Smart Bothy"
+              - entity: sensor.trend_github_assembly_guides_followers
+                name: "GitHub: Assembly"
+            name: Followers
+            hours_to_show: 168
+            points_per_hour: 0.25
+            line_width: 2
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.trend_github_demos_total_clones
+                name: "GitHub: Demos"
+              - entity: sensor.trend_github_pithy_total_clones
+                name: "GitHub: Pithy"
+              - entity: sensor.trend_github_smart_bothy_total_clones
+                name: "GitHub: Smart Bothy"
+              - entity: sensor.trend_github_assembly_guides_total_clones
+                name: "GitHub: Assembly"
+            name: Clones
+            hours_to_show: 168
+            points_per_hour: 0.25
+            line_width: 2
