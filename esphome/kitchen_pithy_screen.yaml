@@ -323,16 +323,6 @@ sensor:
             id: uptimeSecs
             value: !lambda |- 
               return x;
-              
-  - platform: sht3xd
-    temperature:
-      name: "${deviceUpper} Temperature"
-      id: ${deviceName}_temperature
-    humidity:
-      name: "${deviceUpper} Humidity"
-      id: ${deviceName}_humidity
-    address: 0x44
-    update_interval: 15s
 
   - platform: homeassistant
     id: climate_current
