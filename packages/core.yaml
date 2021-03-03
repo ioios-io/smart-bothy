@@ -1,3 +1,15 @@
+input_select:
+  debug_mode:
+    name: Debug Mode
+    icon: mdi:bug-check-outline
+    options:
+      - "Off"
+      - Lights
+      - Climate
+      - Mobile App
+      - Motion
+    initial: "Off"
+
 input_boolean:
   service_reload_ha:
     name: "Reload HA Core & Services"
@@ -9,12 +21,20 @@ input_boolean:
     icon: mdi:restart
     initial: off
 
-  sleep_timer_start:
-    name: "Start the Sleep Timer"
-    icon: mdi:bed
+  service_in_depth:
+    name: "More Depth of Detail"
+    icon: mdi:magnify-plus
     initial: off
 
 sensor:
+  - platform: systemmonitor
+    resources:
+      - type: disk_use_percent
+        arg: /
+      - type: memory_use_percent
+      - type: swap_use_percent
+      - type: processor_use
+
   - platform: time_date
     display_options:
       - "date"

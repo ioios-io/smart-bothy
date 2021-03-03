@@ -29,6 +29,10 @@
 "script.*_scene_off":
   icon: "mdi:power"
 
+# DEBUG
+"input_boolean.debug_*_mode":
+  icon: "mdi:bug-outline"
+
 # GENERAL TRENDS
 "sensor.trend_*_total_views":
   icon: "mdi:eye"

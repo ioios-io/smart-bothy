@@ -40,6 +40,31 @@ person:
 timer:
 webhook:
 zeroconf:
+recorder:
+  commit_interval: 3
+  db_url: !secret mariaDBsock
+  purge_keep_days: 7
+  include:
+    domains:
+      - sensor
+      - switch
+      - media_player
+  exclude:
+    entities:
+      - sensor.date
+    entity_globs:
+      - sensor.*_volume
+      - sensor.*_warmth
+      - sensor.*_brightness
+      - sensor.*_battery_percent
+      - sensor.*_average_temperature
+      - sensor.*_average_humidity
+
+      - sensor.esp_signal_*
+      - sensor.esp_uptime_*
+      - sensor.github_*
+      - sensor.prusa_mk3s_*
+      - sensor.john_lumleys_i*
 
 zone: !include custom/zones.yaml
 
@@ -60,6 +85,10 @@ group:
 lovelace:
   mode: yaml
   resources:
+    - url: "https://fonts.googleapis.com/css?family=Oxygen"
+      type: css
+    - url: "https://fonts.googleapis.com/css?family=Oxygen+Mono"
+      type: css
     - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
       type: module
     - url: /hacsfiles/lovelace-github-entity-row/github-entity-row.js
@@ -118,9 +147,8 @@ lovelace:
       type: module
     - url: /hacsfiles/ha-lovelace-elapsed-time-card/elapsed-time-card.js
       type: module
-
-tts:
-  - platform: google_translate
+    - url: /hacsfiles/lovelace-badge-card/badge-card.js
+      type: module
 
 sensor:
   - platform: template
