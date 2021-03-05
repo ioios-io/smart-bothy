@@ -1,0 +1,45 @@
+- type: custom:stack-in-card
+  mode: vertical
+  cards:
+    - type: custom:stack-in-card
+      mode: horizontal
+      cards:
+        - type: entities
+          entities:
+            - input_boolean.event_updating_circadian
+            - input_boolean.mode_override_circadian
+            - sensor.circadian_light
+
+        - type: entities
+          entities:
+            - sensor.homs_yard_side_light_level
+            - sensor.homs_yard_side_temperature
+
+    - type: history-graph
+      hours_to_show: 24
+      entities:
+        - entity: binary_sensor.dark_outside
+          Name: Dark
+        - entity: binary_sensor.homs_yard_side_motion
+          Name: "Yard: Side"
+        - entity: binary_sensor.homs_yard_rear_motion
+          Name: "Yard: Rear"
+
+    - type: custom:mini-graph-card
+      entities:
+        - entity: sensor.solar_elevation
+          Name: Solar Elevation
+        - entity: sensor.solar_max_elevation
+          Name: Maximum Elevation
+        - entity: sensor.circadian_light
+          Name: Circadian Colour Correction
+        - entity: sensor.homs_yard_side_light_level
+          name: Outside Light Level
+      update_interval: 30
+      line_width: 2
+      lower_bound: ~-50
+      show:
+        name: true
+        icon: false
+        labels: true
+        name_adaptive_color: false

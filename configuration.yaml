@@ -14,41 +14,39 @@ homeassistant:
 config:
 cloud:
 system_health:
-updater:
-  reporting: false
+
 discovery:
+dhcp:
+ssdp:
+zeroconf:
+
 image:
 stream:
 http:
-dhcp:
-history:
+browser:
+
 map:
 sun:
-frontend:
-  themes: !include_dir_merge_named themes/
-logger:
-  default: warning
-logbook:
-  exclude:
-    entities:
-      - script.bedroom_filament_change
+
 #media_source:
 mobile_app:
 person:
-#ssdp:
-#tag:
-timer:
+tag:
+
 webhook:
-zeroconf:
+
+updater:
+  reporting: true
+  include_used_components: true
+
+history:
+logger:
+  default: info
+logbook:
 recorder:
   commit_interval: 3
-  db_url: !secret mariaDBsock
-  purge_keep_days: 7
-  include:
-    domains:
-      - sensor
-      - switch
-      - media_player
+  db_url: !secret mariaDBsocket
+  purge_keep_days: 90
   exclude:
     entities:
       - sensor.date
@@ -64,17 +62,55 @@ recorder:
       - sensor.esp_uptime_*
       - sensor.github_*
       - sensor.prusa_mk3s_*
-      - sensor.john_lumleys_i*
+
+      - sensor.john_lumleys_i*_distance
+      - sensor.john_lumleys_i*scended
+      - sensor.john_lumleys_i*_location
+      - sensor.john_lumleys_i*_steps
+
+      - switch.esp_restart_*
+
+      - input_number.*_brightness_maximum
+      - input_number.*_brightness_minimum
+      - input_number.*_warmth_maximum
+      - input_number.*_warmth_minimum
+      - input_number.*_transition_maximum
+      - input_number.*_transition_minimum
+      - input_number.*_transition_current
+      - input_number.*_transition_off
+  include:
+    domains:
+      - alarm_control_panel
+      - binary_sensor
+      - camera
+      - climate
+      - device_tracker
+      - media_player
+      - person
+      - sensor
+      - switch
+      - sun
+
+      - timer
+      - input_number
+      - input_boolean
+      - input_select
+      - input_text
+    entities:
+      - sensor.bedroom_lamps_brightness
+      - sensor.living_room_lamps_brightness
 
 zone: !include custom/zones.yaml
 
-automation manual: !include_dir_merge_list custom/automations/
 automation ui: !include custom/automations.yaml
+automation manual: !include_dir_merge_list custom/automations/
 
 script: !include_dir_merge_list custom/scripts/
 
 scene: !include_dir_merge_list custom/scenes/
 
+counter:
+timer:
 input_boolean:
 input_datetime:
 input_number:
@@ -82,6 +118,8 @@ input_select:
 input_text:
 group:
 
+frontend:
+  themes: !include_dir_merge_named themes/
 lovelace:
   mode: yaml
   resources:
@@ -149,6 +187,21 @@ lovelace:
       type: module
     - url: /hacsfiles/lovelace-badge-card/badge-card.js
       type: module
+
+  dashboards:
+    ioios-admins:
+      mode: yaml
+      filename: dashboards/admins/home.yaml
+      title: Admin View
+      icon: mdi:account-plus
+      show_in_sidebar: true
+      require_admin: true
+    ioios-hidden:
+      mode: yaml
+      title: Fuck
+      icon: mdi:account-minus
+      show_in_sidebar: false
+      filename: dashboards/hidden/home.yaml
 
 sensor:
   - platform: template

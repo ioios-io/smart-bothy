@@ -1,0 +1,57 @@
+title: Admin Mode
+views:
+  - path: default_view
+    title: Home
+    icon: mdi:home-assistant
+    badges:
+      - type: state-label
+        entity: weather.portree_hourly
+        name: " "
+      - type: state-label
+        entity: sensor.period_of_day
+      - entity: device_tracker.john_lumleys_iphone
+      - entity: person.john_lumley
+        show_name: false
+        show_icon: false
+      - type: entity-filter
+        entities:
+          - entity: binary_sensor.living_room_motion
+            name: Living Room
+          - entity: binary_sensor.bedroom_motion
+            name: Bedroom
+          - entity: binary_sensor.bathroom_motion
+            name: Bathroom
+          - entity: binary_sensor.outside_motion
+            name: Outside
+        state_filter:
+          - "on"
+
+      - type: entity-filter
+        show_name: false
+        show_icon: false
+        entities:
+          - entity: sensor.hms_bedroom_light_level
+            name: Bedroom
+          - entity: sensor.hms_bathroom_light_level
+            name: Bathroom
+          - entity: sensor.hms_living_room_light_level
+            name: Living Room
+          - entity: sensor.homs_yard_rear_light_level
+            name: Yard Rear
+          - entity: sensor.homs_yard_side_light_level
+            name: Yard Side
+        state_filter:
+          - operator: ">"
+            value: 1
+    cards:
+      - type: entity-filter
+        show_name: false
+        show_icon: false
+        entities:
+          - entity: sensor.hms_bedroom_light_level
+            name: Bedroom
+
+  - path: maintenance
+    title: Maintenance
+    icon: mdi:wrench
+    cards: !include maintenance.yaml

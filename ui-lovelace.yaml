@@ -32,7 +32,6 @@ button_card_templates:
       card:
         - background: var(--ha-card-background)
         - border-radius: var(--ha-card-border-radius)
-        - margin-top: 16px
     state:
       - value: "on"
         icon: mdi:check-circle-outline
@@ -51,6 +50,47 @@ title: Smart Bothy
 views:
   - path: default_view
     title: Home
+    icon: mdi:home-assistant
+    badges:
+      - type: state-label
+        entity: weather.portree_hourly
+        name: " "
+      - type: state-label
+        entity: sensor.period_of_day
+      - entity: device_tracker.john_lumleys_iphone
+      - entity: person.john_lumley
+        show_name: false
+        show_icon: false
+      - type: entity-filter
+        entities:
+          - entity: binary_sensor.living_room_motion
+            name: Living Room
+          - entity: binary_sensor.bedroom_motion
+            name: Bedroom
+          - entity: binary_sensor.bathroom_motion
+            name: Bathroom
+          - entity: binary_sensor.outside_motion
+            name: Outside
+        state_filter:
+          - "on"
+
+      - type: entity-filter
+        show_name: false
+        show_icon: false
+        entities:
+          - entity: sensor.hms_bedroom_light_level
+            name: Bedroom
+          - entity: sensor.hms_bathroom_light_level
+            name: Bathroom
+          - entity: sensor.hms_living_room_light_level
+            name: Living Room
+          - entity: sensor.homs_yard_rear_light_level
+            name: Yard Rear
+          - entity: sensor.homs_yard_side_light_level
+            name: Yard Side
+        state_filter:
+          - operator: ">"
+            value: 1
     cards:
       - type: custom:stack-in-card
         mode: vertical
@@ -58,49 +98,6 @@ views:
           border_radius: false
           background: false
         cards:
-          - type: weather-forecast
-            entity: weather.portree
-
-          - type: map
-            aspect_ratio: 16:9
-            hours_to_show: 12
-            dark_mode: true
-            default_zoom: 10
-            entities:
-              - device_tracker.john_lumleys_iphone
-              - zone.home
-              - zone.bridge
-
-      - type: custom:stack-in-card
-        mode: vertical
-        keep:
-          border_radius: false
-          background: false
-        cards:
-          - type: grid
-            columns: 5
-            cards:
-              - type: picture-entity
-                entity: camera.prusa_mk3s
-
-              - type: picture-entity
-                entity: camera.prusa_mk3s
-                camera_view: live
-
-              - type: custom:button-card
-                entity: input_boolean.notify_toggle_printers
-                template: admin_panel
-                name: Notify
-
-              - type: custom:button-card
-                entity: input_boolean.service_reload_ha
-                template: admin_panel
-                name: Reload
-
-              - type: custom:button-card
-                entity: input_boolean.service_restart_ha
-                template: admin_panel
-                name: Restart
           - type: "custom:home-feed-card"
             card_id: main_feed
             title: false
@@ -108,6 +105,47 @@ views:
             more_info_on_tap: true
             state_color: true
             show_empty: false
+
+          - type: horizontal-stack
+            cards:
+              - type: entities
+                entities:
+                  - entity: input_select.debug_mode
+                    name: Debug Mode
+
+              - type: vertical-stack
+                cards:
+                  - type: glance
+                    show_icon: false
+                    state_color: true
+                    entities:
+                      - entity: sensor.processor_use_percent
+                        name: CPU
+                      - entity: sensor.disk_use_percent
+                        name: Disk
+                      - entity: sensor.load_1m
+                        name: Load
+                      - entity: sensor.memory_use_percent
+                        name: RAM
+
+                  - type: grid
+                    columns: 3
+                    square: false
+                    cards:
+                      - type: custom:button-card
+                        entity: input_boolean.service_refresh_ha
+                        template: admin_panel
+                        name: Refresh
+
+                      - type: custom:button-card
+                        entity: input_boolean.service_reload_ha
+                        template: admin_panel
+                        name: Reload
+
+                      - type: custom:button-card
+                        entity: input_boolean.service_restart_ha
+                        template: admin_panel
+                        name: Restart
 
           - type: custom:state-switch
             entity: sensor.john_lumleys_iphone_ssid
@@ -174,19 +212,41 @@ views:
                             name: Free
                             unit: "%"
 
+          - type: custom:mini-media-player
+            entity: media_player.living_room
+            hide:
+              progress: true
+            artwork: full-cover
+            shortcuts:
+              columns: 3 # Max buttons per row
+              buttons:
+                # Start predefined playlist
+                - icon: mdi:cat
+                  type: playlist
+                  id: spotify:user:XXXXXXX:playlist:37i9dQZF1DZ06evO2O09Hg # Where XXXXXXX is your User ID
+                # Change the source to bathroom
+                - icon: mdi:dog
+                  type: source
+                  id: Bathroom
+                # Trigger script
+                - icon: mdi:dog
+                  type: script
+                  id: script.script_name
+
           - type: custom:mini-graph-card
             entities:
               - entity: binary_sensor.living_room_motion
                 name: Living room
               - entity: binary_sensor.bathroom_motion
                 name: Bathroom
-                color: green
               - entity: binary_sensor.bedroom_motion
                 name: Bedroom
+              - entity: binary_sensor.outside_motion
+                name: Outside
             name: Motion last hour
             hours_to_show: 1
             points_per_hour: 60
-            update_interval: 30
+            update_interval: 5
             aggregate_func: max
             line_width: 2
             smoothing: false
@@ -195,6 +255,23 @@ views:
                 label: Clear
               - value: "on"
                 label: Detected
+
+      - type: custom:stack-in-card
+        mode: vertical
+        keep:
+          border_radius: false
+          background: false
+        cards:
+          - type: weather-forecast
+            entity: weather.portree_hourly
+
+          - type: map
+            aspect_ratio: "16:9"
+            hours_to_show: 12
+            dark_mode: false
+            default_zoom: 11
+            entities:
+              - device_tracker.john_lumleys_iphone
 
   - path: living_room
     title: Living Room
@@ -210,45 +287,79 @@ views:
           - type: horizontal-stack
             cards:
               - type: custom:button-card
-                entity: input_text.living_room_last_scene
+                entity: input_select.living_room_scenes
+                name: Living Room
+                icon: mdi:sofa-outline
                 template: scene_button
-                name: Bright
+                size: 60%
+                show_name: false
+                styles:
+                  icon:
+                    - color: >
+                        [[[
+                          if (states['input_boolean.living_room_scene_changing'].state == 'on')
+                            return 'var(--text-medium-color)';
+
+                          if (states['sensor.living_room_lights_brightness'].state > 0)
+                            return 'var(--paper-item-icon-color)';
+
+                          return 'var(--accent-medium-color)';
+                        ]]]
+                  grid:
+                    - position: relative
+                  custom_fields:
+                    notification:
+                      - color: var(--paper-item-icon-color)
+                      - border-radius: 50%
+                      - position: absolute
+                      - left: 60%
+                      - top: -12%
+                      - height: 32px
+                      - width: 32px
+                      - line-height: 4px
+                custom_fields:
+                  notification: >
+                    [[[
+                      if (states['input_boolean.living_room_scene_changing'].state == 'on')
+                        return '<ha-icon icon="mdi:rotate-3d-variant" style="color: var(--label-badge-yellow);"></ha-icon>';
+
+                      if (states['input_boolean.living_room_ceiling_animation'].state == 'on')
+                        return '<ha-icon icon="mdi:motion-play" style="color: var(--label-badge-blue);"></ha-icon>';
+
+                      if (states['sensor.living_room_lights_brightness'].state > 0)
+                        return '<ha-icon icon="mdi:lightbulb-group" style="color: var(--label-badge-green);"></ha-icon>';
+
+                      return '<ha-icon icon="mdi:lightbulb-group-off" style="color: var(--label-badge-red);"></ha-icon>';
+                    ]]]
+
+              - type: custom:button-card
+                entity: input_select.living_room_scenes
+                template: scene_button
+                name: Natural
                 icon: mdi:weather-sunny
                 state:
-                  - value: "Bright"
+                  - value: "Natural"
                     icon: mdi:check-circle-outline
-                    styles:
-                      card:
-                        - background: var(--ha-card-background)
-                        - filter: opacity(70%)
+                    color: var(--accent-color)
                   - operator: "default"
                     color: var(--paper-item-icon-color)
-                    styles:
-                      card:
-                        - background: "none"
                 tap_action:
                   action: call-service
                   service: script.turn_on
                   service_data:
-                    entity_id: script.living_room_scene_bright
+                    entity_id: script.living_room_scene_natural
 
               - type: custom:button-card
-                entity: input_text.living_room_last_scene
+                entity: input_select.living_room_scenes
                 template: scene_button
                 name: Relax
                 icon: mdi:sofa-outline
                 state:
                   - value: "Relax"
                     icon: mdi:check-circle-outline
-                    styles:
-                      card:
-                        - background: var(--ha-card-background)
-                        - filter: opacity(70%)
+                    color: var(--accent-color)
                   - operator: "default"
                     color: var(--paper-item-icon-color)
-                    styles:
-                      card:
-                        - background: "none"
                 tap_action:
                   action: call-service
                   service: script.turn_on
@@ -256,22 +367,16 @@ views:
                     entity_id: script.living_room_scene_relax
 
               - type: custom:button-card
-                entity: input_text.living_room_last_scene
+                entity: input_select.living_room_scenes
                 template: scene_button
                 name: Cosy
                 icon: mdi:bed-single-outline
                 state:
                   - value: "Cosy"
                     icon: mdi:check-circle-outline
-                    styles:
-                      card:
-                        - background: var(--ha-card-background)
-                        - filter: opacity(70%)
+                    color: var(--accent-color)
                   - operator: "default"
                     color: var(--paper-item-icon-color)
-                    styles:
-                      card:
-                        - background: "none"
                 tap_action:
                   action: call-service
                   service: script.turn_on
@@ -279,22 +384,16 @@ views:
                     entity_id: script.living_room_scene_cosy
 
               - type: custom:button-card
-                entity: input_text.living_room_last_scene
+                entity: input_select.living_room_scenes
                 template: scene_button
                 name: "Off"
                 icon: mdi:power
                 state:
                   - value: "Off"
                     icon: mdi:check-circle-outline
-                    styles:
-                      card:
-                        - background: var(--ha-card-background)
-                        - filter: opacity(70%)
+                    color: var(--accent-color)
                   - operator: "default"
                     color: var(--paper-item-icon-color)
-                    styles:
-                      card:
-                        - background: "none"
                 tap_action:
                   action: call-service
                   service: script.turn_on
@@ -302,8 +401,9 @@ views:
                     entity_id: script.living_room_scene_off
 
           - type: custom:light-entity-card
-            entity: light.living_room
+            entity: light.living_room_lights
             persist_features: true
+            consolidate_entities: true
             hide_header: true
             full_width_sliders: true
 
@@ -326,6 +426,7 @@ views:
               - type: custom:button-card
                 entity: light.living_room_ceiling_1
                 template: scene_bulbs
+                color: auto
                 label: >
                   [[[
                     var bri = states['light.living_room_ceiling_1'].attributes.brightness;
@@ -335,6 +436,7 @@ views:
               - type: custom:button-card
                 entity: light.living_room_ceiling_2
                 template: scene_bulbs
+                color: auto
                 label: >
                   [[[
                     var bri = states['light.living_room_ceiling_2'].attributes.brightness;
@@ -344,6 +446,7 @@ views:
               - type: custom:button-card
                 entity: light.living_room_ceiling_3
                 template: scene_bulbs
+                color: auto
                 label: >
                   [[[
                     var bri = states['light.living_room_ceiling_3'].attributes.brightness;
@@ -353,6 +456,7 @@ views:
               - type: custom:button-card
                 entity: light.living_room_ceiling_4
                 template: scene_bulbs
+                color: auto
                 label: >
                   [[[
                     var bri = states['light.living_room_ceiling_4'].attributes.brightness;
@@ -363,7 +467,7 @@ views:
             entities:
               - entity: input_boolean.living_room_ceiling_animation
                 type: custom:multiple-entity-row
-                name: Filament Bulbs Animation
+                name: Ceiling Lights Animation
                 state_header: Run
                 toggle: true
                 state_color: true
@@ -374,7 +478,8 @@ views:
                     name: Edit
                     toggle: true
 
-          - type: vertical-stack
+          - type: custom:stack-in-card
+            mode: vertical
             cards:
               - type: custom:state-switch
                 entity: input_boolean.living_room_ceiling_animation_editing
@@ -382,45 +487,58 @@ views:
                 default: "off"
                 states:
                   "on":
-                    type: vertical-stack
+                    type: custom:stack-in-card
+                    mode: vertical
                     cards:
                       - type: horizontal-stack
                         cards:
                           - type: entities
                             entities:
-                              - type: "section"
-                                label: Brightness
-                              - type: custom:slider-entity-row
-                                entity: input_number.living_room_brightness_maximum
-                                name: hide_state
-                                full_row: true
-                              - type: custom:slider-entity-row
-                                entity: input_number.living_room_brightness_minimum
-                                name: hide_state
-                                full_row: true
+                              - entity: input_number.living_room_brightness_minimum
+                                name: Min
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
+
+                              - entity: input_number.living_room_warmth_minimum
+                                name: Min
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
+
+                              - entity: input_number.living_room_transition_minimum
+                                name: Min
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
 
                           - type: entities
                             entities:
-                              - type: "section"
-                                label: Transitions
-                              - type: custom:slider-entity-row
-                                entity: input_number.living_room_transition_maximum
-                                full_row: true
-                              - type: custom:slider-entity-row
-                                entity: input_number.living_room_transition_minimum
-                                full_row: true
+                              - entity: input_number.living_room_brightness_maximum
+                                name: Max
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
+
+                              - entity: input_number.living_room_warmth_maximum
+                                name: Max
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
+
+                              - entity: input_number.living_room_transition_maximum
+                                name: Max
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
 
                       - type: entities
                         entities:
-                          - type: "section"
-                            label: Fade Away Delay
-                          - type: custom:slider-entity-row
-                            entity: input_number.living_room_transition_off
-                            full_row: true
-
-          - type: entities
-            entities:
-              - type: divider
+                          - entity: input_number.living_room_transition_off
+                            name: "Off: Seconds Delay"
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
 
           - type: custom:mini-graph-card
             entities:
@@ -440,42 +558,93 @@ views:
           border_radius: false
           background: false
         cards:
-          - type: "custom:simple-thermostat"
-            entity: climate.living_room
-            step_size: 1
-            step_layout: row
-            show_header: false
-            control:
-              preset:
-                away: true
-                none:
-                  name: Home
+          - type: custom:state-switch
+            entity: input_select.debug_mode
+            default: NoDebug
+            states:
+              Lights:
+                type: vertical-stack
+                cards:
+                  - type: entities
+                    entities:
+                      - type: custom:multiple-entity-row
+                        entity: input_boolean.living_room_scene_changing
+                        state_color: true
+                        name: Scenes
+                        secondary_info:
+                          entity: input_select.living_room_scenes
+                          name: "Scene:"
+                        entities:
+                          - type: attribute
+                            entity: timer.living_room_scene_settling
+                            name: Settling
+                            attribute: finishes_at
+                            format: total
+                          - type: attribute
+                            entity: timer.living_room_scene_changing
+                            name: Changing
+                            attribute: finishes_at
+                            format: total
+                      - type: custom:multiple-entity-row
+                        entity: sensor.living_room_active_light_count
+                        name: Active Lights
+                        entities:
+                          - entity: sensor.living_room_lamps_brightness
+                            name: Lamps
+                          - entity: sensor.living_room_lights_brightness
+                            name: Lights
+                          - entity: sensor.living_room_ceiling_lights_brightness
+                            name: Ceiling
+                      - type: custom:multiple-entity-row
+                        entity: sensor.living_room_active_light_count
+                        name: Active Lights
+                        entities:
+                          - entity: sensor.living_room_lamps_warmth
+                            name: Lamps
+                          - entity: sensor.living_room_lights_warmth
+                            name: Lights
+                          - entity: sensor.living_room_ceiling_lights_warmth
+                            name: Ceiling
 
-          - type: entities
-            entities:
-              - type: divider
+              NoDebug:
+                type: vertical-stack
+                cards:
+                  - type: "custom:simple-thermostat"
+                    entity: climate.living_room
+                    step_size: 1
+                    step_layout: row
+                    show_header: false
+                    control:
+                      preset:
+                        away: true
+                        none:
+                          name: Home
 
-          - type: custom:mini-graph-card
-            entities:
-              - entity: sensor.living_room_average_temperature
-                name: Average
-              - entity: sensor.tv_pithy_screen_temperature
-                name: TV Pithy
-              - entity: sensor.hms_living_room_temperature
-                name: Hue Motion
-            hours_to_show: 2
-            points_per_hour: 30
-            line_width: 3
-            align_state: center
-            name: Temperature Data
-            show:
-              name: true
-              icon: true
-              state: true
-              labels: true
-              labels_secondary: true
-              extrema: true
-              average: true
+                  - type: entities
+                    entities:
+                      - type: divider
+
+                  - type: custom:mini-graph-card
+                    entities:
+                      - entity: sensor.living_room_average_temperature
+                        name: Average
+                      - entity: sensor.tv_pithy_screen_temperature
+                        name: TV Pithy
+                      - entity: sensor.hms_living_room_temperature
+                        name: Hue Motion
+                    hours_to_show: 2
+                    points_per_hour: 30
+                    line_width: 3
+                    align_state: center
+                    name: Temperature Data
+                    show:
+                      name: true
+                      icon: true
+                      state: true
+                      labels: true
+                      labels_secondary: true
+                      extrema: true
+                      average: true
 
   - path: bedroom
     title: Bedroom
@@ -492,21 +661,49 @@ views:
             cards:
               - type: custom:button-card
                 entity: input_text.bedroom_last_scene
+                name: Bedoom
+                icon: mdi:bed-outline
+                template: scene_button
+                size: 60%
+                show_name: false
+                color: var(--accent-medium-color)
+                styles:
+                  grid:
+                    - position: relative
+                  custom_fields:
+                    notification:
+                      - color: var(--paper-item-icon-color)
+                      - border-radius: 50%
+                      - position: absolute
+                      - left: 60%
+                      - top: 2%
+                      - height: 24px
+                      - width: 24px
+                      - font-size: 10px
+                      - line-height: 20px
+                custom_fields:
+                  notification: >
+                    [[[
+                      if (states['input_boolean.bedroom_filament_animation'].state == 'on')
+                        return '<ha-icon icon="mdi:motion-play-outline"></ha-icon>';
+
+                      if (states['sensor.bedroom_lights_brightness'].state > 0)
+                        return '<ha-icon icon="mdi:lightbulb-group"></ha-icon>';
+
+                      return '<ha-icon icon="mdi:lightbulb-group-off"></ha-icon>';
+                    ]]]
+
+              - type: custom:button-card
+                entity: input_text.bedroom_last_scene
                 template: scene_button
                 name: Bright
                 icon: mdi:weather-sunny
+                color: var(--accent-color)
                 state:
                   - value: "Bright"
                     icon: mdi:check-circle-outline
-                    styles:
-                      card:
-                        - background: var(--ha-card-background)
-                        - filter: opacity(70%)
                   - operator: "default"
                     color: var(--paper-item-icon-color)
-                    styles:
-                      card:
-                        - background: "none"
                 tap_action:
                   action: call-service
                   service: script.turn_on
@@ -518,18 +715,12 @@ views:
                 template: scene_button
                 name: Relax
                 icon: mdi:sofa-outline
+                color: var(--accent-color)
                 state:
                   - value: "Relax"
                     icon: mdi:check-circle-outline
-                    styles:
-                      card:
-                        - background: var(--ha-card-background)
-                        - filter: opacity(70%)
                   - operator: "default"
                     color: var(--paper-item-icon-color)
-                    styles:
-                      card:
-                        - background: "none"
                 tap_action:
                   action: call-service
                   service: script.turn_on
@@ -541,18 +732,12 @@ views:
                 template: scene_button
                 name: Cosy
                 icon: mdi:bed-single-outline
+                color: var(--accent-color)
                 state:
                   - value: "Cosy"
                     icon: mdi:check-circle-outline
-                    styles:
-                      card:
-                        - background: var(--ha-card-background)
-                        - filter: opacity(70%)
                   - operator: "default"
                     color: var(--paper-item-icon-color)
-                    styles:
-                      card:
-                        - background: "none"
                 tap_action:
                   action: call-service
                   service: script.turn_on
@@ -564,18 +749,12 @@ views:
                 template: scene_button
                 name: "Off"
                 icon: mdi:power
+                color: var(--accent-color)
                 state:
                   - value: "Off"
                     icon: mdi:check-circle-outline
-                    styles:
-                      card:
-                        - background: var(--ha-card-background)
-                        - filter: opacity(70%)
                   - operator: "default"
                     color: var(--paper-item-icon-color)
-                    styles:
-                      card:
-                        - background: "none"
                 tap_action:
                   action: call-service
                   service: script.turn_on
@@ -583,8 +762,9 @@ views:
                     entity_id: script.bedroom_scene_off
 
           - type: custom:light-entity-card
-            entity: light.bedroom
+            entity: light.bedroom_lights
             persist_features: true
+            consolidate_entities: true
             hide_header: true
             full_width_sliders: true
 
@@ -655,7 +835,8 @@ views:
                     name: Edit
                     toggle: true
 
-          - type: vertical-stack
+          - type: custom:stack-in-card
+            mode: vertical
             cards:
               - type: custom:state-switch
                 entity: input_boolean.bedroom_filament_animation_editing
@@ -663,45 +844,45 @@ views:
                 default: "off"
                 states:
                   "on":
-                    type: vertical-stack
+                    type: custom:stack-in-card
+                    mode: vertical
                     cards:
                       - type: horizontal-stack
                         cards:
                           - type: entities
                             entities:
-                              - type: "section"
-                                label: Brightness
-                              - type: custom:slider-entity-row
-                                entity: input_number.bedroom_brightness_maximum
-                                name: hide_state
-                                full_row: true
-                              - type: custom:slider-entity-row
-                                entity: input_number.bedroom_brightness_minimum
-                                name: hide_state
-                                full_row: true
+                              - entity: input_number.bedroom_brightness_minimum
+                                name: Min
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
+
+                              - entity: input_number.bedroom_transition_minimum
+                                name: Min
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
 
                           - type: entities
                             entities:
-                              - type: "section"
-                                label: Transitions
-                              - type: custom:slider-entity-row
-                                entity: input_number.bedroom_transition_maximum
-                                full_row: true
-                              - type: custom:slider-entity-row
-                                entity: input_number.bedroom_transition_minimum
-                                full_row: true
+                              - entity: input_number.bedroom_brightness_maximum
+                                name: Max
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
+                              - entity: input_number.bedroom_transition_maximum
+                                name: Max
+                                type: "custom:numberbox-card"
+                                icon_plus: "mdi:chevron-up"
+                                icon_minus: "mdi:chevron-down"
 
                       - type: entities
                         entities:
-                          - type: "section"
-                            label: Fade Away Delay
-                          - type: custom:slider-entity-row
-                            entity: input_number.bedroom_transition_off
-                            full_row: true
-
-          - type: entities
-            entities:
-              - type: divider
+                          - entity: input_number.bedroom_transition_off
+                            name: "Off: Seconds Delay"
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
 
           - type: custom:mini-graph-card
             entities:
@@ -721,6 +902,8 @@ views:
           border_radius: false
           background: false
         cards:
+          - type: entity
+            entity: input_text.bedroom_last_scene
           - type: "custom:simple-thermostat"
             entity: climate.bedroom
             step_size: 1
@@ -758,6 +941,55 @@ views:
               extrema: true
               average: true
 
+  - path: circadian
+    title: Circadian
+    icon: mdi:shield-sun
+    panel: true
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: custom:stack-in-card
+            mode: horizontal
+            cards:
+              - type: entities
+                entities:
+                  - input_boolean.event_updating_circadian
+                  - input_boolean.mode_override_circadian
+                  - sensor.circadian_light
+
+              - type: entities
+                entities:
+                  - sensor.homs_yard_side_light_level
+                  - sensor.homs_yard_side_temperature
+
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: binary_sensor.dark_outside
+                Name: Dark
+              - entity: binary_sensor.homs_yard_side_motion
+                Name: "Yard: Side"
+              - entity: binary_sensor.homs_yard_rear_motion
+                Name: "Yard: Rear"
+
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.solar_elevation
+                Name: Solar Elevation
+              - entity: sensor.solar_max_elevation
+                Name: Maximum Elevation
+              - entity: sensor.circadian_light
+                Name: Circadian Colour Correction
+            update_interval: 30
+            line_width: 2
+            lower_bound: ~-50
+            show:
+              name: true
+              icon: false
+              labels: true
+              name_adaptive_color: false
+
   - path: config
     title: Config
     icon: mdi:head-cog-outline
@@ -768,11 +1000,6 @@ views:
         cards:
           - type: horizontal-stack
             cards:
-              - type: entities
-                entities:
-                  - input_text.bedroom_last_scene
-                  - input_text.living_room_last_scene
-
               - type: custom:auto-entities
                 card:
                   type: entities
@@ -783,7 +1010,19 @@ views:
                         device_class: motion
                 sort:
                   method: last_changed
-                  count: 5
+                  count: 20
+
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                filter:
+                  include:
+                    - domain: sensor
+                      attributes:
+                        device_class: battery
+                sort:
+                  method: last_changed
+                  count: 20
 
       - type: custom:stack-in-card
         mode: vertical
