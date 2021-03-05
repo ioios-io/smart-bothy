@@ -11,14 +11,34 @@ input_select:
     initial: "Off"
 
 input_boolean:
+  mode_notify_printers:
+    name: "Notifications: Printers"
+    icon: mdi:printer-3d-nozzle-alert-outline
+    initial: on
+
+  mode_override_circadian:
+    name: "Override: Circadian Lighting"
+    icon: mdi:white-balance-sunny
+    initial: off
+
+  event_updating_circadian:
+    name: "Event: Updating Circadian Lighting"
+    icon: mdi:white-balance-sunny
+    initial: off
+
+  service_refresh_ha:
+    name: "Refresh Lovelace & Themes"
+    icon: mdi:reload
+    initial: off
+
   service_reload_ha:
     name: "Reload HA Core & Services"
-    icon: mdi:wrench
+    icon: mdi:reload-alert
     initial: off
 
   service_restart_ha:
     name: "Restart HA"
-    icon: mdi:restart
+    icon: mdi:power-standby
     initial: off
 
   service_in_depth:
@@ -27,6 +47,11 @@ input_boolean:
     initial: off
 
 sensor:
+  - platform: uptime
+    name: Time Online
+
+  - platform: websocket_api
+
   - platform: systemmonitor
     resources:
       - type: disk_use_percent
@@ -34,87 +59,27 @@ sensor:
       - type: memory_use_percent
       - type: swap_use_percent
       - type: processor_use
-
-  - platform: time_date
-    display_options:
-      - "date"
-
-  - platform: worldclock
-    time_zone: America/Los_Angeles
-    name: "Rachel Time"
-
-  - platform: template
-    sensors:
-      since_rachel:
-        value_template: '{{ ( ( as_timestamp(now()) - as_timestamp(strptime("11.01.2020", "%d.%m.%Y")) ) / 86400 ) | round(0) }}'
-        friendly_name: "Since I Saw Rachel"
-        unit_of_measurement: "Days"
-        icon_template: "{{ 'mdi:face-woman' }}"
-
-      # STOLEN FROM https://community.home-assistant.io/t/next-dawn-next-dusk-in-automation/45339/13?u=ioios-io
-      period_of_day:
-        friendly_name: "Period of the Day"
-        value_template: >-
-          {% set elevation = state_attr('sun.sun', 'elevation') %}
-          {% set rising = state_attr('sun.sun', 'rising') %}
-          {%- if elevation <= -12 -%}
-            Night
-          {%- elif -12 < elevation <= -6 -%}
-            {{ 'Dawn' if rising else 'Dusk' }}
-          {%- else -%}
-            Day
-          {%- endif -%}
-        icon_template: >-
-          {% set elevation = state_attr('sun.sun', 'elevation') %}
-          {% set rising = state_attr('sun.sun', 'rising') %}
-          {%- if elevation <= -12 -%}
-            mdi:weather-night
-          {%- elif -12 < elevation <= -6 -%}
-            mdi:weather-sunset-{{ 'up' if rising else 'down' }}
-          {% else %}
-            mdi:weather-sunny
-          {% endif %}
-        attribute_templates:
-          next_sunset_mins: "{{ ( (as_timestamp(states.sun.sun.attributes.next_setting)) - (as_timestamp(now()) ) / 60) | round(0) }}"
-          next_sunrise_mins: "{{ ( (as_timestamp(states.sun.sun.attributes.next_rising)) - (as_timestamp(now()) ) / 60) | round(0) }}"
-
-      # STOLEN FROM https://community.home-assistant.io/t/circadian-light-with-philips-hue-independent-from-world-clocks/45435
-      solar_angle:
-        friendly_name: "Sun Angle"
-        unit_of_measurement: "°"
-        value_template: "{{ '%+.1f'|format(state_attr('sun.sun', 'elevation')) }}"
-        icon_template: "{{ 'mdi:angle-acute' }}"
-
-      max_elevation:
-        friendly_name: "Maximum Solar Elevation Angle"
-        unit_of_measurement: "°"
-        icon_template: "{{ 'mdi:angle-acute' }}"
-        value_template: >
-          {% set deg = pi / 180.0 %}
-          {% set N = now().strftime("%j") | int %}
-          {% set L = state_attr('zone.home','latitude') | float %}
-          {% set D = (-1 * asin(0.39779 * cos(0.98565 * deg * (N + 10) + 1.914 * deg * sin(0.98565 * deg * (N - 2))))) / deg %}
-          {{ (asin(sin(L * deg) * sin(D * deg) + cos(L * deg) * cos(D * deg)) / deg) | round(2) }}
-
-      circadian_light:
-        friendly_name: "Calculated Circadian Light Value"
-        unit_of_measurement: "mired"
-        icon_template: "{{ 'mdi:weather-sunny-alert' }}"
-        value_template: >
-          {% set mired_min = 200 %}
-          {% set mired_max = 350 %}
-          {% set elev_at_mired_max = 0 %}
-          {% set mired_night = 390 %}
-          {% if state_attr('sun.sun', 'elevation') > elev_at_mired_max %}
-            {{ (mired_max - ((state_attr('sun.sun', 'elevation') | float) - elev_at_mired_max) * (mired_max - mired_min) / ((states('sensor.max_elevation') | float) - elev_at_mired_max) ) | int }}
-          {% else %}
-            {{ mired_night }}
-          {% endif %}
+      - type: last_boot
+      - type: load_1m
 
 automation:
-  - id: "16198227729791"
-    alias: Reload HA Core
-    description: Refresh a few things
+  - alias: Reload Frontend
+    description: Refresh Lovelace & Themes
+    trigger:
+      - platform: state
+        entity_id: input_boolean.service_refresh_ha
+        from: "off"
+        to: "on"
+    condition: []
+    action:
+      - service: lovelace.reload_resources
+      - service: frontend.reload_themes
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.service_refresh_ha
+    mode: single
+
+  - alias: Reload HA Core
+    description: Reload The Core
     trigger:
       - platform: state
         entity_id: input_boolean.service_reload_ha
@@ -123,14 +88,11 @@ automation:
     condition: []
     action:
       - service: homeassistant.reload_core_config
-      - delay:
-          seconds: 3
       - service: input_boolean.turn_off
         entity_id: input_boolean.service_reload_ha
     mode: single
 
-  - id: "16174563229791"
-    alias: Restart HA
+  - alias: Restart HA
     description: Restart Home Assistant
     trigger:
       - platform: state

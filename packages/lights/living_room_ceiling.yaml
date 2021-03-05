@@ -19,7 +19,7 @@ input_number:
 
   living_room_warmth_maximum:
     name: Living Room Warmth Maximum
-    min: 153
+    min: 154
     max: 465
     initial: 420
     mode: slider
@@ -29,7 +29,7 @@ input_number:
   living_room_warmth_minimum:
     name: Living Room Warmth Minimum
     min: 153
-    max: 465
+    max: 464
     initial: 370
     mode: slider
     icon: mdi:white-balance-iridescent
@@ -262,7 +262,7 @@ script:
         description: "Minimum Random Warmth Mireds"
         example: "153"
       transition_secs:
-        description: "Transistion Time in Seconds"
+        description: "Transition Time in Seconds"
         example: "2"
     sequence:
       - service: light.turn_on
@@ -271,27 +271,27 @@ script:
         data_template:
           brightness_pct: "{{ range( brightness_min, brightness_max ) | random }}"
           color_temp: "{{ range( warmth_min, warmth_max ) | random }}"
-          transition: "{{ range( 0 , transition_secs ) | random }}"
+          transition: "{{ range( 1 , transition_secs ) | random }}"
       - service: light.turn_on
         target:
           entity_id: "light.living_room_ceiling_2"
         data_template:
           brightness_pct: "{{ range( brightness_min , brightness_max ) | random }}"
           color_temp: "{{ range( warmth_min, warmth_max ) | random }}"
-          transition: "{{ range( 0 , transition_secs ) | random }}"
+          transition: "{{ range( 1 , transition_secs ) | random }}"
       - service: light.turn_on
         target:
           entity_id: "light.living_room_ceiling_3"
         data_template:
           brightness_pct: "{{ range( brightness_min , brightness_max ) | random }}"
           color_temp: "{{ range( warmth_min, warmth_max ) | random }}"
-          transition: "{{ range( 0 , transition_secs ) | random }}"
+          transition: "{{ range( 1 , transition_secs ) | random }}"
       - service: light.turn_on
         target:
           entity_id: "light.living_room_ceiling_4"
         data_template:
           brightness_pct: "{{ range( brightness_min , brightness_max ) | random }}"
           color_temp: "{{ range( warmth_min, warmth_max ) | random }}"
-          transition: "{{ range( 0 , transition_secs ) | random }}"
+          transition: "{{ range( 1 , transition_secs ) | random }}"
       - delay:
           seconds: "{{ transition_secs | int }}"

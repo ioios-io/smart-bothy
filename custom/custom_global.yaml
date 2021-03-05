@@ -13,9 +13,11 @@
 
 "sensor.*_lights_warmth":
   icon: "mdi:invert-colors"
+  unit_of_measurement: " "
 
 "sensor.*_lights_brightness":
   icon: "mdi:brightness-5"
+  unit_of_measurement: " "
 
 "script.*_scene_bright":
   icon: "mdi:white-balance-sunny"

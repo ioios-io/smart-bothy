@@ -45,12 +45,6 @@ notify:
       - service: mobile_app_john_lumleys_iphone
       - service: mobile_app_john_lumleys_ipad
 
-input_boolean:
-  notify_toggle_printers:
-    name: "Notification Toggle: Printers"
-    initial: on
-    icon: mdi:printer-3d-nozzle-alert-outline
-
 automation:
   - alias: Printer 1 Cooldown
     trigger:
@@ -60,7 +54,7 @@ automation:
         to: "on"
     condition:
       - condition: state
-        entity_id: input_boolean.notify_toggle_printers
+        entity_id: input_boolean.mode_notify_printers
         state: "on"
     action:
       service: notify.JOHN
@@ -86,7 +80,7 @@ automation:
         to: "off"
     condition:
       - condition: state
-        entity_id: input_boolean.notify_toggle_printers
+        entity_id: input_boolean.mode_notify_printers
         state: "on"
     action:
       service: notify.JOHN

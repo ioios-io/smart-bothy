@@ -1,7 +1,26 @@
+switch:
+  - platform: template
+    switches:
+      bedroom_heater:
+        friendly_name: "Bedroom Heater"
+        value_template: "{{ is_state('sensor.bedroom_heater', 'on') }}"
+        turn_on:
+          service: persistent_notification.create
+          data_template:
+            message: Heating switched on
+            title: Bedroom Climate
+            notification_id: 1234
+        turn_off:
+          service: persistent_notification.create
+          data_template:
+            message: Heating switched off
+            title: Bedroom Climate
+            notification_id: 1235
+
 climate:
   - platform: generic_thermostat
     name: Living Room
-    heater: switch.living_room_heater
+    heater: switch.bedroom_heater
     target_sensor: sensor.living_room_average_temperature
     min_temp: 10
     max_temp: 30
@@ -59,6 +78,13 @@ binary_sensor:
           {% endif %}
 
 sensor:
+  - platform: derivative
+    source: sensor.living_room_average_temperature
+    name: Temperature change per hour
+    round: 1
+    unit_time: h # the resulting "unit_of_measurement" will be °C/h if the sensor.temperate has set °C as it's unit
+    time_window: "00:30:00" # we look at the change over the last half hour
+
   - platform: min_max
     name: Living Room Average Temperature
     type: mean
@@ -94,7 +120,7 @@ sensor:
       living_room_climate_setpoint:
         friendly_name: "Living Room Climate Setpoint"
         device_class: temperature
-        value_template: "{{ state_attr('climate.living_room', 'temperature') | int | round(0) }}"
+        value_template: "{{ state_attr('climate.living_room', 'temperature') | int }}"
         icon_template: "mdi:thermometer-plus"
 
       living_room_climate_temperature:
@@ -107,7 +133,7 @@ sensor:
       bedroom_climate_setpoint:
         friendly_name: "Bedroom Climate Setpoint"
         device_class: temperature
-        value_template: "{{ state_attr('climate.bedroom', 'temperature') | int | round(0) }}"
+        value_template: "{{ state_attr('climate.bedroom', 'temperature') | int }}"
         icon_template: "mdi:thermometer-plus"
 
       bedroom_climate_temperature:

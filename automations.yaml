@@ -1,0 +1,10 @@
+- id: '1614898296211'
+  alias: Motion-activated Rear Light
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: binary_sensor.homs_rear_yard_motion
+      light_target:
+        device_id: 4707d6300a8a0063517d983aec435ca4
+      no_motion_wait: 37

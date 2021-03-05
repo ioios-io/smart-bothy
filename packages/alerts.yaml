@@ -1,6 +1,5 @@
 automation:
-  - id: "16061241892"
-    alias: Door Bell
+  - alias: Door Bell
     description: ""
     trigger:
       - platform: state
@@ -19,8 +18,7 @@ automation:
         state: "off"
     mode: single
 
-  - id: "191634258891"
-    alias: Dinner Bell
+  - alias: Dinner Bell
     description: ""
     trigger:
       - platform: state

@@ -1,246 +1,164 @@
+input_select:
+  # All Scenes
+  living_room_scenes:
+    name: Living Room Scenes
+    options:
+      - "Off"
+      - "Manual"
+      - "Natural"
+      - "Bright"
+      - "Relax"
+      - "Cosy"
+      - "Dinner"
+      - "Movies"
+    initial: "Off"
+    icon: mdi:palette-outline
+
 light:
+  # Animated Lights
   - platform: group
     name: Living Room Ceiling Lights
+    scan_interval: 11
     entities:
       - light.living_room_ceiling_1
       - light.living_room_ceiling_2
       - light.living_room_ceiling_3
       - light.living_room_ceiling_4
 
+  # Un-animated Lights
   - platform: group
     name: Living Room Lamps
+    scan_interval: 7
     entities:
       - light.living_room_lamp
       - light.living_room_candle
 
+  # All Lights
   - platform: group
     name: Living Room Lights
+    scan_interval: 9
     entities:
-      - light.living_room_ceiling_lights
-      - light.living_room_lamps
+      - light.living_room_ceiling_1
+      - light.living_room_ceiling_2
+      - light.living_room_ceiling_3
+      - light.living_room_ceiling_4
+      - light.living_room_lamp
+      - light.living_room_candle
+
+input_boolean:
+  # Boolean which is on during scene change
+  living_room_scene_changing:
+    name: Living Room Scene Change In Progress
+    icon: mdi:repeat-once
+
+timer:
+  # Non-animated lights are checked for brightness changes
+  # Fluctuations occur for a short period after changing scenes
+  living_room_scene_settling:
+    name: Safe Time After Scene Begins
+    duration: 30
+    icon: mdi:timer-sand
+
+  # Timer set during each scene on script for transitions
+  living_room_scene_changing:
+    name: Time For Scene Change
+    icon: mdi:timer-sand-empty
 
 sensor:
   - platform: template
     sensors:
-      living_room_lights_warmth:
-        friendly_name: "Living Room Lights Warmth"
-        value_template: "{{ state_attr('light.living_room_lights', 'color_temp') | int | round(0) }}"
+      # Determine if any lights in any group is currently on
+      living_room_active_light_count:
+        friendly_name: "Living Room Active Light Count"
+        unit_of_measurement: Lights
+        value_template: >-
+          {{ expand('light.living_room_lights') | selectattr('state', 'ne', 'off') | list | count }}
 
-  - platform: template
-    sensors:
+      # Get an overall warmth value for each group of lights
       living_room_lights_brightness:
         friendly_name: "Living Room Lights Brightness"
-        value_template: "{{ state_attr('light.living_room_lights', 'brightness') | int | round(0) }}"
+        value_template: "{{ state_attr('light.living_room_lights', 'brightness') | int }}"
+      living_room_lamps_brightness:
+        friendly_name: "Living Room Lamps Brightness"
+        value_template: "{{ state_attr('light.living_room_lamps', 'brightness') | int }}"
+      living_room_ceiling_lights_brightness:
+        friendly_name: "Living Room Ceiling Lights Brightness"
+        value_template: "{{ state_attr('light.living_room_ceiling_lights', 'brightness') | int }}"
 
-input_text:
-  living_room_last_scene:
-    name: Last Scene Selected
-    initial: Unknown
+      # Get an overall warmth value for each group of lights
+      living_room_lights_warmth:
+        friendly_name: "Living Room Lights Warmth"
+        value_template: "{{ state_attr('light.living_room_lights', 'color_temp') | int }}"
+      living_room_lamps_warmth:
+        friendly_name: "Living Room Lamps Warmth"
+        value_template: "{{ state_attr('light.living_room_lamps', 'color_temp') | int }}"
+      living_room_ceiling_lights_warmth:
+        friendly_name: "Living Room Ceiling Lights Warmth"
+        value_template: "{{ state_attr('light.living_room_ceiling_lights', 'color_temp') | int }}"
 
-script:
-  living_room_scene_bright:
-    alias: Living Room Bright Scene Extras
-    description: "Scene functions beyond light settings"
-    sequence:
-      - service: input_text.set_value
+automation:
+  - id: "1613288323483628"
+    alias: Living Room Lights Off
+    description: ""
+    trigger:
+      - platform: state
+        entity_id: sensor.living_room_lights_brightness
+        to: "0"
+    condition: []
+    action:
+      - service: input_select.select_option
         data:
-          entity_id: input_text.living_room_last_scene
-          value: Bright
-      - service: light.turn_on
+          entity_id: input_select.living_room_scenes
+          option: "Off"
+      - service: input_boolean.turn_off
         data:
-          entity_id: light.living_room_candle
-          brightness: 200
-          color_temp: 350
-          transition: 5
-      - service: light.turn_on
+          entity_id: input_boolean.living_room_ceiling_animation
+    mode: single
+
+  - id: "16132949734528"
+    alias: Living Room Lights Off Check
+    description: ""
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.living_room_lights_brightness') | int < 3 }}"
+        for: "00:00:10"
+    condition: "{{ states('input_select.living_room_scenes') | string != 'Manual' }}"
+    action:
+      - service: light.turn_off
         data:
-          entity_id: light.living_room_lamp
-          brightness: 200
-          color_temp: 300
-          transition: 3
-      - service: input_number.set_value
+          entity_id: light.living_room_lamps
+      - service: light.turn_off
         data:
-          entity_id: input_number.living_room_transition_off
-          value: 1
+          entity_id: light.living_room_ceiling_lights
+    mode: restart
+
+  - id: "16152153628"
+    alias: Living Room Force Animation Stop
+    description: ""
+    trigger:
+      - platform: state
+        entity_id: light.living_room_lamps
+    condition:
+      condition: template
+      value_template: >
+        {{ trigger.from_state and
+          trigger.to_state.attributes.brightness !=
+          trigger.from_state.attributes.brightness and
+          states('input_select.living_room_scenes') != "Manual" and
+          is_state('timer.living_room_scene_settling', 'idle')}}
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.living_room_scenes
+          option: Manual
       - service: input_boolean.turn_off
         data:
           entity_id: input_boolean.living_room_ceiling_animation
       - delay:
-          seconds: 1
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_brightness_maximum
-          value: 80
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_brightness_minimum
-          value: 70
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_warmth_maximum
-          value: 300
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_warmth_minimum
-          value: 200
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_maximum
-          value: 60
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_minimum
-          value: 10
-      - delay:
-          seconds: 1
-      - service: input_boolean.turn_on
-        data:
-          entity_id: input_boolean.living_room_ceiling_animation
-
-  living_room_scene_relax:
-    alias: Living Room Relax Scene Extras
-    description: "Scene functions beyond light settings"
-    sequence:
-      - service: input_text.set_value
-        data:
-          entity_id: input_text.living_room_last_scene
-          value: Relax
+          seconds: 2
       - service: light.turn_on
-        data:
-          entity_id: light.living_room_candle
-          brightness: 100
-          color_temp: 380
-          transition: 5
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_lamp
-          brightness: 100
-          color_temp: 350
-          transition: 3
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_off
-          value: 1
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.living_room_ceiling_animation
-      - delay:
-          seconds: 1
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_brightness_maximum
-          value: 50
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_brightness_minimum
-          value: 30
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_warmth_maximum
-          value: 400
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_warmth_minimum
-          value: 200
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_maximum
-          value: 30
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_minimum
-          value: 10
-      - delay:
-          seconds: 1
-      - service: input_boolean.turn_on
-        data:
-          entity_id: input_boolean.living_room_ceiling_animation
-
-  living_room_scene_cosy:
-    alias: Living Room Cosy Scene Extras
-    description: "Scene functions & light settings"
-    sequence:
-      - service: input_text.set_value
-        data:
-          entity_id: input_text.living_room_last_scene
-          value: Cosy
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_candle
-          brightness: 40
-          color_temp: 450
-          transition: 10
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_lamp
-          brightness: 60
-          color_temp: 450
-          transition: 6
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_off
-          value: 1
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.living_room_ceiling_animation
-      - delay:
-          seconds: 1
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_brightness_maximum
-          value: 8
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_brightness_minimum
-          value: 1
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_warmth_maximum
-          value: 465
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_warmth_minimum
-          value: 153
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_maximum
-          value: 3
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_minimum
-          value: 1
-      - delay:
-          seconds: 1
-      - service: input_boolean.turn_on
-        data:
-          entity_id: input_boolean.living_room_ceiling_animation
-
-  living_room_scene_off:
-    alias: Living Room Off Scene
-    description: "Scene functions & light settings"
-    sequence:
-      - service: input_text.set_value
-        data:
-          entity_id: input_text.living_room_last_scene
-          value: "Off"
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_off
-          value: 5
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_candle
-          brightness: 0
-          color_temp: 450
-          transition: 13
-      - service: light.turn_on
-        data:
-          entity_id: light.living_room_lamp
-          brightness: 0
-          color_temp: 450
-          transition: 10
-      - delay:
-          seconds: 1
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.living_room_ceiling_animation
+        data_template:
+          entity_id: light.living_room_ceiling_lights
+          brightness: "{{ trigger.to_state.attributes.brightness | int }}"
+          transition: 2
+    mode: single

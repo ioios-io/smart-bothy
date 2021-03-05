@@ -1,0 +1,122 @@
+sensor:
+  - platform: season
+  - platform: moon
+  - platform: time_date
+    display_options:
+      - "date_time_iso"
+
+  - platform: template
+    sensors:
+      time_formatted:
+        friendly_name: "Date and time"
+        value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%A %B %-m, %I:%M %p') }}"
+        icon_template: mdi:calendar-clock
+
+      since_rachel:
+        value_template: '{{ ( ( as_timestamp(now()) - as_timestamp(strptime("11.01.2020", "%d.%m.%Y")) ) / 86400 ) | round(0) }}'
+        friendly_name: "Since I Saw Rachel"
+        unit_of_measurement: "Days"
+        icon_template: "{{ 'mdi:face-woman' }}"
+
+      # STOLEN FROM https://community.home-assistant.io/t/next-dawn-next-dusk-in-automation/45339/13?u=ioios-io
+      period_of_day:
+        friendly_name: "Period of the Day"
+        value_template: >-
+          {% set elevation = state_attr('sun.sun', 'elevation') | int %}
+          {% set max_elevation = states('solar_max_elevation') | int %}
+          {% set rising = state_attr('sun.sun', 'rising') %}
+          {%- if elevation <= -18 -%}
+            Night
+          {%- elif -18 < elevation <= -12 -%}
+            {{ 'Astronomical Dawn' if rising else 'Astronomical Dusk' }}
+          {%- elif -12 < elevation <= -6 -%}
+            {{ 'Nautical Dawn' if rising else 'Nautical Dusk' }}
+          {%- elif -6 < elevation <= 0 -%}
+            {{ 'Civil Dawn' if rising else 'Civil Dusk' }}
+          {%- elif elevation <= max_elevation -%}
+            High Noon
+          {%- else -%}
+            Day
+          {%- endif -%}
+        icon_template: >-
+          {% set elevation = state_attr('sun.sun', 'elevation') | int %}
+          {% set max_elevation = states('solar_max_elevation') | int %}
+          {% set rising = state_attr('sun.sun', 'rising') %}
+          {%- if elevation <= -12 -%}
+            mdi:weather-night
+          {%- elif -12 < elevation <= -6 -%}
+            mdi:weather-sunset-{{ 'up' if rising else 'down' }}
+          {%- elif elevation <= max_elevation -%}
+            mdi:weather-sunny-alert
+          {%- else -%}
+            mdi:weather-sunny
+          {%- endif %}
+        attribute_templates:
+          Next Sunset: "{{ states.sun.sun.attributes.next_setting }}"
+          Next Sunset (mins): "{{ ( ( as_timestamp(states.sun.sun.attributes.next_setting) - as_timestamp(now()) ) / 60) | round(0) }}"
+          Next Sunrise: "{{ states.sun.sun.attributes.next_rising }}"
+          Next Sunrise (mins): "{{ ( ( as_timestamp(states.sun.sun.attributes.next_rising) - as_timestamp(now()) ) / 60) | round(0) }}"
+
+      # STOLEN FROM https://community.home-assistant.io/t/circadian-light-with-philips-hue-independent-from-world-clocks/45435
+      # Strip out the elevation and azimuth from the Sun object.
+      solar_elevation:
+        friendly_name: "Solar Angle"
+        unit_of_measurement: "°"
+        value_template: "{{ '%+.2f' | format(state_attr('sun.sun', 'elevation')) | float }}"
+        icon_template: "{{ 'mdi:angle-acute' }}"
+
+      # One day I might get solar panels :)
+      solar_azimuth:
+        friendly_name: "Solar Azimuth"
+        unit_of_measurement: "°"
+        value_template: "{{ '%+.2f' | format(state_attr('sun.sun', 'azimuth')) | float }}"
+        icon_template: "{{ 'mdi:angle-obtuse' }}"
+
+      # Calculate the highest elevation today for use in Cricadian formula and to denote High Noon.
+      solar_max_elevation:
+        friendly_name: "Maximum Solar Elevation Angle"
+        unit_of_measurement: "°"
+        icon_template: "{{ 'mdi:angle-acute' }}"
+        value_template: >
+          {% set deg = pi / 180.0 %}
+          {% set N = now().strftime("%j") | int %}
+          {% set L = state_attr('zone.home','latitude') | float %}
+          {% set D = (-1 * asin(0.39779 * cos(0.98565 * deg * (N + 10) + 1.914 * deg * sin(0.98565 * deg * (N - 2))))) / deg %}
+
+          {{ (asin(sin(L * deg) * sin(D * deg) + cos(L * deg) * cos(D * deg)) / deg) | round(2) }}
+
+      # Calculate the mired value for (attempted) colour consistency throughout the day
+      circadian_light:
+        friendly_name: "Calculated Circadian Light Value"
+        unit_of_measurement: "mired"
+        icon_template: "{{ 'mdi:shield-sun-outline' }}"
+        value_template: >
+          {% set mired_min = 200 %}
+          {% set mired_max = 460 %}
+          {% set elev_at_mired_max = -18 %}
+          {% set mired_night = 460 %}
+
+          {% if is_state('sun.sun', 'above_horizon') %}
+            {% if states('sensor.solar_elevation') | int > elev_at_mired_max %}
+              {{ (mired_max - (states('sensor.solar_elevation') | int - elev_at_mired_max) * (mired_max - mired_min) / (states('sensor.solar_max_elevation') | int - elev_at_mired_max) ) | int }}
+            {% else %}
+              {{ mired_night }}
+            {% endif %}
+          {% else %}
+            {{ mired_night }}
+          {% endif %}
+
+automation:
+  - alias: "Update Circadian Lights"
+    trigger:
+      - platform: time_pattern
+        minutes: /1
+    condition: "{{ is_state('input_select.living_room_scenes', 'Natural') }}"
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.event_updating_circadian
+      - service: script.living_room_scene_natural_update
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.event_updating_circadian

@@ -1,0 +1,42 @@
+binary_sensor:
+  - platform: template
+    sensors:
+      dark_outside:
+        friendly_name: "Is it dark outside?"
+        icon_template: mdi:theme-light-dark
+        value_template: >-
+          {{ is_state_attr('sensor.homs_yard_side_light_level', 'dark', true)
+            or is_state_attr('sensor.homs_yard_rear_light_level', 'dark', true) }}
+
+automation:
+  - alias: "Rear Lights Off"
+    description: "Turn lights off when the sun comes up"
+    trigger:
+      - entity_id: binary_sensor.outside_motion
+        platform: state
+        from: "on"
+        to: "off"
+        for:
+          seconds: 60
+    condition: "{{ is_state('light.rear_light', 'on') }}"
+    action:
+      - service: light.turn_off
+        data:
+          entity_id: light.rear_light
+    mode: single
+
+  - alias: "Rear Lights Motion On"
+    description: "Turn lights on when something moves"
+    trigger:
+      - entity_id: binary_sensor.outside_motion
+        platform: state
+        from: "off"
+        to: "on"
+    condition: >-
+      {{ is_state('light.rear_light', 'off') and
+        is_state('binary_sensor.dark_outside', 'on') }}
+    action:
+      - service: light.turn_on
+        data:
+          entity_id: light.rear_light
+    mode: single

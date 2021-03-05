@@ -76,6 +76,7 @@ sensor:
               {{ minutes }} minutes
             {%- endif -%}
           {%- endif -%}
+
 input_boolean:
   printer1_cool_down:
     name: Printer 1 Cool Down Period
@@ -83,12 +84,11 @@ input_boolean:
     icon: mdi:printer-3d-nozzle-alert
 
 automation:
-  - id: "15838379610"
-    alias: Notification From 3D Printer After Cooldown
+  - alias: Notification From 3D Printer After Cooldown
     trigger:
       - entity_id: binary_sensor.prusa_mk3s_printing
-        from: "on"
         platform: state
+        from: "on"
         to: "off"
     condition: []
     action:

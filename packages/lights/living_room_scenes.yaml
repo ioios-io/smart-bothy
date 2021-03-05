@@ -1,0 +1,364 @@
+script:
+  living_room_scene_natural:
+    alias: Living Room Natural Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.living_room_scenes
+          option: "Natural"
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_settling
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_changing
+          duration: 5
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_candle
+          brightness: 200
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 5
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_lamp
+          brightness: 200
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 1
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_ceiling_1
+          brightness: 200
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 4
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_ceiling_2
+          brightness: 200
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 4
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_ceiling_3
+          brightness: 200
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 4
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_ceiling_4
+          brightness: 200
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 4
+      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+
+  living_room_scene_natural_update:
+    alias: Living Room Natural Scene Update
+    description: "Circadian update for colour temperature"
+    sequence:
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_candle
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 5
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_lamp
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 3
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_ceiling_1
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 4
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_ceiling_2
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 4
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_ceiling_3
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 4
+      - service: light.turn_on
+        data_template:
+          entity_id: light.living_room_ceiling_4
+          color_temp: "{{ states('sensor.circadian_light') | int }}"
+          transition: 4
+
+  living_room_scene_bright:
+    alias: Living Room Bright Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.living_room_scenes
+          option: "Bright"
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_settling
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_changing
+          duration: 5
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_candle
+          brightness: 200
+          color_temp: 350
+          transition: 5
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp
+          brightness: 200
+          color_temp: 300
+          transition: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_maximum
+          value: 100
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_minimum
+          value: 70
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_maximum
+          value: 300
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_minimum
+          value: 200
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_maximum
+          value: 60
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_minimum
+          value: 10
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+
+  living_room_scene_relax:
+    alias: Living Room Relax Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.living_room_scenes
+          option: "Relax"
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_settling
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_changing
+          duration: 5
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_candle
+          brightness: 100
+          color_temp: 380
+          transition: 5
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp
+          brightness: 100
+          color_temp: 350
+          transition: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_maximum
+          value: 50
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_minimum
+          value: 30
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_maximum
+          value: 400
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_minimum
+          value: 200
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_maximum
+          value: 30
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_minimum
+          value: 10
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+
+  living_room_scene_cosy:
+    alias: Living Room Cosy Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.living_room_scenes
+          option: "Cosy"
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_settling
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_changing
+          duration: 10
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_candle
+          brightness: 40
+          color_temp: 450
+          transition: 10
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp
+          brightness: 60
+          color_temp: 450
+          transition: 6
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_maximum
+          value: 8
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_brightness_minimum
+          value: 1
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_maximum
+          value: 465
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_warmth_minimum
+          value: 153
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_maximum
+          value: 3
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_minimum
+          value: 1
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+
+  living_room_scene_off:
+    alias: Living Room Off Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.living_room_scenes
+          option: "Off"
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_settling
+      - service: timer.start
+        data:
+          entity_id: timer.living_room_scene_changing
+          duration: 10
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 10
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamps
+          brightness: 0
+          color_temp: 450
+          transition: 10
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lights
+          brightness: 0
+          color_temp: 450
+          transition: 30
