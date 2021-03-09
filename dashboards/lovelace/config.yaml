@@ -1,0 +1,144 @@
+path: config
+title: Config
+icon: mdi:head-cog-outline
+panel: false
+badges:
+  - entity: weather.portree
+  - entity: weather.portree_hourly
+  - entity: sensor.period_of_day
+  - entity: sun.sun
+  - entity: device_tracker.john_lumleys_iphone
+  - entity: person.john_lumley
+    show_name: false
+    show_icon: false
+  - type: entity-filter
+    entities:
+      - entity: binary_sensor.living_room_motion
+        name: Living Room
+      - entity: binary_sensor.bedroom_motion
+        name: Bedroom
+      - entity: binary_sensor.bathroom_motion
+        name: Bathroom
+      - entity: binary_sensor.outside_motion
+        name: Outside
+    state_filter:
+      - "on"
+
+  - type: entity-filter
+    show_name: false
+    show_icon: false
+    entities:
+      - entity: sensor.hms_bedroom_light_level
+        name: Bedroom
+      - entity: sensor.hms_bathroom_light_level
+        name: Bathroom
+      - entity: sensor.hms_living_room_light_level
+        name: Living Room
+      - entity: sensor.homs_yard_rear_light_level
+        name: Yard Rear
+      - entity: sensor.homs_yard_side_light_level
+        name: Yard Side
+    state_filter:
+      - operator: ">"
+        value: 1
+cards:
+  - type: custom:stack-in-card
+    mode: vertical
+    cards:
+      - type: map
+        aspect_ratio: "16:9"
+        hours_to_show: 12
+        dark_mode: false
+        default_zoom: 11
+        entities:
+          - device_tracker.john_lumleys_iphone
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:auto-entities
+            card:
+              type: entities
+            filter:
+              include:
+                - domain: binary_sensor
+                  attributes:
+                    device_class: motion
+            sort:
+              method: last_changed
+              count: 20
+
+          - type: custom:auto-entities
+            card:
+              type: entities
+            filter:
+              include:
+                - domain: sensor
+                  attributes:
+                    device_class: battery
+            sort:
+              method: last_changed
+              count: 20
+
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: custom:state-switch
+        entity: sensor.prusa_mk3s_current_state
+        states:
+          Operational:
+            type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - entity: sensor.prusa_mk3s_current_state
+                    name: "Printer 1: MK3S"
+                  - type: custom:template-entity-row
+                    entity: input_boolean.printer1_cool_down
+                    name: "Cooling Down"
+                    state: "{{ states('sensor.prusa_mk3s_actual_tool0_temp') }}{{ state_attr('sensor.prusa_mk3s_actual_tool0_temp', 'unit_of_measurement') }}"
+                    condition: "{{is_state('input_boolean.printer1_cool_down', 'on')}}"
+
+              - type: picture-entity
+                entity: sensor.prusa_mk3s_current_state
+                camera_image: camera.prusa_mk3s
+                camera_view: live
+
+          Printing:
+            type: vertical-stack
+            cards:
+              - type: picture-glance
+                camera_view: live
+                entities:
+                  - entity: sensor.prusa_mk3s_job_percentage
+
+                  - entity: sensor.prusa_mk3s_time_remaining
+                  - entity: sensor.prusa_mk3s_time_elapsed
+                camera_image: camera.prusa_mk3s
+
+              - type: "custom:elapsed-time-card"
+                format: Time Left
+                time_format: 1h 5m
+                time_today: sensor.prusa_mk3s_time_remaining
+                icon: camera-timer
+
+              - type: "custom:mini-graph-card"
+                entities:
+                  - entity: sensor.prusa_mk3s_actual_tool0_temp
+                    name: Hot-End Current
+                  - entity: sensor.prusa_mk3s_target_tool0_temp
+                    name: Hot-End Target
+                  - entity: sensor.prusa_mk3s_actual_bed_temp
+                    name: Bed Current
+                  - entity: sensor.prusa_mk3s_target_bed_temp
+                    name: Bed Target
+                hours_to_show: 1
+                line_width: 3
+                show:
+                  labels: hover
+                  legend: false
+                  name_adaptive_color: false
+                icon: "mdi:thermometer"
+                name: Temperatures

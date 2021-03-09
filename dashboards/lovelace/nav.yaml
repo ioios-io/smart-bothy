@@ -1,0 +1,56 @@
+button_card_templates:
+  scene_button:
+    show_name: true
+    color: var(--paper-item-icon-color)
+    size: 35%
+    styles:
+      card:
+        - border-radius: var(--ha-card-border-radius)
+        - margin-top: 16px
+        - --mdc-ripple-color: white
+        - --mdc-ripple-press-opacity: 0.5
+
+  scene_bulbs:
+    show_name: false
+    size: 50%
+    color_type: icon
+    color: auto-no-temperature
+    show_label: true
+    hold_action:
+      action: more-info
+
+  scene_ccts:
+    template: scene_bulbs
+    show_name: true
+
+  admin_panel:
+    show_name: true
+    color: auto
+    color_type: card
+    size: 35%
+    styles:
+      card:
+        - background: var(--ha-card-background)
+        - border-radius: var(--ha-card-border-radius)
+    state:
+      - value: "on"
+        icon: mdi:check-circle-outline
+        color: var(--disabled-text-color)
+        styles:
+          card:
+            - background: var(--accent-color)
+            - filter: opacity(70%)
+      - operator: "default"
+        color: auto
+        styles:
+          card:
+            - background: var(--ha-card-background)
+
+title: Bothy
+views:
+  - !include home.yaml
+  - !include living_room.yaml
+  - !include bedroom.yaml
+  - !include circadian.yaml
+  - !include config.yaml
+  - !include github.yaml

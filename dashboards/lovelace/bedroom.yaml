@@ -1,0 +1,294 @@
+path: bedroom
+title: Bedroom
+icon: mdi:bed-outline
+panel: false
+cards:
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            entity: input_text.bedroom_last_scene
+            name: Bedoom
+            icon: mdi:bed-outline
+            template: scene_button
+            size: 60%
+            show_name: false
+            color: var(--accent-medium-color)
+            styles:
+              grid:
+                - position: relative
+              custom_fields:
+                notification:
+                  - color: var(--paper-item-icon-color)
+                  - border-radius: 50%
+                  - position: absolute
+                  - left: 60%
+                  - top: 2%
+                  - height: 24px
+                  - width: 24px
+                  - font-size: 10px
+                  - line-height: 20px
+            custom_fields:
+              notification: >
+                [[[
+                  if (states['input_boolean.bedroom_filament_animation'].state == 'on')
+                    return '<ha-icon icon="mdi:motion-play-outline"></ha-icon>';
+
+                  if (states['sensor.bedroom_lights_brightness'].state > 0)
+                    return '<ha-icon icon="mdi:lightbulb-group"></ha-icon>';
+
+                  return '<ha-icon icon="mdi:lightbulb-group-off"></ha-icon>';
+                ]]]
+
+          - type: custom:button-card
+            entity: input_text.bedroom_last_scene
+            template: scene_button
+            name: Bright
+            icon: mdi:weather-sunny
+            color: var(--accent-color)
+            state:
+              - value: "Bright"
+                icon: mdi:check-circle-outline
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.bedroom_scene_bright
+
+          - type: custom:button-card
+            entity: input_text.bedroom_last_scene
+            template: scene_button
+            name: Relax
+            icon: mdi:sofa-outline
+            color: var(--accent-color)
+            state:
+              - value: "Relax"
+                icon: mdi:check-circle-outline
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.bedroom_scene_relax
+
+          - type: custom:button-card
+            entity: input_text.bedroom_last_scene
+            template: scene_button
+            name: Cosy
+            icon: mdi:bed-single-outline
+            color: var(--accent-color)
+            state:
+              - value: "Cosy"
+                icon: mdi:check-circle-outline
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.bedroom_scene_cosy
+
+          - type: custom:button-card
+            entity: input_text.bedroom_last_scene
+            template: scene_button
+            name: "Off"
+            icon: mdi:power
+            color: var(--accent-color)
+            state:
+              - value: "Off"
+                icon: mdi:check-circle-outline
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.bedroom_scene_off
+
+      - type: custom:light-entity-card
+        entity: light.bedroom_lights
+        persist_features: true
+        consolidate_entities: true
+        hide_header: true
+        full_width_sliders: true
+
+      - type: entities
+        entities:
+          - type: divider
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            entity: light.bedroom_lamp
+            template: scene_ccts
+            name: Lamp
+
+          - type: custom:button-card
+            entity: light.bedroom_candle
+            template: scene_ccts
+            name: Bedside
+
+          - type: custom:button-card
+            entity: light.bedroom_filament_1
+            template: scene_bulbs
+            label: >
+              [[[
+                var bri = states['light.bedroom_filament_1'].attributes.brightness;
+                return (bri ? bri : '0');
+              ]]]
+
+          - type: custom:button-card
+            entity: light.bedroom_filament_2
+            template: scene_bulbs
+            label: >
+              [[[
+                var bri = states['light.bedroom_filament_2'].attributes.brightness;
+                return (bri ? bri : '0');
+              ]]]
+
+          - type: custom:button-card
+            entity: light.bedroom_filament_3
+            template: scene_bulbs
+            label: >
+              [[[
+                var bri = states['light.bedroom_filament_3'].attributes.brightness;
+                return (bri ? bri : '0');
+              ]]]
+
+          - type: custom:button-card
+            entity: light.bedroom_filament_4
+            template: scene_bulbs
+            label: >
+              [[[
+                var bri = states['light.bedroom_filament_4'].attributes.brightness;
+                return (bri ? bri : '0');
+              ]]]
+
+      - type: entities
+        entities:
+          - entity: input_boolean.bedroom_filament_animation
+            type: custom:multiple-entity-row
+            name: Filament Bulbs Animation
+            state_header: Run
+            toggle: true
+            state_color: true
+            tap_action:
+              action: toggle
+            entities:
+              - entity: input_boolean.bedroom_filament_animation_editing
+                name: Edit
+                toggle: true
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: custom:state-switch
+            entity: input_boolean.bedroom_filament_animation_editing
+            transition: flip
+            default: "off"
+            states:
+              "on":
+                type: custom:stack-in-card
+                mode: vertical
+                cards:
+                  - type: horizontal-stack
+                    cards:
+                      - type: entities
+                        entities:
+                          - entity: input_number.bedroom_brightness_minimum
+                            name: Min
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                          - entity: input_number.bedroom_transition_minimum
+                            name: Min
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                      - type: entities
+                        entities:
+                          - entity: input_number.bedroom_brightness_maximum
+                            name: Max
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+                          - entity: input_number.bedroom_transition_maximum
+                            name: Max
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                  - type: entities
+                    entities:
+                      - entity: input_number.bedroom_transition_off
+                        name: "Off: Seconds Delay"
+                        type: "custom:numberbox-card"
+                        icon_plus: "mdi:chevron-up"
+                        icon_minus: "mdi:chevron-down"
+
+      - type: custom:mini-graph-card
+        entities:
+          - sensor.hms_bedroom_light_level
+        hours_to_show: 2
+        points_per_hour: 20
+        line_color: var(--accent-color)
+        show:
+          name: false
+          icon: false
+          labels: false
+          name_adaptive_color: false
+
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: entity
+        entity: input_text.bedroom_last_scene
+      - type: "custom:simple-thermostat"
+        entity: climate.bedroom
+        step_size: 1
+        step_layout: row
+        show_header: false
+        control:
+          preset:
+            away: true
+            none:
+              name: Home
+
+      - type: entities
+        entities:
+          - type: divider
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.bedroom_average_temperature
+            name: Average
+          - entity: sensor.bedroom_bedside_temperature
+            name: Bedside
+          - entity: sensor.hms_bedroom_temperature
+            name: Hue Motion
+        hours_to_show: 2
+        points_per_hour: 30
+        line_width: 3
+        align_state: center
+        name: Temperature Data
+        show:
+          name: true
+          icon: true
+          state: true
+          labels: true
+          labels_secondary: true
+          extrema: true
+          average: true

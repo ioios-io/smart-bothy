@@ -1,0 +1,389 @@
+path: living_room
+title: Living Room
+icon: mdi:sofa-outline
+panel: false
+cards:
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            name: Living Room
+            icon: mdi:sofa-outline
+            template: scene_button
+            size: 60%
+            show_name: false
+            styles:
+              icon:
+                - color: >
+                    [[[
+                      if (states['input_boolean.living_room_scene_changing'].state == 'on')
+                        return 'var(--text-medium-color)';
+
+                      if (states['sensor.living_room_lights_brightness'].state > 0)
+                        return 'var(--paper-item-icon-color)';
+
+                      return 'var(--accent-medium-color)';
+                    ]]]
+              grid:
+                - position: relative
+              custom_fields:
+                notification:
+                  - color: var(--paper-item-icon-color)
+                  - border-radius: 50%
+                  - position: absolute
+                  - left: 60%
+                  - top: -12%
+                  - height: 32px
+                  - width: 32px
+                  - line-height: 4px
+            custom_fields:
+              notification: >
+                [[[
+                  if (states['input_boolean.living_room_scene_changing'].state == 'on')
+                    return '<ha-icon icon="mdi:rotate-3d-variant" style="color: var(--label-badge-yellow);"></ha-icon>';
+
+                  if (states['input_boolean.living_room_ceiling_animation'].state == 'on')
+                    return '<ha-icon icon="mdi:motion-play" style="color: var(--label-badge-blue);"></ha-icon>';
+
+                  if (states['sensor.living_room_lights_brightness'].state > 0)
+                    return '<ha-icon icon="mdi:lightbulb-group" style="color: var(--label-badge-green);"></ha-icon>';
+
+                  return '<ha-icon icon="mdi:lightbulb-group-off" style="color: var(--label-badge-red);"></ha-icon>';
+                ]]]
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: Natural
+            icon: mdi:weather-sunny
+            state:
+              - value: "Natural"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_natural
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: Relax
+            icon: mdi:sofa-outline
+            state:
+              - value: "Relax"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_relax
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: Cosy
+            icon: mdi:bed-single-outline
+            state:
+              - value: "Cosy"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_cosy
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: "Off"
+            icon: mdi:power
+            state:
+              - value: "Off"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_off
+
+      - type: custom:light-entity-card
+        entity: light.living_room_lights
+        persist_features: true
+        consolidate_entities: true
+        hide_header: true
+        full_width_sliders: true
+
+      - type: entities
+        entities:
+          - type: divider
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            entity: light.living_room_lamp
+            template: scene_ccts
+            name: Lamp
+
+          - type: custom:button-card
+            entity: light.living_room_candle
+            template: scene_ccts
+            name: Bedside
+
+          - type: custom:button-card
+            entity: light.living_room_ceiling_1
+            template: scene_bulbs
+            color: auto
+            label: >
+              [[[
+                var bri = states['light.living_room_ceiling_1'].attributes.brightness;
+                return (bri ? bri : '0');
+              ]]]
+
+          - type: custom:button-card
+            entity: light.living_room_ceiling_2
+            template: scene_bulbs
+            color: auto
+            label: >
+              [[[
+                var bri = states['light.living_room_ceiling_2'].attributes.brightness;
+                return (bri ? bri : '0');
+              ]]]
+
+          - type: custom:button-card
+            entity: light.living_room_ceiling_3
+            template: scene_bulbs
+            color: auto
+            label: >
+              [[[
+                var bri = states['light.living_room_ceiling_3'].attributes.brightness;
+                return (bri ? bri : '0');
+              ]]]
+
+          - type: custom:button-card
+            entity: light.living_room_ceiling_4
+            template: scene_bulbs
+            color: auto
+            label: >
+              [[[
+                var bri = states['light.living_room_ceiling_4'].attributes.brightness;
+                return (bri ? bri : '0');
+              ]]]
+
+      - type: entities
+        entities:
+          - entity: input_boolean.living_room_ceiling_animation
+            type: custom:multiple-entity-row
+            name: Ceiling Lights Animation
+            state_header: Run
+            toggle: true
+            state_color: true
+            tap_action:
+              action: toggle
+            entities:
+              - entity: input_boolean.living_room_ceiling_animation_editing
+                name: Edit
+                toggle: true
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: custom:state-switch
+            entity: input_boolean.living_room_ceiling_animation_editing
+            transition: flip
+            default: "off"
+            states:
+              "on":
+                type: custom:stack-in-card
+                mode: vertical
+                cards:
+                  - type: horizontal-stack
+                    cards:
+                      - type: entities
+                        entities:
+                          - entity: input_number.living_room_brightness_minimum
+                            name: Min
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                          - entity: input_number.living_room_warmth_minimum
+                            name: Min
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                          - entity: input_number.living_room_transition_minimum
+                            name: Min
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                      - type: entities
+                        entities:
+                          - entity: input_number.living_room_brightness_maximum
+                            name: Max
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                          - entity: input_number.living_room_warmth_maximum
+                            name: Max
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                          - entity: input_number.living_room_transition_maximum
+                            name: Max
+                            type: "custom:numberbox-card"
+                            icon_plus: "mdi:chevron-up"
+                            icon_minus: "mdi:chevron-down"
+
+                  - type: entities
+                    entities:
+                      - entity: input_number.living_room_transition_off
+                        name: "Off: Seconds Delay"
+                        type: "custom:numberbox-card"
+                        icon_plus: "mdi:chevron-up"
+                        icon_minus: "mdi:chevron-down"
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.living_room_average_light_level
+            name: Average
+          - entity: sensor.hms_living_room_1_light_level
+            name: Window Corner
+          - entity: sensor.hms_living_room_2_light_level
+            name: Kitchen Corner
+          - entity: sensor.living_room_lights_brightness
+            name: Lights
+            show_line: true
+            show_points: true
+            show_legend: true
+            y_axis: secondary
+        hours_to_show: 2
+        points_per_hour: 30
+        line_width: 2
+        show:
+          labels: true
+          labels_secondary: true
+          name: false
+          icon: false
+          name_adaptive_color: false
+
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: custom:state-switch
+        entity: input_select.debug_mode
+        default: NoDebug
+        states:
+          Lights:
+            type: vertical-stack
+            cards:
+              - type: grid
+                square: false
+                cards:
+                  - type: entity
+                    entity: input_select.living_room_scenes
+
+                  - type: entity
+                    entity: input_text.living_room_previous_scene
+
+                  - type: vertical-stack
+                    cards:
+                      - name: Settling
+                        type: custom:button-card
+                        entity: timer.living_room_scene_settling
+                        label: >
+                          [[[
+                            var timeLeft = states['timer.living_room_scene_settling'].attributes.finishes_in;
+                            return timeLeft;
+                          ]]]
+                        value: >
+                          [[[
+                            var timeLeft = states['timer.living_room_scene_settling'].attributes.finishes_in;
+                            return timeLeft;
+                          ]]]
+                        show_label: true
+                        show_state: true
+                        show_icon: false
+              - type: entity
+                name: Last Action
+                entity: input_text.living_room_last_action
+
+              - type: entities
+                entities:
+                  - entity: script.living_room_scene_change
+                  - entity: sensor.living_room_last_scene_cache
+                  - name: Brightness
+                    type: custom:multiple-entity-row
+                    entity: sensor.living_room_active_light_count
+                    entities:
+                      - entity: sensor.living_room_lamps_brightness
+                        name: Lamps
+                      - entity: sensor.living_room_lights_brightness
+                        name: Lights
+                      - entity: sensor.living_room_ceiling_lights_brightness
+                        name: Ceiling
+
+          NoDebug:
+            type: vertical-stack
+            cards:
+              - type: "custom:simple-thermostat"
+                entity: climate.living_room
+                step_size: 1
+                step_layout: row
+                show_header: false
+                control:
+                  preset:
+                    away: true
+                    none:
+                      name: Home
+
+              - type: entities
+                entities:
+                  - type: divider
+
+              - type: custom:mini-graph-card
+                entities:
+                  - entity: sensor.living_room_average_temperature
+                    name: Average
+                  - entity: sensor.hms_living_room_1_temperature
+                    name: Hue Motion Window
+                  - entity: sensor.hms_living_room_2_temperature
+                    name: Hue Motion Kitchen
+                hours_to_show: 2
+                points_per_hour: 30
+                line_width: 3
+                align_state: center
+                name: Temperature Data
+                show:
+                  name: true
+                  icon: true
+                  state: true
+                  labels: true
+                  labels_secondary: true
+                  extrema: true
+                  average: true

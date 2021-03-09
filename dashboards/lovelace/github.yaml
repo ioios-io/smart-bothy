@@ -1,0 +1,79 @@
+path: github
+title: GitHub
+icon: mdi:github
+panel: false
+cards:
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: "custom:github-flexi-card"
+        secondary_info: "Release: {latest_release_tag}"
+        url: true
+        compact_view: true
+        attribute_urls: true
+        attributes:
+          - views
+          - stargazers
+          - open_issues
+          - clones
+          - forks
+          - open_pull_requests
+        entities:
+          - sensor.github_demos
+          - sensor.github_pithy
+          - sensor.github_assembly_guides
+          - sensor.github_smart_bothy
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.trend_github_demos_unique_views
+            name: "GitHub: Demos"
+          - entity: sensor.trend_github_pithy_unique_views
+            name: "GitHub: Pithy"
+          - entity: sensor.trend_github_smart_bothy_unique_views
+            name: "GitHub: Smart Bothy"
+          - entity: sensor.trend_github_assembly_guides_unique_views
+            name: "GitHub: Assembly"
+        name: Total Views
+        hours_to_show: 168
+        points_per_hour: 0.25
+        line_width: 2
+
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.trend_github_demos_followers
+            name: "GitHub: Demos"
+          - entity: sensor.trend_github_pithy_followers
+            name: "GitHub: Pithy"
+          - entity: sensor.trend_github_smart_bothy_followers
+            name: "GitHub: Smart Bothy"
+          - entity: sensor.trend_github_assembly_guides_followers
+            name: "GitHub: Assembly"
+        name: Followers
+        hours_to_show: 168
+        points_per_hour: 0.25
+        line_width: 2
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.trend_github_demos_total_clones
+            name: "GitHub: Demos"
+          - entity: sensor.trend_github_pithy_total_clones
+            name: "GitHub: Pithy"
+          - entity: sensor.trend_github_smart_bothy_total_clones
+            name: "GitHub: Smart Bothy"
+          - entity: sensor.trend_github_assembly_guides_total_clones
+            name: "GitHub: Assembly"
+        name: Clones
+        hours_to_show: 168
+        points_per_hour: 0.25
+        line_width: 2

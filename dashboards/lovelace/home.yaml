@@ -1,0 +1,220 @@
+path: default_view
+title: Home
+icon: mdi:home-assistant
+cards:
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: "custom:home-feed-card"
+        card_id: main_feed
+        title: false
+        id_filter: ^.*
+        more_info_on_tap: true
+        state_color: true
+        show_empty: false
+
+      - type: entities
+        entities:
+          - type: custom:template-entity-row
+            icon: "{{ states.sensor.period_of_day.attributes.icon }}"
+            name: "{{ states('sensor.date_full_string') }}"
+            secondary: "{{ states('sensor.period_of_day') }}"
+            state: "{{ states('sensor.date_time_24') }}"
+
+      - type: horizontal-stack
+        cards:
+          - type: entities
+            entities:
+              - type: custom:template-entity-row
+                icon: mdi:account-hard-hat
+                name: "{{ states('input_text.core_status_display') }}"
+                condition: "{{ is_state('binary_sensor.core_script_running', 'on') }}"
+
+              - type: custom:template-entity-row
+                entity: input_select.debug_mode
+                name: Debug
+                condition: "{{ is_state('binary_sensor.core_script_running', 'off') }}"
+              - type: custom:template-entity-row
+                entity: sensor.date_data_file
+                name: "{{ sensor.date_data_file }}"
+                condition: "{{ is_state('binary_sensor.core_script_running', 'off') }}"
+
+          - type: vertical-stack
+            cards:
+              - type: glance
+                show_icon: false
+                state_color: true
+                entities:
+                  - entity: sensor.processor_use_percent
+                    name: CPU
+                  - entity: sensor.disk_use_percent
+                    name: Disk
+                  - entity: sensor.load_1m
+                    name: Load
+                  - entity: sensor.memory_use_percent
+                    name: RAM
+
+              - type: grid
+                columns: 3
+                square: false
+                cards:
+                  - type: custom:button-card
+                    entity: input_boolean.service_refresh_ha
+                    template: admin_panel
+                    name: Refresh
+
+                  - type: custom:button-card
+                    entity: input_boolean.service_reload_ha
+                    template: admin_panel
+                    name: Reload
+
+                  - type: custom:button-card
+                    entity: input_boolean.service_restart_ha
+                    template: admin_panel
+                    name: Restart
+
+      - type: custom:state-switch
+        entity: sensor.john_lumleys_iphone_ssid
+        states:
+          SKYFC5A7:
+            type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - type: custom:multiple-entity-row
+                    entity: sensor.john_lumleys_iphone_storage
+                    name: John's iPhone
+                    icon: mdi:cellphone-iphone
+                    show_state: false
+                    secondary_info:
+                      entity: sensor.john_lumleys_iphone_battery_state
+                      name: "Battery:"
+                    entities:
+                      - entity: sensor.john_lumleys_iphone_battery_level
+                        name: Battery
+                        unit: "%"
+                      - attribute: Total
+                        name: Storage
+                      - entity: sensor.john_lumleys_iphone_storage
+                        name: Free
+                        unit: "%"
+          "Not Connected":
+            type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - type: custom:multiple-entity-row
+                    entity: sensor.john_lumleys_iphone_storage
+                    name: John's iPhone
+                    icon: mdi:cellphone-iphone
+                    show_state: false
+                    secondary_info:
+                      entity: sensor.john_lumleys_iphone_battery_state
+                      name: "Battery:"
+
+      - type: custom:state-switch
+        entity: sensor.john_lumleys_ipad_ssid
+        states:
+          SKYFC5A7:
+            type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - type: custom:multiple-entity-row
+                    entity: sensor.john_lumleys_ipad_storage
+                    name: John's iPad
+                    icon: mdi:tablet-ipad
+                    show_state: false
+                    secondary_info:
+                      entity: sensor.john_lumleys_ipad_battery_state
+                      name: "Battery:"
+                    entities:
+                      - entity: sensor.john_lumleys_ipad_battery_level
+                        name: Battery
+                        unit: "%"
+                      - attribute: Total
+                        name: Storage
+                      - entity: sensor.john_lumleys_ipad_storage
+                        name: Free
+                        unit: "%"
+
+      - type: custom:mini-media-player
+        entity: media_player.living_room
+        hide:
+          progress: true
+        artwork: full-cover
+        shortcuts:
+          columns: 3 # Max buttons per row
+          buttons:
+            # Start predefined playlist
+            - icon: mdi:cat
+              type: playlist
+              id: spotify:user:XXXXXXX:playlist:37i9dQZF1DZ06evO2O09Hg # Where XXXXXXX is your User ID
+            # Change the source to bathroom
+            - icon: mdi:dog
+              type: source
+              id: Bathroom
+            # Trigger script
+            - icon: mdi:dog
+              type: script
+              id: script.script_name
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: binary_sensor.living_room_motion
+            name: Living room
+          - entity: binary_sensor.bathroom_motion
+            name: Bathroom
+          - entity: binary_sensor.bedroom_motion
+            name: Bedroom
+          - entity: binary_sensor.outside_motion
+            name: Outside
+        name: Motion last hour
+        hours_to_show: 1
+        points_per_hour: 60
+        update_interval: 10
+        aggregate_func: max
+        line_width: 2
+        smoothing: false
+        show:
+          name: false
+          icon: false
+          state: false
+        state_map:
+          - value: "off"
+            label: Clear
+          - value: "on"
+            label: Detected
+
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: weather-forecast
+        entity: weather.portree_hourly
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.outside_average_temperature
+            aggregate_func: max
+            name: Max
+          - entity: sensor.outside_average_temperature
+            aggregate_func: min
+            name: Min
+          - entity: sensor.outside_average_temperature
+            aggregate_func: avg
+            name: Average
+        name: Weekly Temperature
+        hours_to_show: 168
+        group_by: date
+        line_width: 2
+        show:
+          labels: true
+          name: false
+          icon: false
+          name_adaptive_color: false
