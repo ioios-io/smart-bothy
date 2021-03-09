@@ -5,17 +5,19 @@ switch:
         friendly_name: "Bedroom Heater"
         value_template: "{{ is_state('sensor.bedroom_heater', 'on') }}"
         turn_on:
-          service: persistent_notification.create
-          data_template:
-            message: Heating switched on
-            title: Bedroom Climate
-            notification_id: 1234
+          service: notify.climate_history
+          data:
+            message: "{'bedroom_heater':'on'}"
         turn_off:
-          service: persistent_notification.create
-          data_template:
-            message: Heating switched off
-            title: Bedroom Climate
-            notification_id: 1235
+          service: notify.climate_history
+          data:
+            message: "{'bedroom_heater':'off'}"
+
+notify:
+  - name: climate_history
+    platform: file
+    filename: /config/cache/climate_history.json
+    timestamp: true
 
 climate:
   - platform: generic_thermostat
@@ -90,7 +92,8 @@ sensor:
     type: mean
     round_digits: 1
     entity_ids:
-      - sensor.hms_living_room_temperature
+      - sensor.hms_living_room_1_temperature
+      - sensor.hms_living_room_2_temperature
       - sensor.tv_pithy_screen_temperature
 
   - platform: min_max
@@ -106,7 +109,8 @@ sensor:
     round_digits: 1
     entity_ids:
       - sensor.bedroom_bedside_temperature
-      - sensor.hms_bedroom_temperature
+      - sensor.hms_bedroom_1_temperature
+      - sensor.hms_bedroom_2_temperature
 
   - platform: min_max
     name: Bedroom Average Humidity

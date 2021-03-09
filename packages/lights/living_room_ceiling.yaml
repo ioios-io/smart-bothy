@@ -83,8 +83,7 @@ input_boolean:
     icon: mdi:cogs
 
 automation:
-  - id: "194683523628"
-    alias: Living Room Animation
+  - alias: Living Room Animation
     description: ""
     trigger:
       - platform: state
@@ -93,6 +92,11 @@ automation:
         to: "on"
     condition: []
     action:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Animation: Start"
+
       - service: input_boolean.turn_off
         data:
           entity_id: input_boolean.living_room_ceiling_animation_editing
@@ -106,8 +110,7 @@ automation:
           transition_min: "{{ states('input_number.living_room_transition_minimum') | int }}"
     mode: single
 
-  - id: "157389653628"
-    alias: Living Room Animation Off
+  - alias: Living Room Animation Off
     description: Switch off animation with input_boolean
     trigger:
       - platform: state
@@ -126,10 +129,14 @@ automation:
       - service: script.living_room_ceiling_off
         data_template:
           transition_off: "{{ states('input_number.living_room_transition_off') | int }}"
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Animation: Stop Requested"
     mode: single
 
-  - id: "1864377792"
-    alias: Living Room Brightness Conformity
+  - alias: Living Room Brightness Conformity
     description: Ensures min stays below max
     trigger:
       - platform: template
@@ -142,10 +149,14 @@ automation:
         data_template:
           value: '{{ (states("input_number.living_room_brightness_maximum")  | int ) - 1 }}'
         entity_id: input_number.living_room_brightness_minimum
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Animation: Brightness Conformity"
     mode: single
 
-  - id: "1617532639792"
-    alias: Living Room Warmth Conformity
+  - alias: Living Room Warmth Conformity
     description: Ensures min stays below max
     trigger:
       - platform: template
@@ -158,10 +169,14 @@ automation:
         data_template:
           value: '{{ (states("input_number.living_room_warmth_maximum")  | int ) - 1 }}'
         entity_id: input_number.living_room_warmth_minimum
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Animation: Warmth Conformity"
     mode: single
 
-  - id: "1619564239791"
-    alias: Living Room Transition Conformity
+  - alias: Living Room Transition Conformity
     description: Ensures min stays below max
     trigger:
       - platform: template
@@ -172,6 +187,11 @@ automation:
         data_template:
           value: '{{ (states("input_number.living_room_transition_maximum")  | int ) - 1 }}'
         entity_id: input_number.living_room_transition_minimum
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Animation: Transition Conformity"
     mode: single
 
 script:

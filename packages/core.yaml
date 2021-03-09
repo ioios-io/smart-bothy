@@ -46,6 +46,21 @@ input_boolean:
     icon: mdi:magnify-plus
     initial: off
 
+input_text:
+  core_status_display:
+    name: "Status Display"
+    icon: mdi:comma-circle
+    initial: ""
+
+binary_sensor:
+  - platform: template
+    sensors:
+      core_script_running:
+        friendly_name: "Core Script Running"
+        value_template: >-
+          {{ is_state('input_boolean.service_refresh_ha', 'on') or 
+            is_state('input_boolean.service_reload_ha', 'on') }}
+
 sensor:
   - platform: uptime
     name: Time Online
@@ -62,9 +77,103 @@ sensor:
       - type: last_boot
       - type: load_1m
 
+script:
+  core_refresh_ha:
+    alias: Refreshing Core
+    description: "Refreshing Lovelace resources and custom themes"
+    sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Lovelace Resources"
+
+      - service: lovelace.reload_resources
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Lovelace Themes"
+      - service: frontend.reload_themes
+
+  core_reload_ha:
+    alias: Reloading Core
+    description: "Reload core config and all reloadable domains"
+    sequence:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Scenes"
+      - service: scene.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Templates"
+      - service: template.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Groups"
+      - service: group.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Timers"
+      - service: timer.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Thermostats"
+      - service: generic_thermostat.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Persons"
+      - service: person.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Zones"
+      - service: zone.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Input Booleans"
+      - service: input_boolean.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Input Selects"
+      - service: input_select.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Input Texts"
+      - service: input_text.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Input Numbers"
+      - service: input_number.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Input Datetimes"
+      - service: input_datetime.reload
+
 automation:
-  - alias: Reload Frontend
-    description: Refresh Lovelace & Themes
+  - alias: Refresh HA
+    description: Refresh Variables, Lovelace & Themes
     trigger:
       - platform: state
         entity_id: input_boolean.service_refresh_ha
@@ -72,13 +181,16 @@ automation:
         to: "on"
     condition: []
     action:
-      - service: lovelace.reload_resources
-      - service: frontend.reload_themes
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.service_refresh_ha
+
+      - service: script.core_refresh_ha
+
       - service: input_boolean.turn_off
         entity_id: input_boolean.service_refresh_ha
     mode: single
 
-  - alias: Reload HA Core
+  - alias: Reload HA
     description: Reload The Core
     trigger:
       - platform: state
@@ -87,9 +199,38 @@ automation:
         to: "on"
     condition: []
     action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.service_reload_ha
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading HA Core"
+
       - service: homeassistant.reload_core_config
+
+      - service: script.core_reload_ha
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Scripts"
+      - service: script.reload
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Reloading Automations"
+
       - service: input_boolean.turn_off
         entity_id: input_boolean.service_reload_ha
+      - service: automation.reload
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.core_status_display
+          value: "Successfully Reloaded"
+      - delay:
+          seconds: 2
     mode: single
 
   - alias: Restart HA

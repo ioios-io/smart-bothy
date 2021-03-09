@@ -8,6 +8,15 @@ binary_sensor:
           {{ is_state_attr('sensor.homs_yard_side_light_level', 'dark', true)
             or is_state_attr('sensor.homs_yard_rear_light_level', 'dark', true) }}
 
+sensor:
+  - platform: min_max
+    name: Outside Average Temperature
+    type: mean
+    round_digits: 1
+    entity_ids:
+      - sensor.homs_yard_side_temperature
+      - sensor.homs_yard_rear_temperature
+
 automation:
   - alias: "Rear Lights Off"
     description: "Turn lights off when the sun comes up"
@@ -17,7 +26,7 @@ automation:
         from: "on"
         to: "off"
         for:
-          seconds: 60
+          seconds: 120
     condition: "{{ is_state('light.rear_light', 'on') }}"
     action:
       - service: light.turn_off

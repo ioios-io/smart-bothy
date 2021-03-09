@@ -8,6 +8,15 @@
   unit_of_measurement: "%"
   device_class: battery
 
+"sensor.*_motion_timeout":
+  unit_of_measurement: "seconds"
+  icon: mdi:motion-sensor-off
+
+"sensor.*_average_light_level":
+  unit_of_measurement: "lx"
+  device_class: illuminance
+  icon: "mdi:brightness-5"
+
 "light.*_filament_*":
   icon: "mdi:lightbulb-group-outline"
 

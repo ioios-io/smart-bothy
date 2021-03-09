@@ -1,3 +1,88 @@
+notify:
+  - name: date_data
+    platform: file
+    filename: /config/cache/date_data.txt
+    timestamp: true
+
+automation:
+  - alias: "Light State Dark Master"
+    description: "Log when it gets dark"
+    trigger:
+      - entity_id: binary_sensor.dark_outside
+        platform: state
+        from: "off"
+        to: "on"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Master Dark. Sun Elevation: {{ states('sensor.solar_elevation') }}"
+    mode: single
+  - alias: "Light State Dark Sensor Rear"
+    description: "Log when it gets dark: sensor 1"
+    trigger:
+      - entity_id: sensor.homs_yard_rear_light_level
+        platform: state
+        attribute: dark
+        from: "off"
+        to: "on"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Yard Rear. Sun: {{ states('sensor.solar_elevation') }}. Lux: {{ states('sensor.homs_yard_rear_light_level') }}. Raw: {{ states.sensor.homs_yard_rear_light_level.attributes.lightlevel }}"
+    mode: single
+  - alias: "Light State Dark Sensor Side"
+    description: "Log when it gets dark: sensor 2"
+    trigger:
+      - entity_id: sensor.homs_yard_side_light_level
+        platform: state
+        attribute: dark
+        from: "off"
+        to: "on"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Yard Side. Sun: {{ states('sensor.solar_elevation') }}. Lux: {{ states('sensor.homs_yard_side_light_level') }}. Raw: {{ states.sensor.homs_yard_side_light_level.attributes.lightlevel }}"
+    mode: single
+
+  - alias: "Light State Light Master"
+    description: "Log when it gets light"
+    trigger:
+      - entity_id: binary_sensor.dark_outside
+        platform: state
+        from: "on"
+        to: "off"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Master Light. Sun Elevation: {{ states('sensor.solar_elevation') }}"
+    mode: single
+  - alias: "Light State Light Sensor Rear"
+    description: "Log when it gets light: sensor 1"
+    trigger:
+      - entity_id: sensor.homs_yard_rear_light_level
+        platform: state
+        attribute: dark
+        from: "on"
+        to: "off"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Yard Rear. Sun: {{ states('sensor.solar_elevation') }}. Lux: {{ states('sensor.homs_yard_rear_light_level') }}. Raw: {{ states.sensor.homs_yard_rear_light_level.attributes.lightlevel }}"
+    mode: single
+  - alias: "Light State Light Sensor Side"
+    description: "Log when it gets light: sensor 2"
+    trigger:
+      - entity_id: sensor.homs_yard_side_light_level
+        platform: state
+        attribute: dark
+        from: "on"
+        to: "off"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Yard Side. Sun: {{ states('sensor.solar_elevation') }}. Lux: {{ states('sensor.homs_yard_side_light_level') }}. Raw: {{ states.sensor.homs_yard_side_light_level.attributes.lightlevel }}"
+    mode: single
+
 sensor:
   - platform: season
   - platform: moon
@@ -5,25 +90,45 @@ sensor:
     display_options:
       - "date_time_iso"
 
+  - platform: file
+    file_path: /config/cache/date_data.txt
+    name: "Date Data File"
+
   - platform: template
     sensors:
-      time_formatted:
-        friendly_name: "Date and time"
-        value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%A %B %-m, %I:%M %p') }}"
-        icon_template: mdi:calendar-clock
-
-      since_rachel:
-        value_template: '{{ ( ( as_timestamp(now()) - as_timestamp(strptime("11.01.2020", "%d.%m.%Y")) ) / 86400 ) | round(0) }}'
-        friendly_name: "Since I Saw Rachel"
-        unit_of_measurement: "Days"
-        icon_template: "{{ 'mdi:face-woman' }}"
+      date_weekday:
+        friendly_name: "Date: Weekday"
+        value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%A') }}"
+      date_string:
+        friendly_name: "Date: String"
+        value_template: >-
+          {% set month_full_name = now().strftime("%B") %}
+          {% set day = now().strftime("%-d") %}
+          {%- if day | int == 1 or day | int == 21 or day | int == 31 -%}
+            {{ day }}st
+          {%- elif day | int == 2 or day | int == 22 -%}
+            {{ day }}nd
+          {%- elif day | int == 3 or day | int == 23 -%}
+            {{ day }}rd
+          {%- else -%}
+            {{ day }}th
+          {%- endif %} {{ month_full_name }}
+      date_time_24:
+        friendly_name: "Date: 24h Time"
+        value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%H:%M') }}"
+      date_time_12:
+        friendly_name: "Date: 12h Time"
+        value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%I:%M %p') }}"
+      date_full_string:
+        friendly_name: "Date: Full String"
+        value_template: "{{ states('sensor.date_weekday') }}, {{ states('sensor.date_string') }}"
 
       # STOLEN FROM https://community.home-assistant.io/t/next-dawn-next-dusk-in-automation/45339/13?u=ioios-io
       period_of_day:
         friendly_name: "Period of the Day"
         value_template: >-
-          {% set elevation = state_attr('sun.sun', 'elevation') | int %}
-          {% set max_elevation = states('solar_max_elevation') | int %}
+          {% set elevation = state_attr('sun.sun', 'elevation') | float %}
+          {% set max_elevation = states('solar_max_elevation') | float %}
           {% set rising = state_attr('sun.sun', 'rising') %}
           {%- if elevation <= -18 -%}
             Night
@@ -39,8 +144,8 @@ sensor:
             Day
           {%- endif -%}
         icon_template: >-
-          {% set elevation = state_attr('sun.sun', 'elevation') | int %}
-          {% set max_elevation = states('solar_max_elevation') | int %}
+          {% set elevation = state_attr('sun.sun', 'elevation') | float %}
+          {% set max_elevation = states('solar_max_elevation') | float %}
           {% set rising = state_attr('sun.sun', 'rising') %}
           {%- if elevation <= -12 -%}
             mdi:weather-night
@@ -53,9 +158,7 @@ sensor:
           {%- endif %}
         attribute_templates:
           Next Sunset: "{{ states.sun.sun.attributes.next_setting }}"
-          Next Sunset (mins): "{{ ( ( as_timestamp(states.sun.sun.attributes.next_setting) - as_timestamp(now()) ) / 60) | round(0) }}"
           Next Sunrise: "{{ states.sun.sun.attributes.next_rising }}"
-          Next Sunrise (mins): "{{ ( ( as_timestamp(states.sun.sun.attributes.next_rising) - as_timestamp(now()) ) / 60) | round(0) }}"
 
       # STOLEN FROM https://community.home-assistant.io/t/circadian-light-with-philips-hue-independent-from-world-clocks/45435
       # Strip out the elevation and azimuth from the Sun object.
@@ -92,11 +195,11 @@ sensor:
         icon_template: "{{ 'mdi:shield-sun-outline' }}"
         value_template: >
           {% set mired_min = 200 %}
-          {% set mired_max = 460 %}
+          {% set mired_max = 420 %}
           {% set elev_at_mired_max = -18 %}
-          {% set mired_night = 460 %}
+          {% set mired_night = 450 %}
 
-          {% if is_state('sun.sun', 'above_horizon') %}
+          {% if is_state('sun.sun', 'above_horizon') or is_state('sun.sun', 'below_horizon') %}
             {% if states('sensor.solar_elevation') | int > elev_at_mired_max %}
               {{ (mired_max - (states('sensor.solar_elevation') | int - elev_at_mired_max) * (mired_max - mired_min) / (states('sensor.solar_max_elevation') | int - elev_at_mired_max) ) | int }}
             {% else %}
@@ -105,18 +208,3 @@ sensor:
           {% else %}
             {{ mired_night }}
           {% endif %}
-
-automation:
-  - alias: "Update Circadian Lights"
-    trigger:
-      - platform: time_pattern
-        minutes: /1
-    condition: "{{ is_state('input_select.living_room_scenes', 'Natural') }}"
-    action:
-      - service: input_boolean.turn_on
-        data:
-          entity_id: input_boolean.event_updating_circadian
-      - service: script.living_room_scene_natural_update
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.event_updating_circadian

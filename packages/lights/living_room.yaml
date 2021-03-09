@@ -14,6 +14,22 @@ input_select:
     initial: "Off"
     icon: mdi:palette-outline
 
+notify:
+  - name: living_room_latest_scene
+    platform: file
+    filename: /config/cache/living_room_latest_scene.json
+
+input_text:
+  living_room_last_action:
+    name: "Last Action: Living Room"
+    icon: mdi:gesture-tap-button
+    initial: "Fuck Knows"
+
+  living_room_previous_scene:
+    name: Previous Living Room Scene
+    icon: mdi:palette
+    initial: "Reboot"
+
 light:
   # Animated Lights
   - platform: group
@@ -65,6 +81,11 @@ timer:
     icon: mdi:timer-sand-empty
 
 sensor:
+  - platform: file
+    name: Living Room Last Scene Cache
+    file_path: /config/cache/living_room_latest_scene.json
+    value_template: "{{ value_json.living_room }}"
+
   - platform: template
     sensors:
       # Determine if any lights in any group is currently on
@@ -96,9 +117,24 @@ sensor:
         friendly_name: "Living Room Ceiling Lights Warmth"
         value_template: "{{ state_attr('light.living_room_ceiling_lights', 'color_temp') | int }}"
 
+      # Timer counters as a sensor for easier display
+      living_room_scene_changing_timer:
+        friendly_name: "Living Room Scene Change Countdown"
+        value_template: "{{ state_attr('timer.living_room_scene_changing', 'finishes_at') | int }}"
+      living_room_scene_settling_timer:
+        friendly_name: "Living Room Scene Settling Countdown"
+        value_template: "{{ state_attr('timer.living_room_scene_settling', 'finishes_at') | int }}"
+
 automation:
-  - id: "1613288323483628"
-    alias: Living Room Lights Off
+  - alias: "Living Room Circadian Lights"
+    trigger:
+      - platform: time_pattern
+        minutes: /1
+    condition: "{{ is_state('input_select.living_room_scenes', 'Natural') }}"
+    action:
+      - service: script.living_room_scene_natural_update
+
+  - alias: Living Room Lights Off
     description: ""
     trigger:
       - platform: state
@@ -115,8 +151,7 @@ automation:
           entity_id: input_boolean.living_room_ceiling_animation
     mode: single
 
-  - id: "16132949734528"
-    alias: Living Room Lights Off Check
+  - alias: Living Room Lights Off Check
     description: ""
     trigger:
       - platform: template
@@ -132,8 +167,7 @@ automation:
           entity_id: light.living_room_ceiling_lights
     mode: restart
 
-  - id: "16152153628"
-    alias: Living Room Force Animation Stop
+  - alias: Living Room Manual Detected
     description: ""
     trigger:
       - platform: state
@@ -151,6 +185,50 @@ automation:
         data:
           entity_id: input_select.living_room_scenes
           option: Manual
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Manual Mode Detected"
+
+      - delay:
+          seconds: 1
+      - service: script.living_room_manual_mode_natural_exception
+      - service: script.living_room_manual_mode_stop_animation
+
+    mode: single
+
+script:
+  living_room_manual_mode_natural_exception:
+    alias: Living Room Revert To Natural Mode
+    description: "If manual mode was triggered by brightness tweak, revert back minus brightness action"
+    sequence:
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: input_text.living_room_previous_scene
+            state: "Natural"
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Reinstating Natural Mode"
+
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.living_room_scenes
+          option: "Natural"
+      - service: script.living_room_scene_natural_update
+
+  living_room_manual_mode_stop_animation:
+    alias: Living Room Stop Animation
+    description: "Stop animation, usually upno entering manual mode"
+    sequence:
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: input_text.living_room_previous_scene
+            state: "Natural"
+
       - service: input_boolean.turn_off
         data:
           entity_id: input_boolean.living_room_ceiling_animation
@@ -161,4 +239,8 @@ automation:
           entity_id: light.living_room_ceiling_lights
           brightness: "{{ trigger.to_state.attributes.brightness | int }}"
           transition: 2
-    mode: single
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Animation: Manual Mode Stop"

@@ -1,22 +1,61 @@
 script:
-  living_room_scene_natural:
-    alias: Living Room Natural Scene
-    description: "Scene functions & light settings"
+  living_room_scene_change:
+    alias: Living Room Scene Change
+    description: "Scene change functions"
+    fields:
+      scene_name:
+        description: "The title of the scene"
+        example: "Natural"
+      scene_duration:
+        description: "The duration of scene change"
+        example: "5"
     sequence:
       - service: input_boolean.turn_on
         data:
           entity_id: input_boolean.living_room_scene_changing
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_previous_scene
+          value: "{{ scene_name }}"
+
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Scene Selected: {{ scene_name }}"
+
       - service: input_select.select_option
         data:
           entity_id: input_select.living_room_scenes
-          option: "Natural"
+          option: "{{ scene_name }}"
+
       - service: timer.start
         data:
           entity_id: timer.living_room_scene_settling
+
       - service: timer.start
         data:
           entity_id: timer.living_room_scene_changing
-          duration: 5
+          duration: "{{ scene_duration | int }}"
+
+      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
+
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_scene_changing
+
+  living_room_scene_natural:
+    alias: Living Room Natural Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.living_room_scene_change
+        data:
+          variables:
+            scene_name: "Natural"
+            scene_duration: 5
+
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_candle
@@ -62,10 +101,6 @@ script:
           brightness: 200
           color_temp: "{{ states('sensor.circadian_light') | int }}"
           transition: 4
-      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.living_room_scene_changing
 
   living_room_scene_natural_update:
     alias: Living Room Natural Scene Update
@@ -102,24 +137,23 @@ script:
           color_temp: "{{ states('sensor.circadian_light') | int }}"
           transition: 4
 
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.living_room_last_action
+          value: "Natural Mode: Circadian Update"
+
   living_room_scene_bright:
     alias: Living Room Bright Scene
     description: "Scene functions & light settings"
     sequence:
-      - service: input_boolean.turn_on
+      - service: script.turn_on
+        target:
+          entity_id: script.living_room_scene_change
         data:
-          entity_id: input_boolean.living_room_scene_changing
-      - service: input_select.select_option
-        data:
-          entity_id: input_select.living_room_scenes
-          option: "Bright"
-      - service: timer.start
-        data:
-          entity_id: timer.living_room_scene_settling
-      - service: timer.start
-        data:
-          entity_id: timer.living_room_scene_changing
-          duration: 5
+          variables:
+            scene_name: "Bright"
+            scene_duration: 5
+
       - service: light.turn_on
         data:
           entity_id: light.living_room_candle
@@ -170,29 +204,19 @@ script:
       - service: input_boolean.turn_on
         data:
           entity_id: input_boolean.living_room_ceiling_animation
-      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.living_room_scene_changing
 
   living_room_scene_relax:
     alias: Living Room Relax Scene
     description: "Scene functions & light settings"
     sequence:
-      - service: input_boolean.turn_on
+      - service: script.turn_on
+        target:
+          entity_id: script.living_room_scene_change
         data:
-          entity_id: input_boolean.living_room_scene_changing
-      - service: input_select.select_option
-        data:
-          entity_id: input_select.living_room_scenes
-          option: "Relax"
-      - service: timer.start
-        data:
-          entity_id: timer.living_room_scene_settling
-      - service: timer.start
-        data:
-          entity_id: timer.living_room_scene_changing
-          duration: 5
+          variables:
+            scene_name: "Relax"
+            scene_duration: 7
+
       - service: light.turn_on
         data:
           entity_id: light.living_room_candle
@@ -204,7 +228,7 @@ script:
           entity_id: light.living_room_lamp
           brightness: 100
           color_temp: 350
-          transition: 3
+          transition: 6
       - service: input_number.set_value
         data:
           entity_id: input_number.living_room_transition_off
@@ -243,29 +267,19 @@ script:
       - service: input_boolean.turn_on
         data:
           entity_id: input_boolean.living_room_ceiling_animation
-      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.living_room_scene_changing
 
   living_room_scene_cosy:
     alias: Living Room Cosy Scene
     description: "Scene functions & light settings"
     sequence:
-      - service: input_boolean.turn_on
+      - service: script.turn_on
+        target:
+          entity_id: script.living_room_scene_change
         data:
-          entity_id: input_boolean.living_room_scene_changing
-      - service: input_select.select_option
-        data:
-          entity_id: input_select.living_room_scenes
-          option: "Cosy"
-      - service: timer.start
-        data:
-          entity_id: timer.living_room_scene_settling
-      - service: timer.start
-        data:
-          entity_id: timer.living_room_scene_changing
-          duration: 10
+          variables:
+            scene_name: "Cosy"
+            scene_duration: 10
+
       - service: light.turn_on
         data:
           entity_id: light.living_room_candle
@@ -316,29 +330,19 @@ script:
       - service: input_boolean.turn_on
         data:
           entity_id: input_boolean.living_room_ceiling_animation
-      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.living_room_scene_changing
 
   living_room_scene_off:
     alias: Living Room Off Scene
     description: "Scene functions & light settings"
     sequence:
-      - service: input_boolean.turn_on
+      - service: script.turn_on
+        target:
+          entity_id: script.living_room_scene_change
         data:
-          entity_id: input_boolean.living_room_scene_changing
-      - service: input_select.select_option
-        data:
-          entity_id: input_select.living_room_scenes
-          option: "Off"
-      - service: timer.start
-        data:
-          entity_id: timer.living_room_scene_settling
-      - service: timer.start
-        data:
-          entity_id: timer.living_room_scene_changing
-          duration: 10
+          variables:
+            scene_name: "Off"
+            scene_duration: 12
+
       - service: input_number.set_value
         data:
           entity_id: input_number.living_room_transition_off
@@ -353,9 +357,6 @@ script:
         data:
           entity_id: input_boolean.living_room_ceiling_animation
       - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.living_room_scene_changing
       - service: light.turn_on
         data:
           entity_id: light.living_room_lights

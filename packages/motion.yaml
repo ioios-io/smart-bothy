@@ -1,40 +1,64 @@
+input_datetime:
+  living_room_motion_timeout:
+    name: Living Room Motion Timeout
+    initial: "00:01:30"
+    has_time: true
+    has_date: false
+
+  bathroom_motion_timeout:
+    name: Bathroom Motion Timeout
+    initial: "00:01:30"
+    has_time: true
+    has_date: false
+
+  bedroom_motion_timeout:
+    name: Bedroom Motion Timeout
+    initial: "00:01:30"
+    has_time: true
+    has_date: false
+
+  outside_motion_timeout:
+    name: Outside Motion Timeout
+    initial: "00:01:30"
+    has_time: true
+    has_date: false
+
 binary_sensor:
   - platform: template
     sensors:
       living_room_motion:
         friendly_name: "Living Room Motion"
         device_class: motion
-        delay_off:
-          seconds: 70
+        delay_off: "{{ states('input_datetime.living_room_motion_timeout') }}"
         value_template: >-
           {{ is_state('binary_sensor.pir_kitchen_screen', 'on')
-            or is_state('binary_sensor.hms_living_room_motion', 'on') }}
+            or is_state('binary_sensor.hms_living_room_1_motion', 'on')
+            or is_state('binary_sensor.hms_living_room_2_motion', 'on') }}
 
       bedroom_motion:
         friendly_name: "Bedroom Motion"
         device_class: motion
-        delay_off:
-          seconds: 30
+        delay_off: "{{ states('input_datetime.bedroom_motion_timeout') }}"
         value_template: >-
           {{ is_state('binary_sensor.pir_bedroom_detect', 'on')
-            or is_state('binary_sensor.hms_bedroom_motion', 'on') }}
+            or is_state('binary_sensor.hms_bedroom_1_motion', 'on')
+            or is_state('binary_sensor.hms_bedroom_2_motion', 'on') }}
 
       bathroom_motion:
         friendly_name: "Bathroom Motion"
         device_class: motion
-        delay_off:
-          seconds: 20
+        delay_off: "{{ states('input_datetime.bathroom_motion_timeout') }}"
         value_template: >-
           {{ is_state('binary_sensor.hms_bathroom_motion', 'on') }}
 
       outside_motion:
         friendly_name: "Outside Motion"
         device_class: motion
-        delay_off:
-          seconds: 20
+        delay_off: "{{ states('input_datetime.outside_motion_timeout') }}"
         value_template: >-
           {{ is_state('binary_sensor.homs_yard_rear_motion', 'on')
             or is_state('binary_sensor.homs_yard_side_motion', 'on') }}
+
 sensor:
   - platform: template
     sensors:
@@ -42,18 +66,54 @@ sensor:
         friendly_name: "HMS Bathroom Battery Level"
         value_template: '{{state_attr("binary_sensor.hms_bathroom_motion", "battery_level")}}'
 
-      hms_bedroom_battery_percent:
-        friendly_name: "HMS Bedroom Battery Level"
-        value_template: '{{state_attr("binary_sensor.hms_bedroom_motion", "battery_level")}}'
+      hms_bedroom_1_battery_percent:
+        friendly_name: "HMS Bedroom 1 Battery Level"
+        value_template: '{{state_attr("binary_sensor.hms_bedroom_1_motion", "battery_level")}}'
+      hms_bedroom_2_battery_percent:
+        friendly_name: "HMS Bedroom 2 Battery Level"
+        value_template: '{{state_attr("binary_sensor.hms_bedroom_2_motion", "battery_level")}}'
 
-      hms_living_room_battery_percent:
-        friendly_name: "HMS Living Room Battery Level"
-        value_template: '{{state_attr("binary_sensor.hms_living_room_motion", "battery_level")}}'
+      hms_living_room_1_battery_percent:
+        friendly_name: "HMS Living Room 1 Battery Level"
+        value_template: '{{state_attr("binary_sensor.hms_living_room_1_motion", "battery_level")}}'
+      hms_living_room_2_battery_percent:
+        friendly_name: "HMS Living Room 2 Battery Level"
+        value_template: '{{state_attr("binary_sensor.hms_living_room_2_motion", "battery_level")}}'
 
       homs_yard_rear_battery_percent:
         friendly_name: "HOMS Yard Rear Battery Level"
         value_template: '{{state_attr("binary_sensor.homs_yard_rear_motion", "battery_level")}}'
-
       homs_yard_side_battery_percent:
         friendly_name: "HOMS Yard Side Battery Level"
         value_template: '{{state_attr("binary_sensor.homs_yard_side_motion", "battery_level")}}'
+
+  - platform: min_max
+    name: Bedroom Average Light Level
+    type: mean
+    round_digits: 1
+    entity_ids:
+      - sensor.hms_bedroom_1_light_level
+      - sensor.hms_bedroom_2_light_level
+
+  - platform: min_max
+    name: Living Room Average Light Level
+    type: mean
+    round_digits: 1
+    entity_ids:
+      - sensor.hms_living_room_1_light_level
+      - sensor.hms_living_room_2_light_level
+
+  - platform: min_max
+    name: Bathroom Average Light Level
+    type: mean
+    round_digits: 1
+    entity_ids:
+      - sensor.hms_bathroom_light_level
+
+  - platform: min_max
+    name: Outside Yard Average Light Level
+    type: mean
+    round_digits: 1
+    entity_ids:
+      - sensor.homs_yard_side_light_level
+      - sensor.homs_yard_rear_light_level

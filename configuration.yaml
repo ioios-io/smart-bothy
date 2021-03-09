@@ -2,6 +2,14 @@
 ## Home Assistant Core
 #################################################################
 homeassistant:
+  unit_system: metric
+  time_zone: "Europe/London"
+  external_url: !secret externalURL
+  internal_url: "http://homeassistant.local:8123"
+  allowlist_external_dirs:
+    - "/config/cache"
+  allowlist_external_urls:
+    - "http://octopi.local"
   auth_providers:
     - type: homeassistant
     - type: trusted_networks
@@ -31,7 +39,7 @@ sun:
 #media_source:
 mobile_app:
 person:
-tag:
+#tag:
 
 webhook:
 
@@ -39,12 +47,26 @@ updater:
   reporting: true
   include_used_components: true
 
+zone: !include custom/zones.yaml
+automation: !include custom/automations.yaml
+script: !include_dir_merge_list custom/scripts/
+scene: !include_dir_merge_list custom/scenes/
+
+counter:
+timer:
+input_boolean:
+input_datetime:
+input_number:
+input_select:
+input_text:
+group:
+
 history:
 logger:
-  default: info
+  default: warning
 logbook:
 recorder:
-  commit_interval: 3
+  commit_interval: 60
   db_url: !secret mariaDBsocket
   purge_keep_days: 90
   exclude:
@@ -54,9 +76,6 @@ recorder:
       - sensor.*_volume
       - sensor.*_warmth
       - sensor.*_brightness
-      - sensor.*_battery_percent
-      - sensor.*_average_temperature
-      - sensor.*_average_humidity
 
       - sensor.esp_signal_*
       - sensor.esp_uptime_*
@@ -100,24 +119,6 @@ recorder:
       - sensor.bedroom_lamps_brightness
       - sensor.living_room_lamps_brightness
 
-zone: !include custom/zones.yaml
-
-automation ui: !include custom/automations.yaml
-automation manual: !include_dir_merge_list custom/automations/
-
-script: !include_dir_merge_list custom/scripts/
-
-scene: !include_dir_merge_list custom/scenes/
-
-counter:
-timer:
-input_boolean:
-input_datetime:
-input_number:
-input_select:
-input_text:
-group:
-
 frontend:
   themes: !include_dir_merge_named themes/
 lovelace:
@@ -132,8 +133,6 @@ lovelace:
     - url: /hacsfiles/lovelace-github-entity-row/github-entity-row.js
       type: module
     - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
-      type: module
-    - url: /hacsfiles/state-attribute-element/state-attribute-element.js
       type: module
     - url: /hacsfiles/light-entity-card/light-entity-card.js
       type: module
@@ -183,9 +182,11 @@ lovelace:
       type: module
     - url: /hacsfiles/lovelace-home-feed-card/lovelace-home-feed-card.js
       type: module
-    - url: /hacsfiles/ha-lovelace-elapsed-time-card/elapsed-time-card.js
-      type: module
     - url: /hacsfiles/lovelace-badge-card/badge-card.js
+      type: module
+    - url: /hacsfiles/weather-card/weather-card.js
+      type: module
+    - url: /hacsfiles/lovelace-paper-buttons-row/paper-buttons-row.js
       type: module
 
   dashboards:
