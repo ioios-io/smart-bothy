@@ -16,6 +16,24 @@ cards:
         state_color: true
         show_empty: false
 
+      - type: picture-elements
+        image: /local/images/date_background.png
+        elements:
+          - type: state-label
+            tap_action: toggle
+            entity: sensor.date_time_12
+            style:
+              top: 35%
+              left: 85%
+              font-size: 150%
+          - type: state-label
+            tap_action: toggle
+            entity: sensor.date_weekday
+            style:
+              top: 65%
+              left: 85%
+              font-size: 120%
+
       - type: entities
         entities:
           - type: custom:template-entity-row
@@ -30,6 +48,9 @@ cards:
             entities:
               - type: custom:template-entity-row
                 icon: mdi:account-hard-hat
+                name: "Reloading"
+                condition: "{{ is_state('binary_sensor.core_script_running', 'on') }}"
+              - type: custom:template-entity-row
                 name: "{{ states('input_text.core_status_display') }}"
                 condition: "{{ is_state('binary_sensor.core_script_running', 'on') }}"
 
@@ -38,8 +59,8 @@ cards:
                 name: Debug
                 condition: "{{ is_state('binary_sensor.core_script_running', 'off') }}"
               - type: custom:template-entity-row
-                entity: sensor.date_data_file
-                name: "{{ sensor.date_data_file }}"
+                entity: input_select.user_mode
+                name: User
                 condition: "{{ is_state('binary_sensor.core_script_running', 'off') }}"
 
           - type: vertical-stack
@@ -213,8 +234,142 @@ cards:
         hours_to_show: 168
         group_by: date
         line_width: 2
+        smoothing: false
         show:
           labels: true
           name: false
           icon: false
           name_adaptive_color: false
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            name: Living Room
+            icon: mdi:sofa-outline
+            template: scene_button
+            size: 60%
+            show_name: false
+            styles:
+              icon:
+                - color: >
+                    [[[
+                      if (states['input_boolean.living_room_scene_changing'].state == 'on')
+                        return 'var(--text-medium-color)';
+
+                      if (states['sensor.living_room_lights_brightness'].state > 0)
+                        return 'var(--paper-item-icon-color)';
+
+                      return 'var(--accent-medium-color)';
+                    ]]]
+              grid:
+                - position: relative
+              custom_fields:
+                notification:
+                  - color: var(--paper-item-icon-color)
+                  - border-radius: 50%
+                  - position: absolute
+                  - left: 60%
+                  - top: -12%
+                  - height: 32px
+                  - width: 32px
+                  - line-height: 4px
+            custom_fields:
+              notification: >
+                [[[
+                  if (states['input_boolean.living_room_scene_changing'].state == 'on')
+                    return '<ha-icon icon="mdi:rotate-3d-variant" style="color: var(--label-badge-yellow);"></ha-icon>';
+
+                  if (states['input_boolean.living_room_ceiling_animation'].state == 'on')
+                    return '<ha-icon icon="mdi:motion-play" style="color: var(--label-badge-blue);"></ha-icon>';
+
+                  if (states['sensor.living_room_lights_brightness'].state > 0)
+                    return '<ha-icon icon="mdi:lightbulb-group" style="color: var(--label-badge-green);"></ha-icon>';
+
+                  return '<ha-icon icon="mdi:lightbulb-group-off" style="color: var(--label-badge-red);"></ha-icon>';
+                ]]]
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: Natural
+            icon: "[[[ return states['script.living_room_scene_natural'].attributes.icon; ]]]"
+            state:
+              - value: "Natural"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_natural
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: Bright
+            icon: "[[[ return states['script.living_room_scene_bright'].attributes.icon; ]]]"
+            state:
+              - value: "Bright"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_bright
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: Relax
+            icon: "[[[ return states['script.living_room_scene_relax'].attributes.icon; ]]]"
+            state:
+              - value: "Relax"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_relax
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: Cosy
+            icon: "[[[ return states['script.living_room_scene_cosy'].attributes.icon; ]]]"
+            state:
+              - value: "Cosy"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_cosy
+
+          - type: custom:button-card
+            entity: input_select.living_room_scenes
+            template: scene_button
+            name: "Off"
+            icon: "[[[ return states['script.living_room_scene_off'].attributes.icon; ]]]"
+            state:
+              - value: "Off"
+                icon: mdi:check-circle-outline
+                color: var(--accent-color)
+              - operator: "default"
+                color: var(--paper-item-icon-color)
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              service_data:
+                entity_id: script.living_room_scene_off

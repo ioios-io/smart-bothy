@@ -19,6 +19,10 @@ script:
           entity_id: input_text.living_room_previous_scene
           value: "{{ scene_name }}"
 
+      - service: notify.living_room_latest_scene
+        data:
+          message: "{{ scene_name }}"
+
       - service: input_text.set_value
         data:
           entity_id: input_text.living_room_last_action
@@ -61,13 +65,13 @@ script:
           entity_id: light.living_room_candle
           brightness: 200
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 5
+          transition: 8
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_lamp
           brightness: 200
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 3
+          transition: 6
       - service: input_number.set_value
         data:
           entity_id: input_number.living_room_transition_off
@@ -76,7 +80,7 @@ script:
         data:
           entity_id: input_boolean.living_room_ceiling_animation
       - delay:
-          seconds: 1
+          seconds: 2
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_ceiling_1
@@ -88,19 +92,19 @@ script:
           entity_id: light.living_room_ceiling_2
           brightness: 200
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 4
+          transition: 6
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_ceiling_3
           brightness: 200
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 4
+          transition: 8
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_ceiling_4
           brightness: 200
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 4
+          transition: 10
 
   living_room_scene_natural_update:
     alias: Living Room Natural Scene Update
@@ -110,12 +114,12 @@ script:
         data_template:
           entity_id: light.living_room_candle
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 5
+          transition: 2
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_lamp
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 3
+          transition: 10
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_ceiling_1
@@ -125,17 +129,17 @@ script:
         data_template:
           entity_id: light.living_room_ceiling_2
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 4
+          transition: 6
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_ceiling_3
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 4
+          transition: 8
       - service: light.turn_on
         data_template:
           entity_id: light.living_room_ceiling_4
           color_temp: "{{ states('sensor.circadian_light') | int }}"
-          transition: 4
+          transition: 10
 
       - service: input_text.set_value
         data:

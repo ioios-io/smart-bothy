@@ -2,45 +2,6 @@ path: config
 title: Config
 icon: mdi:head-cog-outline
 panel: false
-badges:
-  - entity: weather.portree
-  - entity: weather.portree_hourly
-  - entity: sensor.period_of_day
-  - entity: sun.sun
-  - entity: device_tracker.john_lumleys_iphone
-  - entity: person.john_lumley
-    show_name: false
-    show_icon: false
-  - type: entity-filter
-    entities:
-      - entity: binary_sensor.living_room_motion
-        name: Living Room
-      - entity: binary_sensor.bedroom_motion
-        name: Bedroom
-      - entity: binary_sensor.bathroom_motion
-        name: Bathroom
-      - entity: binary_sensor.outside_motion
-        name: Outside
-    state_filter:
-      - "on"
-
-  - type: entity-filter
-    show_name: false
-    show_icon: false
-    entities:
-      - entity: sensor.hms_bedroom_light_level
-        name: Bedroom
-      - entity: sensor.hms_bathroom_light_level
-        name: Bathroom
-      - entity: sensor.hms_living_room_light_level
-        name: Living Room
-      - entity: sensor.homs_yard_rear_light_level
-        name: Yard Rear
-      - entity: sensor.homs_yard_side_light_level
-        name: Yard Side
-    state_filter:
-      - operator: ">"
-        value: 1
 cards:
   - type: custom:stack-in-card
     mode: vertical
@@ -52,6 +13,45 @@ cards:
         default_zoom: 11
         entities:
           - device_tracker.john_lumleys_iphone
+
+      - type: custom:badge-card
+        badges:
+          - entity: sensor.period_of_day
+          - entity: sun.sun
+          - entity: sensor.moon
+          - entity: person.john_lumley
+            show_name: false
+            show_icon: false
+          - type: entity-filter
+            entities:
+              - entity: binary_sensor.living_room_motion
+                name: Living Room
+              - entity: binary_sensor.bedroom_motion
+                name: Bedroom
+              - entity: binary_sensor.bathroom_motion
+                name: Bathroom
+              - entity: binary_sensor.outside_motion
+                name: Outside
+            state_filter:
+              - "on"
+
+          - type: entity-filter
+            show_name: false
+            show_icon: false
+            entities:
+              - entity: sensor.hms_bedroom_light_level
+                name: Bedroom
+              - entity: sensor.hms_bathroom_light_level
+                name: Bathroom
+              - entity: sensor.hms_living_room_light_level
+                name: Living Room
+              - entity: sensor.homs_yard_rear_light_level
+                name: Yard Rear
+              - entity: sensor.homs_yard_side_light_level
+                name: Yard Side
+            state_filter:
+              - operator: ">"
+                value: 1
 
       - type: horizontal-stack
         cards:
@@ -65,7 +65,7 @@ cards:
                     device_class: motion
             sort:
               method: last_changed
-              count: 20
+              count: 5
 
           - type: custom:auto-entities
             card:
@@ -77,7 +77,7 @@ cards:
                     device_class: battery
             sort:
               method: last_changed
-              count: 20
+              count: 5
 
   - type: custom:stack-in-card
     mode: vertical
@@ -118,12 +118,6 @@ cards:
                   - entity: sensor.prusa_mk3s_time_elapsed
                 camera_image: camera.prusa_mk3s
 
-              - type: "custom:elapsed-time-card"
-                format: Time Left
-                time_format: 1h 5m
-                time_today: sensor.prusa_mk3s_time_remaining
-                icon: camera-timer
-
               - type: "custom:mini-graph-card"
                 entities:
                   - entity: sensor.prusa_mk3s_actual_tool0_temp
@@ -135,9 +129,9 @@ cards:
                   - entity: sensor.prusa_mk3s_target_bed_temp
                     name: Bed Target
                 hours_to_show: 1
-                line_width: 3
+                line_width: 2
                 show:
-                  labels: hover
+                  labels: false
                   legend: false
                   name_adaptive_color: false
                 icon: "mdi:thermometer"

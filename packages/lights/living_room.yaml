@@ -17,7 +17,8 @@ input_select:
 notify:
   - name: living_room_latest_scene
     platform: file
-    filename: /config/cache/living_room_latest_scene.json
+    filename: /config/cache/living_room_latest_scene.txt
+    timestamp: true
 
 input_text:
   living_room_last_action:
@@ -83,11 +84,16 @@ timer:
 sensor:
   - platform: file
     name: Living Room Last Scene Cache
-    file_path: /config/cache/living_room_latest_scene.json
-    value_template: "{{ value_json.living_room }}"
+    file_path: /config/cache/living_room_latest_scene.txt
 
   - platform: template
     sensors:
+      living_room_latest_scene_txt:
+        friendly_name: "Living Room Latest Selected Scene"
+        value_template: "{{ states.sensor.living_room_last_scene_cache.state.split(' ')[1] }}"
+        attribute_templates:
+          When: "{{ states.sensor.living_room_last_scene_cache.state.split(' ')[0] }}"
+
       # Determine if any lights in any group is currently on
       living_room_active_light_count:
         friendly_name: "Living Room Active Light Count"

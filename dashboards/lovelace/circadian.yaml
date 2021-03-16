@@ -24,11 +24,28 @@ cards:
         hours_to_show: 24
         entities:
           - entity: binary_sensor.dark_outside
-            Name: Dark
+            name: Dark
           - entity: binary_sensor.homs_yard_side_motion
-            Name: "Yard: Side"
+            name: "Yard: Side"
           - entity: binary_sensor.homs_yard_rear_motion
-            Name: "Yard: Rear"
+            name: "Yard: Rear"
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.homs_yard_side_light_level
+            name: Daylight Side
+          - entity: sensor.homs_yard_rear_light_level
+            name: Daylight Rear
+        update_interval: 30
+        line_width: 1
+        align_state: center
+        align_header: center
+        points_per_hour: 4
+        show:
+          name: true
+          icon: false
+          name_adaptive_color: false
+          labels: false
 
       - type: custom:mini-graph-card
         entities:

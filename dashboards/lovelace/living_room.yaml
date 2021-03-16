@@ -61,7 +61,7 @@ cards:
             entity: input_select.living_room_scenes
             template: scene_button
             name: Natural
-            icon: mdi:weather-sunny
+            icon: "[[[ return states['script.living_room_scene_natural'].attributes.icon; ]]]"
             state:
               - value: "Natural"
                 icon: mdi:check-circle-outline
@@ -78,7 +78,7 @@ cards:
             entity: input_select.living_room_scenes
             template: scene_button
             name: Relax
-            icon: mdi:sofa-outline
+            icon: "[[[ return states['script.living_room_scene_relax'].attributes.icon; ]]]"
             state:
               - value: "Relax"
                 icon: mdi:check-circle-outline
@@ -95,7 +95,7 @@ cards:
             entity: input_select.living_room_scenes
             template: scene_button
             name: Cosy
-            icon: mdi:bed-single-outline
+            icon: "[[[ return states['script.living_room_scene_cosy'].attributes.icon; ]]]"
             state:
               - value: "Cosy"
                 icon: mdi:check-circle-outline
@@ -112,7 +112,7 @@ cards:
             entity: input_select.living_room_scenes
             template: scene_button
             name: "Off"
-            icon: mdi:power
+            icon: "[[[ return states['script.living_room_scene_off'].attributes.icon; ]]]"
             state:
               - value: "Off"
                 icon: mdi:check-circle-outline
@@ -141,12 +141,12 @@ cards:
           - type: custom:button-card
             entity: light.living_room_lamp
             template: scene_ccts
-            name: Lamp
+            name: Table
 
           - type: custom:button-card
             entity: light.living_room_candle
             template: scene_ccts
-            name: Bedside
+            name: Kitchen
 
           - type: custom:button-card
             entity: light.living_room_ceiling_1
@@ -302,50 +302,44 @@ cards:
           Lights:
             type: vertical-stack
             cards:
-              - type: grid
-                square: false
+              - type: horizontal-stack
                 cards:
+                  - type: glance
+                    show_name: false
+                    entities:
+                      - sensor.living_room_active_light_count
+                      - timer.living_room_scene_settling
+                      - timer.living_room_scene_changing
+
                   - type: entity
+                    name: Current Scene
                     entity: input_select.living_room_scenes
 
-                  - type: entity
-                    entity: input_text.living_room_previous_scene
-
-                  - type: vertical-stack
-                    cards:
-                      - name: Settling
-                        type: custom:button-card
-                        entity: timer.living_room_scene_settling
-                        label: >
-                          [[[
-                            var timeLeft = states['timer.living_room_scene_settling'].attributes.finishes_in;
-                            return timeLeft;
-                          ]]]
-                        value: >
-                          [[[
-                            var timeLeft = states['timer.living_room_scene_settling'].attributes.finishes_in;
-                            return timeLeft;
-                          ]]]
-                        show_label: true
-                        show_state: true
-                        show_icon: false
               - type: entity
                 name: Last Action
                 entity: input_text.living_room_last_action
 
               - type: entities
                 entities:
-                  - entity: script.living_room_scene_change
-                  - entity: sensor.living_room_last_scene_cache
                   - name: Brightness
                     type: custom:multiple-entity-row
-                    entity: sensor.living_room_active_light_count
+                    entity: sensor.living_room_lights_brightness
+                    secondary_info: last-updated
+                    state_header: Total
                     entities:
                       - entity: sensor.living_room_lamps_brightness
                         name: Lamps
-                      - entity: sensor.living_room_lights_brightness
-                        name: Lights
                       - entity: sensor.living_room_ceiling_lights_brightness
+                        name: Ceiling
+                  - name: Warmth
+                    type: custom:multiple-entity-row
+                    entity: sensor.living_room_lights_warmth
+                    secondary_info: last-updated
+                    state_header: Total
+                    entities:
+                      - entity: sensor.living_room_lamps_warmth
+                        name: Lamps
+                      - entity: sensor.living_room_ceiling_lights_warmth
                         name: Ceiling
 
           NoDebug:
