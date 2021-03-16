@@ -1,0 +1,139 @@
+# https://github.com/liviuschera/noctis
+noctis-ioios:
+  # for header
+  header-height: 56px;
+  app-header-background-color: "var(--ha-card-background)"
+
+  # QUICK FIND DEBUGGING COLOURS
+  finder-1: "#af6090"
+  finder-2: "#9030af"
+  finder-3: "#9ff050"
+
+  # Fonts
+  primary-font-family: "Oxygen,sans-serif"
+  secondary-font-family: "Oxygen Mono,sans-serif"
+
+  ha-card-header-font-family: "var(--primary-font-family)"
+  paper-font-body1_-_font-family: "var(--primary-font-family)"
+  paper-font-subhead_-_font-family: "var(--primary-font-family)"
+  paper-font-common-base_-_font-family: "var(--secondary-font-family)"
+  paper-font-common-code_-_font-family: "var(--secondary-font-family)"
+  paper-font-headline_-_font-family: "var(--secondary-font-family)"
+  paper-font-caption_-_font-family: "var(--secondary-font-family)"
+  paper-font-title_-_font-family: "var(--secondary-font-family)"
+
+  # Text
+  text-color: "#ffffff"
+  text-color2: "#f0fff0"
+  primary-text-color: "var(--text-color2)"
+  text-primary-color: "var(--text-color)"
+  secondary-text-color: "#d6e6df"
+  text-medium-light-color: "#B6D0C0"
+  text-medium-color: "#b1c3b9"
+  disabled-text-color: "#c1c3c9"
+
+  divider-color: "var(--background-color)"
+  primary-color: "var(--accent-color)"
+  light-primary-color: "var(--ha-card-background)"
+  dark-primary-color: "var(--accent-medium-color)"
+
+  # Main Colors
+  accent-color: "#72b7c0" # Glacier
+  accent-medium-color: "#3f848d" # Ming
+  button-color: "rgba(29,51,38,0.75)"
+  border-color: "none"
+
+  # Background
+  background-color: "#102017"
+  background-color-2: "#1b2b24"
+  background-color-3: "#172720"
+
+  card-background-color: "rgba(25,41,34,0.9)"
+  primary-background-color: "var(--background-color)"
+  secondary-background-color: "#999999"
+  markdown-code-background-color: "var(--secondary-background-color)"
+
+  # Card
+  ha-card-background: "var(--card-background-color)"
+  ha-card-box-shadow: "4px 4px 12px -6px rgba(17,70,42,0.5)"
+  ha-card-border-radius: "9px"
+
+  # Icons
+  paper-item-icon-color: "#e8f7ef"
+  paper-item-icon-active-color: "var(--accent-color)"
+
+  # Select Box
+  paper-listbox-background-color: "var(--background-color-3)"
+
+  # Sidebar
+  sidebar-background-color: "var(--background-color)"
+  sidebar-icon-color: "var(--paper-item-icon-color)"
+  sidebar-selected-icon-color: "var(--accent-color)"
+  sidebar-selected-text-color: "var(--primary-text-color)"
+
+  # Sliders
+  paper-slider-knob-color: "var(--primary-text-color)"
+  paper-slider-knob-start-color: "var(--secondary-text-color)"
+  paper-slider-secondary-color: "var(--secondary-text-color)"
+  paper-slider-pin-color: "var(--accent-medium-color)"
+  paper-slider-active-color: "var(--accent-color)"
+  paper-slider-container-color: rgba(255, 255, 255, 0.5)
+  paper-slider-font-color: "var(--primary-text-color)"
+  ha-slider-background: none !important
+
+  # Toggle:
+  paper-toggle-button-checked-bar-color: "var(--accent-color)"
+  mdc-theme-primary: "var(--accent-color)"
+
+  # Switch
+  switch-unchecked-color: "var(--accent-medium-color)"
+  switch-checked-button-color: "var(--accent-color)"
+  switch-unchecked-track-color: "var(--secondary-background-color)"
+  switch-checked-track-color: "var(--secondary-background-color)"
+
+  # Radio Button
+  paper-radio-button-checked-color: "var(--accent-color)"
+
+  # Popups
+  more-info-header-background: "var(--secondary-background-color)"
+  paper-dialog-background-color: "rgba(22,48,40,0.9)"
+
+  # Tables
+  table-row-background-color: "var(--background-color-2)"
+  table-row-alternative-background-color: "var(--background-color-3)"
+
+  # Badges
+  label-badge-background-color: "var(--background-color)"
+  label-badge-border-color: "var(--text-primary-color)"
+  label-badge-text-color: "var(--text-primary-color)"
+  label-badge-red: "#e64100" # Trinidad
+  label-badge-blue: "#507b95" # Smalt Blue
+  label-badge-green: "#3f8d6c" # Viridian
+  label-badge-yellow: "#d5971a" # Galliano
+
+  # Weather Icons
+  weather-icon-cloud-front-color: "#72b7c0" # Glacier
+  weather-icon-cloud-back-color: "#8ca6a6" # Cascade
+  weather-icon-sun-color: "#d5971a" # Galliano
+  weather-icon-rain-color: "#507b95" # Smalt Blue
+
+  paper-input-container-focus-color: "var(--accent-medium-color)"
+
+  # Custom Header
+  ch-background: "var(--background-color)"
+  ch-active-tab-color: "var(--accent-color)"
+  ch-notification-dot-color: "var(--accent-color)"
+  ch-all-tabs-color: "var(--sidebar-icon-color)"
+  ch-tab-indicator-color: "var(--accent-color)"
+
+  # Mini Mediaplayer
+  mini-media-player-base-color: "var(--primary-text-color)"
+  mini-media-player-accent-color: "var(--accent-color)"
+  mini-media-player-icon-color: "var(--primary-text-color)"
+  mini-media-player-button-color: "var(--button-color)"
+  mini-media-player-background-opacity: 0
+  mini-media-player-progress-height: 12px
+
+  # Mini Graph Card
+  mcg-title-letter-spacing: 1
+  mcg-title-font-weight: 400

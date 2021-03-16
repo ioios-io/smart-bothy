@@ -60,22 +60,6 @@ wifi:
   ssid: ${wifiSSID}
   password: ${wifiPass}
 
-captive_portal:
-logger:
-ota:
-  password: ${passOTA}
-  
-i2c:
-  sda: ${i2cData}
-  scl: ${i2cClock}
-  scan: True
-  frequency: 200MHz
-  id: bus_a
-
-time:
-  - platform: homeassistant
-    id: homeassistant_time
-    
 api:
   password: ${passESPH} 
   services:
@@ -95,6 +79,22 @@ api:
             brightness: 60%
             effect: "Alarm Sequence"
 
+captive_portal:
+logger:
+ota:
+  password: ${passOTA}
+  
+i2c:
+  sda: ${i2cData}
+  scl: ${i2cClock}
+  scan: True
+  frequency: 200MHz
+  id: bus_a
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+    
 globals:
   - id: lastAct
     type: int
