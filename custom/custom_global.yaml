@@ -28,21 +28,29 @@
   icon: "mdi:brightness-5"
   unit_of_measurement: " "
 
+"script.*_scene_natural":
+  icon: "mdi:brightness-auto"
+
 "script.*_scene_bright":
-  icon: "mdi:white-balance-sunny"
+  icon: "mdi:brightness-7"
 
 "script.*_scene_relax":
-  icon: "mdi:sofa-outline"
+  icon: "mdi:brightness-6"
 
 "script.*_scene_cosy":
-  icon: "mdi:bed-double-outline"
+  icon: "mdi:brightness-4"
+
+"script.*_scene_movie":
+  icon: "mdi:filmstrip"
+
+"script.*_scene_dinner":
+  icon: "mdi:silverware-fork-knife"
+
+"script.*_scene_manual":
+  icon: "mdi:camera-control"
 
 "script.*_scene_off":
   icon: "mdi:power"
-
-# DEBUG
-"input_boolean.debug_*_mode":
-  icon: "mdi:bug-outline"
 
 # GENERAL TRENDS
 "sensor.trend_*_total_views":

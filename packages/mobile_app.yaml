@@ -52,10 +52,7 @@ automation:
         entity_id: input_boolean.printer1_cool_down
         from: "off"
         to: "on"
-    condition:
-      - condition: state
-        entity_id: input_boolean.mode_notify_printers
-        state: "on"
+    condition: "{{ states('input_boolean.mode_notify_printers') == 'on' }}"
     action:
       service: notify.JOHN
       data:

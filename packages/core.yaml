@@ -1,4 +1,13 @@
 input_select:
+  user_mode:
+    name: User Mode
+    icon: mdi:badge-account
+    options:
+      - Normal
+      - Extra
+      - Expert
+    initial: Normal
+
   debug_mode:
     name: Debug Mode
     icon: mdi:bug-check-outline
@@ -77,6 +86,54 @@ sensor:
       - type: last_boot
       - type: load_1m
 
+  # Stolen from DavidFW1960 @ https://github.com/DavidFW1960/home-assistant/blob/master/packages/sysmonitor.yaml
+  - platform: template
+    sensors:
+      systemuptime:
+        value_template: >-
+          {% set time = (as_timestamp(now()) - as_timestamp(states('sensor.last_boot'))) %}
+          {% set minutes = ((time % 3600) / 60) | int %}
+          {% set hours = ((time % 86400) / 3600) | int %}
+          {% set days = (time / 86400) | int %}
+          {%- if time < 60 -%}
+            Less than a minute
+          {%- else -%}
+            {%- if days > 0 -%}
+              {%- if days == 1 -%}
+                1 day
+              {%- else -%}
+                {{ days }} days
+              {%- endif -%}
+            {%- endif -%}
+            {%- if hours > 0 -%}
+              {%- if days > 0 -%}
+                {{ ', ' }}
+              {%- endif -%}
+              {%- if hours == 1 -%}
+                1 hour
+              {%- else -%}
+                {{ hours }} hours
+              {%- endif -%}
+            {%- endif -%}
+            {%- if minutes > 0 -%}
+              {%- if days > 0 or hours > 0 -%}
+                {{ ', ' }}
+              {%- endif -%}
+              {%- if minutes == 1 -%}
+                1 minute
+              {%- else -%}
+                {{ minutes }} minutes
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+
+  - platform: statistics
+    entity_id: sensor.memory_use_percent
+    name: memory
+  - platform: statistics
+    entity_id: sensor.processor_use
+    name: processor
+
 script:
   core_refresh_ha:
     alias: Refreshing Core
@@ -85,14 +142,14 @@ script:
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Lovelace Resources"
+          value: "Lovelace Resources"
 
       - service: lovelace.reload_resources
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Lovelace Themes"
+          value: "Lovelace Themes"
       - service: frontend.reload_themes
 
   core_reload_ha:
@@ -102,76 +159,92 @@ script:
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Scenes"
+          value: "Scenes"
       - service: scene.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Templates"
+          value: "Templates"
       - service: template.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Groups"
+          value: "Groups"
       - service: group.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Timers"
+          value: "Timers"
       - service: timer.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Thermostats"
+          value: "Thermostats"
       - service: generic_thermostat.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Persons"
+          value: "Persons"
       - service: person.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Zones"
+          value: "Zones"
       - service: zone.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Input Booleans"
+          value: "Input Booleans"
       - service: input_boolean.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Input Selects"
+          value: "Input Selects"
       - service: input_select.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Input Texts"
+          value: "Input Texts"
       - service: input_text.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Input Numbers"
+          value: "Input Numbers"
       - service: input_number.reload
 
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Input Datetimes"
+          value: "Input Datetimes"
       - service: input_datetime.reload
 
 automation:
+  - alias: "System Runtime"
+    trigger:
+      platform: time_pattern
+      minutes: "/1"
+      seconds: 0
+    action:
+      - service: homeassistant.update_entity
+        entity_id: sensor.systemuptime
+
+  - alias: "Update Speedtest"
+    trigger:
+      platform: homeassistant
+      event: start
+    action:
+      - service: speedtestdotnet.speedtest
+
   - alias: Refresh HA
     description: Refresh Variables, Lovelace & Themes
     trigger:
@@ -205,7 +278,7 @@ automation:
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading HA Core"
+          value: "HA Core"
 
       - service: homeassistant.reload_core_config
 
@@ -214,12 +287,12 @@ automation:
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Scripts"
+          value: "Scripts"
       - service: script.reload
       - service: input_text.set_value
         data:
           entity_id: input_text.core_status_display
-          value: "Reloading Automations"
+          value: "Automations"
 
       - service: input_boolean.turn_off
         entity_id: input_boolean.service_reload_ha
@@ -250,3 +323,45 @@ automation:
           seconds: 3
       - service: homeassistant.restart
     mode: single
+
+homeassistant:
+  customize_glob:
+    package.node_anchors:
+      common: &common
+        package: "core"
+
+    # DEBUG
+    input_boolean.debug_*_mode:
+      icon: mdi:bug-outline
+      <<: *common
+
+  customize:
+    sensor.disk_use_percent:
+      friendly_name: Percent Disk Used
+      <<: *common
+    sensor.memory_use_percent:
+      friendly_name: Percent Memory Used
+      <<: *common
+    sensor.load_1m:
+      friendly_name: 1m Load
+      <<: *common
+    sensor.processor_use:
+      friendly_name: Processor Used
+      <<: *common
+    sensor.last_boot:
+      friendly_name: Last Boot
+      device_class: timestamp
+      icon: mdi:clock
+      <<: *common
+    sensor.systemuptime:
+      friendly_name: Since Last Boot
+      icon: mdi:clock
+      <<: *common
+    sensor.memory:
+      friendly_name: Memory % Use Stats
+      icon: mdi:memory
+      <<: *common
+    sensor.processor:
+      friendly_name: Processor % Use Stats
+      icon: mdi:memory
+      <<: *common

@@ -6,15 +6,13 @@ homeassistant:
   time_zone: "Europe/London"
   external_url: !secret externalURL
   internal_url: "http://homeassistant.local:8123"
-  allowlist_external_dirs:
-    - "/config/cache"
-  allowlist_external_urls:
-    - "http://octopi.local"
   auth_providers:
     - type: homeassistant
     - type: trusted_networks
       trusted_networks:
         - 192.168.0.0/24
+  allowlist_external_dirs:
+    - "/config/cache"
   customize: !include custom/custom.yaml
   customize_glob: !include custom/custom_global.yaml
   packages: !include_dir_named packages/
@@ -36,7 +34,7 @@ browser:
 map:
 sun:
 
-#media_source:
+media_source:
 mobile_app:
 person:
 #tag:
@@ -69,34 +67,6 @@ recorder:
   commit_interval: 60
   db_url: !secret mariaDBsocket
   purge_keep_days: 90
-  exclude:
-    entities:
-      - sensor.date
-    entity_globs:
-      - sensor.*_volume
-      - sensor.*_warmth
-      - sensor.*_brightness
-
-      - sensor.esp_signal_*
-      - sensor.esp_uptime_*
-      - sensor.github_*
-      - sensor.prusa_mk3s_*
-
-      - sensor.john_lumleys_i*_distance
-      - sensor.john_lumleys_i*scended
-      - sensor.john_lumleys_i*_location
-      - sensor.john_lumleys_i*_steps
-
-      - switch.esp_restart_*
-
-      - input_number.*_brightness_maximum
-      - input_number.*_brightness_minimum
-      - input_number.*_warmth_maximum
-      - input_number.*_warmth_minimum
-      - input_number.*_transition_maximum
-      - input_number.*_transition_minimum
-      - input_number.*_transition_current
-      - input_number.*_transition_off
   include:
     domains:
       - alarm_control_panel
@@ -118,6 +88,33 @@ recorder:
     entities:
       - sensor.bedroom_lamps_brightness
       - sensor.living_room_lamps_brightness
+  exclude:
+    entities:
+      - sensor.date
+    entity_globs:
+      - sensor.*_volume
+      - sensor.*_warmth
+      - sensor.*_brightness
+
+      - sensor.esp_signal_*
+      - sensor.esp_uptime_*
+      - sensor.github_*
+
+      - sensor.john_lumleys_i*_distance
+      - sensor.john_lumleys_i*scended
+      - sensor.john_lumleys_i*_location
+      - sensor.john_lumleys_i*_steps
+
+      - switch.esp_restart_*
+
+      - input_number.*_brightness_maximum
+      - input_number.*_brightness_minimum
+      - input_number.*_warmth_maximum
+      - input_number.*_warmth_minimum
+      - input_number.*_transition_maximum
+      - input_number.*_transition_minimum
+      - input_number.*_transition_current
+      - input_number.*_transition_off
 
 frontend:
   themes: !include_dir_merge_named themes/
@@ -187,6 +184,8 @@ lovelace:
     - url: /hacsfiles/weather-card/weather-card.js
       type: module
     - url: /hacsfiles/lovelace-paper-buttons-row/paper-buttons-row.js
+      type: module
+    - url: /hacsfiles/config-template-card/config-template-card.js
       type: module
 
   dashboards:

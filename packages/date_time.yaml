@@ -23,8 +23,8 @@ automation:
       - entity_id: sensor.homs_yard_rear_light_level
         platform: state
         attribute: dark
-        from: "off"
-        to: "on"
+        from: "false"
+        to: "true"
     action:
       - service: notify.date_data
         data_template:
@@ -36,8 +36,8 @@ automation:
       - entity_id: sensor.homs_yard_side_light_level
         platform: state
         attribute: dark
-        from: "off"
-        to: "on"
+        from: "false"
+        to: "true"
     action:
       - service: notify.date_data
         data_template:
@@ -62,8 +62,8 @@ automation:
       - entity_id: sensor.homs_yard_rear_light_level
         platform: state
         attribute: dark
-        from: "on"
-        to: "off"
+        from: "true"
+        to: "false"
     action:
       - service: notify.date_data
         data_template:
@@ -75,8 +75,8 @@ automation:
       - entity_id: sensor.homs_yard_side_light_level
         platform: state
         attribute: dark
-        from: "on"
-        to: "off"
+        from: "true"
+        to: "false"
     action:
       - service: notify.date_data
         data_template:
@@ -147,9 +147,9 @@ sensor:
           {% set elevation = state_attr('sun.sun', 'elevation') | float %}
           {% set max_elevation = states('solar_max_elevation') | float %}
           {% set rising = state_attr('sun.sun', 'rising') %}
-          {%- if elevation <= -12 -%}
-            mdi:weather-night
-          {%- elif -12 < elevation <= -6 -%}
+          {%- if elevation <= -6 -%}
+            {{ states.sensor.moon.attributes.icon }}
+          {%- elif -6 < elevation <= 0 -%}
             mdi:weather-sunset-{{ 'up' if rising else 'down' }}
           {%- elif elevation <= max_elevation -%}
             mdi:weather-sunny-alert
@@ -159,6 +159,7 @@ sensor:
         attribute_templates:
           Next Sunset: "{{ states.sun.sun.attributes.next_setting }}"
           Next Sunrise: "{{ states.sun.sun.attributes.next_rising }}"
+          Moon Phase: "{{ states('sensor.moon') | replace('_',' ') | title }}"
 
       # STOLEN FROM https://community.home-assistant.io/t/circadian-light-with-philips-hue-independent-from-world-clocks/45435
       # Strip out the elevation and azimuth from the Sun object.
@@ -194,9 +195,9 @@ sensor:
         unit_of_measurement: "mired"
         icon_template: "{{ 'mdi:shield-sun-outline' }}"
         value_template: >
-          {% set mired_min = 200 %}
+          {% set mired_min = 170 %}
           {% set mired_max = 420 %}
-          {% set elev_at_mired_max = -18 %}
+          {% set elev_at_mired_max = -6 %}
           {% set mired_night = 450 %}
 
           {% if is_state('sun.sun', 'above_horizon') or is_state('sun.sun', 'below_horizon') %}

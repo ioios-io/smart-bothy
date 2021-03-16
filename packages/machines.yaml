@@ -1,15 +1,15 @@
 octoprint:
   - host: !secret octoprintIP1
     api_key: !secret octoprintAPI1
-    name: !secret octoprintName1
+    name: Prusa MK3S
     number_of_tools: 1
     bed: true
 
 camera:
   - platform: mjpeg
-    name: !secret octoprintName1
-    still_image_url: http://octopi.local/webcam/?action=snapshot
-    mjpeg_url: http://octopi.local/webcam/?action=stream
+    name: Prusa MK3S
+    still_image_url: !secret octoprintSnap1
+    mjpeg_url: !secret octoprintStream1
 
 sensor:
   - platform: template
