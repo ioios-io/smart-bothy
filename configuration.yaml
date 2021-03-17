@@ -79,6 +79,7 @@ recorder:
       - sensor
       - switch
       - sun
+      - weather
 
       - timer
       - input_number

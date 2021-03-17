@@ -8,6 +8,62 @@ cards:
       border_radius: false
       background: false
     cards:
+      - type: picture-elements
+        image: /local/images/date_background.png
+        elements:
+          - type: state-icon
+            entity: sensor.period_of_day
+            style:
+              top: 25%
+              left: 5%
+              transform: scale(2,2)
+
+          - type: state-label
+            tap_action: toggle
+            entity: sensor.date_time_24
+            style:
+              top: 35%
+              left: 29%
+              font-size: 150%
+          - type: state-label
+            tap_action: toggle
+            entity: sensor.date_weekday
+            style:
+              top: 65%
+              left: 29%
+              font-size: 120%
+
+          - type: service-button
+            service: script.turn_on
+            service_data:
+              entity_id: script.living_room_scene_off
+            title: " "
+            style:
+              top: 50%
+              left: 50%
+
+          - type: state-label
+            tap_action: toggle
+            entity: sensor.date_date
+            style:
+              top: 35%
+              left: 71%
+              font-size: 150%
+          - type: state-label
+            tap_action: toggle
+            entity: sensor.date_month
+            style:
+              top: 65%
+              left: 71%
+              font-size: 120%
+
+          - type: state-icon
+            entity: sun.sun
+            style:
+              top: 25%
+              left: 85%
+              transform: scale(2,2)
+
       - type: "custom:home-feed-card"
         card_id: main_feed
         title: false
@@ -15,32 +71,6 @@ cards:
         more_info_on_tap: true
         state_color: true
         show_empty: false
-
-      - type: picture-elements
-        image: /local/images/date_background.png
-        elements:
-          - type: state-label
-            tap_action: toggle
-            entity: sensor.date_time_12
-            style:
-              top: 35%
-              left: 85%
-              font-size: 150%
-          - type: state-label
-            tap_action: toggle
-            entity: sensor.date_weekday
-            style:
-              top: 65%
-              left: 85%
-              font-size: 120%
-
-      - type: entities
-        entities:
-          - type: custom:template-entity-row
-            icon: "{{ states.sensor.period_of_day.attributes.icon }}"
-            name: "{{ states('sensor.date_full_string') }}"
-            secondary: "{{ states('sensor.period_of_day') }}"
-            state: "{{ states('sensor.date_time_24') }}"
 
       - type: horizontal-stack
         cards:
@@ -73,8 +103,6 @@ cards:
                     name: CPU
                   - entity: sensor.disk_use_percent
                     name: Disk
-                  - entity: sensor.load_1m
-                    name: Load
                   - entity: sensor.memory_use_percent
                     name: RAM
 
@@ -97,91 +125,11 @@ cards:
                     template: admin_panel
                     name: Restart
 
-      - type: custom:state-switch
-        entity: sensor.john_lumleys_iphone_ssid
-        states:
-          SKYFC5A7:
-            type: vertical-stack
-            cards:
-              - type: entities
-                entities:
-                  - type: custom:multiple-entity-row
-                    entity: sensor.john_lumleys_iphone_storage
-                    name: John's iPhone
-                    icon: mdi:cellphone-iphone
-                    show_state: false
-                    secondary_info:
-                      entity: sensor.john_lumleys_iphone_battery_state
-                      name: "Battery:"
-                    entities:
-                      - entity: sensor.john_lumleys_iphone_battery_level
-                        name: Battery
-                        unit: "%"
-                      - attribute: Total
-                        name: Storage
-                      - entity: sensor.john_lumleys_iphone_storage
-                        name: Free
-                        unit: "%"
-          "Not Connected":
-            type: vertical-stack
-            cards:
-              - type: entities
-                entities:
-                  - type: custom:multiple-entity-row
-                    entity: sensor.john_lumleys_iphone_storage
-                    name: John's iPhone
-                    icon: mdi:cellphone-iphone
-                    show_state: false
-                    secondary_info:
-                      entity: sensor.john_lumleys_iphone_battery_state
-                      name: "Battery:"
-
-      - type: custom:state-switch
-        entity: sensor.john_lumleys_ipad_ssid
-        states:
-          SKYFC5A7:
-            type: vertical-stack
-            cards:
-              - type: entities
-                entities:
-                  - type: custom:multiple-entity-row
-                    entity: sensor.john_lumleys_ipad_storage
-                    name: John's iPad
-                    icon: mdi:tablet-ipad
-                    show_state: false
-                    secondary_info:
-                      entity: sensor.john_lumleys_ipad_battery_state
-                      name: "Battery:"
-                    entities:
-                      - entity: sensor.john_lumleys_ipad_battery_level
-                        name: Battery
-                        unit: "%"
-                      - attribute: Total
-                        name: Storage
-                      - entity: sensor.john_lumleys_ipad_storage
-                        name: Free
-                        unit: "%"
-
       - type: custom:mini-media-player
         entity: media_player.living_room
         hide:
           progress: true
-        artwork: full-cover
-        shortcuts:
-          columns: 3 # Max buttons per row
-          buttons:
-            # Start predefined playlist
-            - icon: mdi:cat
-              type: playlist
-              id: spotify:user:XXXXXXX:playlist:37i9dQZF1DZ06evO2O09Hg # Where XXXXXXX is your User ID
-            # Change the source to bathroom
-            - icon: mdi:dog
-              type: source
-              id: Bathroom
-            # Trigger script
-            - icon: mdi:dog
-              type: script
-              id: script.script_name
+        artwork: cover
 
       - type: custom:mini-graph-card
         entities:

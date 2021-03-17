@@ -79,6 +79,71 @@ cards:
               method: last_changed
               count: 5
 
+      - type: custom:state-switch
+        entity: sensor.john_lumleys_iphone_ssid
+        states:
+          SKYFC5A7:
+            type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - type: custom:multiple-entity-row
+                    entity: sensor.john_lumleys_iphone_storage
+                    name: John's iPhone
+                    icon: mdi:cellphone-iphone
+                    show_state: false
+                    secondary_info:
+                      entity: sensor.john_lumleys_iphone_battery_state
+                      name: "Battery:"
+                    entities:
+                      - entity: sensor.john_lumleys_iphone_battery_level
+                        name: Battery
+                        unit: "%"
+                      - attribute: Total
+                        name: Storage
+                      - entity: sensor.john_lumleys_iphone_storage
+                        name: Free
+                        unit: "%"
+          "Not Connected":
+            type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - type: custom:multiple-entity-row
+                    entity: sensor.john_lumleys_iphone_storage
+                    name: John's iPhone
+                    icon: mdi:cellphone-iphone
+                    show_state: false
+                    secondary_info:
+                      entity: sensor.john_lumleys_iphone_battery_state
+                      name: "Battery:"
+
+      - type: custom:state-switch
+        entity: sensor.john_lumleys_ipad_ssid
+        states:
+          SKYFC5A7:
+            type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - type: custom:multiple-entity-row
+                    entity: sensor.john_lumleys_ipad_storage
+                    name: John's iPad
+                    icon: mdi:tablet-ipad
+                    show_state: false
+                    secondary_info:
+                      entity: sensor.john_lumleys_ipad_battery_state
+                      name: "Battery:"
+                    entities:
+                      - entity: sensor.john_lumleys_ipad_battery_level
+                        name: Battery
+                        unit: "%"
+                      - attribute: Total
+                        name: Storage
+                      - entity: sensor.john_lumleys_ipad_storage
+                        name: Free
+                        unit: "%"
+
   - type: custom:stack-in-card
     mode: vertical
     keep:
