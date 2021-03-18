@@ -161,15 +161,16 @@ script:
       - service: light.turn_on
         data:
           entity_id: light.living_room_candle
-          brightness: 200
+          brightness: 250
           color_temp: 350
           transition: 5
       - service: light.turn_on
         data:
           entity_id: light.living_room_lamp
-          brightness: 200
+          brightness: 250
           color_temp: 300
           transition: 3
+
       - service: input_number.set_value
         data:
           entity_id: input_number.living_room_transition_off
@@ -178,36 +179,31 @@ script:
         data:
           entity_id: input_boolean.living_room_ceiling_animation
       - delay:
-          seconds: 1
-      - service: input_number.set_value
+          seconds: 2
+      - service: light.turn_on
         data:
-          entity_id: input_number.living_room_brightness_maximum
-          value: 100
-      - service: input_number.set_value
+          entity_id: light.living_room_ceiling_1
+          brightness: 250
+          color_temp: 320
+          transition: 3
+      - service: light.turn_on
         data:
-          entity_id: input_number.living_room_brightness_minimum
-          value: 70
-      - service: input_number.set_value
+          entity_id: light.living_room_ceiling_2
+          brightness: 250
+          color_temp: 340
+          transition: 3
+      - service: light.turn_on
         data:
-          entity_id: input_number.living_room_warmth_maximum
-          value: 300
-      - service: input_number.set_value
+          entity_id: light.living_room_ceiling_3
+          brightness: 250
+          color_temp: 360
+          transition: 3
+      - service: light.turn_on
         data:
-          entity_id: input_number.living_room_warmth_minimum
-          value: 200
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_maximum
-          value: 60
-      - service: input_number.set_value
-        data:
-          entity_id: input_number.living_room_transition_minimum
-          value: 10
-      - delay:
-          seconds: 1
-      - service: input_boolean.turn_on
-        data:
-          entity_id: input_boolean.living_room_ceiling_animation
+          entity_id: light.living_room_ceiling_4
+          brightness: 250
+          color_temp: 380
+          transition: 3
 
   living_room_scene_relax:
     alias: Living Room Relax Scene
@@ -335,6 +331,74 @@ script:
         data:
           entity_id: input_boolean.living_room_ceiling_animation
 
+  living_room_scene_movie:
+    alias: Living Room Movie Scene
+    description: "Scene functions & light settings"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.living_room_scene_change
+        data:
+          variables:
+            scene_name: "Movie"
+            scene_duration: 30
+
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_candle
+          brightness: 0
+          color_temp: 450
+          transition: 10
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp
+          brightness: 60
+          color_temp: 450
+          transition: 6
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 1
+
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - delay:
+          seconds: 2
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_ceiling_1
+          brightness: 50
+          color_temp: 220
+          transition: 3
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_ceiling_2
+          brightness: 0
+          color_temp: 220
+          transition: 3
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_ceiling_3
+          brightness: 0
+          color_temp: 220
+          transition: 3
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_ceiling_4
+          brightness: 50
+          color_temp: 220
+          transition: 3
+
   living_room_scene_off:
     alias: Living Room Off Scene
     description: "Scene functions & light settings"
@@ -367,3 +431,36 @@ script:
           brightness: 0
           color_temp: 450
           transition: 30
+
+  living_room_scene_off_quickly:
+    alias: Living Room Off Quickly
+    description: "Scene functions & light settings"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.living_room_scene_change
+        data:
+          variables:
+            scene_name: "Off"
+            scene_duration: 3
+
+      - service: input_number.set_value
+        data:
+          entity_id: input_number.living_room_transition_off
+          value: 1
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamps
+          brightness: 0
+          color_temp: 450
+          transition: 2
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.living_room_ceiling_animation
+      - wait_template: "{{ is_state('timer.living_room_scene_changing', 'idle') }}"
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lights
+          brightness: 0
+          color_temp: 450
+          transition: 3

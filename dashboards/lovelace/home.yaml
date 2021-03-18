@@ -320,4 +320,4 @@ cards:
               action: call-service
               service: script.turn_on
               service_data:
-                entity_id: script.living_room_scene_off
+                entity_id: script.living_room_scene_off_quickly
