@@ -326,42 +326,36 @@ automation:
 
 homeassistant:
   customize_glob:
-    package.node_anchors:
-      common: &common
-        package: "core"
-
     # DEBUG
     input_boolean.debug_*_mode:
       icon: mdi:bug-outline
-      <<: *common
 
   customize:
     sensor.disk_use_percent:
       friendly_name: Percent Disk Used
-      <<: *common
+
     sensor.memory_use_percent:
       friendly_name: Percent Memory Used
-      <<: *common
+
     sensor.load_1m:
       friendly_name: 1m Load
-      <<: *common
+
     sensor.processor_use:
       friendly_name: Processor Used
-      <<: *common
+
     sensor.last_boot:
       friendly_name: Last Boot
       device_class: timestamp
       icon: mdi:clock
-      <<: *common
+
     sensor.systemuptime:
       friendly_name: Since Last Boot
       icon: mdi:clock
-      <<: *common
+
     sensor.memory:
       friendly_name: Memory % Use Stats
       icon: mdi:memory
-      <<: *common
+
     sensor.processor:
       friendly_name: Processor % Use Stats
       icon: mdi:memory
-      <<: *common

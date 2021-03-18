@@ -72,6 +72,130 @@ cards:
         state_color: true
         show_empty: false
 
+      - type: picture-elements
+        elements:
+          - entity: sensor.tide_local_station
+            style:
+              background-color: "rgba(0, 0, 0, 0.3)"
+              bottom: 0
+              color: white
+              font-size: 14px
+              left: 0
+              line-height: 34px
+              padding: 0 15px
+              pointer-events: none
+              transform: initial
+              font-weight: bold
+              width: 100%
+            type: state-label
+          - entity: sensor.tide_local_current_height
+            style:
+              color: white
+              font-size: 12px
+              line-height: 32px
+              margin: 150px 5px
+              pointer-events: none
+              font-weight: bold
+              right: 0
+              top: 0
+              transform: initial
+            prefix: "Current Tide Height : "
+            type: state-label
+          - entity: sensor.tide_local_next_high
+            style:
+              color: black
+              font-size: 12px
+              line-height: 32px
+              margin: 1px 35px
+              pointer-events: none
+              font-weight: bold
+              right: 0
+              top: 0
+              transform: initial
+            prefix: "Next High Tide : "
+            type: state-label
+          - entity: sensor.tide_local_next_high_height
+            style:
+              color: black
+              font-size: 12px
+              line-height: 32px
+              margin: 30px 35px
+              font-weight: bold
+              pointer-events: none
+              right: 0
+              top: 0
+              transform: initial
+            prefix: "High Tide Height: "
+            type: state-label
+          - icon: "mdi:arrow-up-bold"
+            style:
+              color: black
+              line-height: 32px
+              margin: 39px 20px
+              pointer-events: none
+              right: 0
+              top: 0
+              transform: scale(0.8)
+            type: icon
+          - entity: sensor.tide_local_next_low
+            style:
+              color: black
+              font-weight: bold
+              font-size: 12px
+              line-height: 32px
+              margin: 59px 35px
+              pointer-events: none
+              right: 0
+              top: 0
+              transform: initial
+            prefix: "Next Low Tide : "
+            type: state-label
+          - entity: sensor.tide_local_next_low_height
+            style:
+              color: black
+              font-weight: bold
+              font-size: 12px
+              line-height: 32px
+              margin: 84px 35px
+              pointer-events: none
+              right: 0
+              top: 0
+              transform: initial
+            type: state-label
+            prefix: "Low Tide Height : "
+          - icon: "mdi:arrow-down-bold"
+            style:
+              color: black
+              line-height: 40px
+              margin: 88px 20px
+              pointer-events: none
+              right: 0
+              top: 0
+              transform: scale(0.8)
+            type: icon
+        camera_image: camera.local_tides_curve
+
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.tide_local_current_height
+            name: Current Tide Height
+            show_points: false
+            show_legend: true
+          - entity: sensor.aurora_visibility_aurora_visibility
+            name: Aurora Visibility
+            show_points: false
+            show_legend: true
+            y_axis: secondary
+        show:
+          labels: true
+          labels_secondary: true
+          name: false
+          icon: false
+          state: false
+        hours_to_show: 12
+        points_per_hour: 6
+        line_width: 2
+
       - type: horizontal-stack
         cards:
           - type: entities

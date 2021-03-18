@@ -18,6 +18,84 @@ sensor:
       - sensor.homs_yard_rear_temperature
 
 automation:
+  - alias: "Light State Dark Master"
+    description: "Log when it gets dark"
+    trigger:
+      - entity_id: binary_sensor.dark_outside
+        platform: state
+        from: "off"
+        to: "on"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Master Dark. Sun Elevation: {{ states('sensor.solar_elevation') }}"
+    mode: single
+  - alias: "Light State Dark Sensor Rear"
+    description: "Log when it gets dark: sensor 1"
+    trigger:
+      - entity_id: sensor.homs_yard_rear_light_level
+        platform: state
+        attribute: dark
+        from: "false"
+        to: "true"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Yard Rear. Sun: {{ states('sensor.solar_elevation') }}. Lux: {{ states('sensor.homs_yard_rear_light_level') }}. Raw: {{ states.sensor.homs_yard_rear_light_level.attributes.lightlevel }}"
+    mode: single
+  - alias: "Light State Dark Sensor Side"
+    description: "Log when it gets dark: sensor 2"
+    trigger:
+      - entity_id: sensor.homs_yard_side_light_level
+        platform: state
+        attribute: dark
+        from: "false"
+        to: "true"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Yard Side. Sun: {{ states('sensor.solar_elevation') }}. Lux: {{ states('sensor.homs_yard_side_light_level') }}. Raw: {{ states.sensor.homs_yard_side_light_level.attributes.lightlevel }}"
+    mode: single
+
+  - alias: "Light State Light Master"
+    description: "Log when it gets light"
+    trigger:
+      - entity_id: binary_sensor.dark_outside
+        platform: state
+        from: "on"
+        to: "off"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Master Light. Sun Elevation: {{ states('sensor.solar_elevation') }}"
+    mode: single
+  - alias: "Light State Light Sensor Rear"
+    description: "Log when it gets light: sensor 1"
+    trigger:
+      - entity_id: sensor.homs_yard_rear_light_level
+        platform: state
+        attribute: dark
+        from: "true"
+        to: "false"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Yard Rear. Sun: {{ states('sensor.solar_elevation') }}. Lux: {{ states('sensor.homs_yard_rear_light_level') }}. Raw: {{ states.sensor.homs_yard_rear_light_level.attributes.lightlevel }}"
+    mode: single
+  - alias: "Light State Light Sensor Side"
+    description: "Log when it gets light: sensor 2"
+    trigger:
+      - entity_id: sensor.homs_yard_side_light_level
+        platform: state
+        attribute: dark
+        from: "true"
+        to: "false"
+    action:
+      - service: notify.date_data
+        data_template:
+          message: "Yard Side. Sun: {{ states('sensor.solar_elevation') }}. Lux: {{ states('sensor.homs_yard_side_light_level') }}. Raw: {{ states.sensor.homs_yard_side_light_level.attributes.lightlevel }}"
+    mode: single
+
   - alias: "Rear Lights Off"
     description: "Turn lights off when the sun comes up"
     trigger:

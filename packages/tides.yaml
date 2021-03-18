@@ -1,0 +1,48 @@
+
+## CAMERA
+camera:
+  - platform: generic
+    name: local_tides_curve
+    still_image_url: http://127.0.0.1:8123/local/local_tides.png
+    verify_ssl: false
+
+sensor:
+  - platform: template
+    sensors:
+      tide_local_next_high:
+        value_template: '{{ as_timestamp(states.sensor.local_tides.attributes.high_tide_time_utc) | timestamp_custom("%a %d/%m/%Y %H:%M") }}'
+        friendly_name: "Next High Tide"
+        icon_template: mdi:waves
+      tide_local_next_low:
+        value_template: '{{ as_timestamp(states.sensor.local_tides.attributes.low_tide_time_utc) | timestamp_custom("%a %d/%m/%Y %H:%M") }}'
+        friendly_name: "Next Low Tide"
+        icon_template: mdi:wave
+      tide_local_next_high_height:
+        value_template: "{{ state_attr('sensor.local_tides','high_tide_height')  }}"
+        friendly_name: "Next High Tide Height"
+        icon_template: mdi:waves
+        unit_of_measurement: m
+      tide_local_next_low_height:
+        value_template: "{{ state_attr('sensor.local_tides','low_tide_height')  }}"
+        friendly_name: "Next Low Tide Height"
+        icon_template: mdi:wave
+        unit_of_measurement: m
+      tide_local_credit:
+        value_template: "{{ state_attr('sensor.local_tides','CreditCallUsed')  }}"
+        friendly_name: "Tide Credit"
+        icon_template: mdi:waves
+        unit_of_measurement: credit
+      tide_local_current_height:
+        value_template: "{{ state_attr('sensor.local_tides','current_height')  }}"
+        friendly_name: "Tide Current Height"
+        icon_template: mdi:waves
+        unit_of_measurement: m
+      tide_local_station:
+        value_template: "{{ state_attr('sensor.local_tides','tidal_station_used')  }}"
+        friendly_name: "Tide Station used"
+        icon_template: mdi:waves
+
+  - platform: worldtidesinfocustom
+    api_key: !secret worldTidesKey
+    name: Local Tides
+    station_distance: 30
