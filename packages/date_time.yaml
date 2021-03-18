@@ -84,6 +84,9 @@ automation:
     mode: single
 
 sensor:
+  - platform: worldtidesinfo
+    api_key: !secret worldTidesKey
+
   - platform: season
   - platform: moon
   - platform: time_date
