@@ -1,0 +1,57 @@
+path: media
+title: Media
+icon: mdi:play-network
+cards:
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: entities
+        entities:
+          - name: Sonos Time
+            type: custom:multiple-entity-row
+            entity: media_player.living_room_sonos
+            secondary_info: last-updated
+            state: hide
+            entities:
+              - entity: sensor.living_room_sonos_time_idle
+                name: Idle
+              - entity: sensor.living_room_sonos_time_playing
+                name: Playing
+              - entity: sensor.living_room_sonos_time_paused
+                name: Paused
+
+      - type: custom:mini-media-player
+        entity: media_player.living_room_sonos
+        hide:
+          progress: true
+        artwork: cover
+
+  - type: custom:stack-in-card
+    mode: vertical
+    keep:
+      border_radius: false
+      background: false
+    cards:
+      - type: entities
+        entities:
+          - name: Apple TV Time
+            type: custom:multiple-entity-row
+            entity: media_player.living_room_atv
+            secondary_info: last-updated
+            state: hide
+            entities:
+              - entity: sensor.living_room_atv_time_idle
+                name: Idle
+              - entity: sensor.living_room_atv_time_playing
+                name: Playing
+              - entity: sensor.living_room_atv_time_paused
+                name: Paused
+
+      - type: custom:mini-media-player
+        entity: media_player.living_room_atv
+        hide:
+          progress: true
+        artwork: cover

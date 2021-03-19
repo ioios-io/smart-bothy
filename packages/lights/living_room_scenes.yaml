@@ -341,7 +341,7 @@ script:
         data:
           variables:
             scene_name: "Movie"
-            scene_duration: 30
+            scene_duration: 11
 
       - service: light.turn_on
         data:

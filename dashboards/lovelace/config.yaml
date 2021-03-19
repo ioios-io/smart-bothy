@@ -8,7 +8,7 @@ cards:
     cards:
       - type: map
         aspect_ratio: "16:9"
-        hours_to_show: 12
+        hours_to_show: 24
         dark_mode: false
         default_zoom: 11
         entities:

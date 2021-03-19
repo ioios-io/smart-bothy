@@ -33,7 +33,6 @@ browser:
 
 map:
 
-media_source:
 mobile_app:
 person:
 #tag:
@@ -69,15 +68,17 @@ recorder:
   include:
     domains:
       - alarm_control_panel
+      - automation
       - binary_sensor
       - camera
       - climate
       - device_tracker
       - media_player
       - person
+      - remote
       - sensor
-      - switch
       - sun
+      - switch
       - weather
 
       - timer
@@ -189,24 +190,9 @@ lovelace:
       type: module
 
   dashboards:
-    ioios-admins:
-      mode: yaml
-      filename: dashboards/admins/home.yaml
-      title: Admin View
-      icon: mdi:account-plus
-      show_in_sidebar: true
-      require_admin: true
     ioios-hidden:
       mode: yaml
-      title: Fuck
+      title: Irrelevant
       icon: mdi:account-minus
       show_in_sidebar: false
-      filename: dashboards/hidden/home.yaml
-
-sensor:
-  - platform: template
-    sensors:
-      living_room_volume:
-        friendly_name: "Living Room Volume"
-        value_template: "{{ ( state_attr('media_player.living_room', 'volume_level') * 100 ) | round(0) }}"
-        unit_of_measurement: "%"
+      filename: dashboards/hidden/nav.yaml

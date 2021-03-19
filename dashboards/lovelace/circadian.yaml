@@ -6,29 +6,27 @@ cards:
   - type: custom:stack-in-card
     mode: vertical
     cards:
-      - type: custom:stack-in-card
-        mode: horizontal
-        cards:
-          - type: entities
-            entities:
-              - input_boolean.event_updating_circadian
-              - input_boolean.mode_override_circadian
-              - sensor.circadian_light
-
-          - type: entities
-            entities:
-              - sensor.homs_yard_side_light_level
-              - sensor.homs_yard_side_temperature
-
-      - type: history-graph
-        hours_to_show: 24
+      - type: custom:mini-graph-card
         entities:
-          - entity: binary_sensor.dark_outside
-            name: Dark
-          - entity: binary_sensor.homs_yard_side_motion
-            name: "Yard: Side"
-          - entity: binary_sensor.homs_yard_rear_motion
-            name: "Yard: Rear"
+          - entity: sensor.home_aurora_visibility
+            aggregate_func: max
+            name: Max
+          - entity: sensor.home_aurora_visibility
+            aggregate_func: min
+            name: Min
+          - entity: sensor.home_aurora_visibility
+            aggregate_func: avg
+            name: Average
+        name: Weekly Aurora Chances
+        hours_to_show: 168
+        group_by: date
+        line_width: 2
+        smoothing: true
+        show:
+          labels: true
+          name: false
+          icon: false
+          name_adaptive_color: false
 
       - type: custom:mini-graph-card
         entities:

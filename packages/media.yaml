@@ -1,0 +1,61 @@
+media_source:
+
+sensor:
+  - platform: template
+    sensors:
+      living_room_sonos_volume:
+        friendly_name: "Living Room Sonos Volume"
+        value_template: "{{ ( state_attr('media_player.living_room_sonos', 'volume_level') * 100 ) | int | round(0) }}"
+        unit_of_measurement: "%"
+      living_room_atv_volume:
+        friendly_name: "Living Room Apple TV Volume"
+        value_template: "{{ ( state_attr('media_player.living_room_atv', 'volume_level') * 100 ) | int | round(0) }}"
+        unit_of_measurement: "%"
+
+  - platform: history_stats
+    name: Living Room ATV Time Idle
+    entity_id: media_player.living_room_atv
+    state: "idle"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: Living Room ATV Time Playing
+    entity_id: media_player.living_room_atv
+    state: "playing"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: Living Room ATV Time Paused
+    entity_id: media_player.living_room_atv
+    state: "paused"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: Living Room Sonos Time Idle
+    entity_id: media_player.living_room_sonos
+    state: "idle"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: Living Room Sonos Time Playing
+    entity_id: media_player.living_room_sonos
+    state: "playing"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: Living Room Sonos Time Paused
+    entity_id: media_player.living_room_sonos
+    state: "paused"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"

@@ -181,7 +181,7 @@ cards:
             name: Current Tide Height
             show_points: false
             show_legend: true
-          - entity: sensor.aurora_visibility_aurora_visibility
+          - entity: sensor.home_aurora_visibility
             name: Aurora Visibility
             show_points: false
             show_legend: true
@@ -192,8 +192,8 @@ cards:
           name: false
           icon: false
           state: false
-        hours_to_show: 12
-        points_per_hour: 6
+        hours_to_show: 24
+        points_per_hour: 4
         line_width: 2
 
       - type: horizontal-stack
@@ -248,12 +248,6 @@ cards:
                     entity: input_boolean.service_restart_ha
                     template: admin_panel
                     name: Restart
-
-      - type: custom:mini-media-player
-        entity: media_player.living_room
-        hide:
-          progress: true
-        artwork: cover
 
       - type: custom:mini-graph-card
         entities:
@@ -415,10 +409,10 @@ cards:
           - type: custom:button-card
             entity: input_select.living_room_scenes
             template: scene_button
-            name: Cosy
-            icon: "[[[ return states['script.living_room_scene_cosy'].attributes.icon; ]]]"
+            name: Movie
+            icon: "[[[ return states['script.living_room_scene_movie'].attributes.icon; ]]]"
             state:
-              - value: "Cosy"
+              - value: "Movie"
                 icon: mdi:check-circle-outline
                 color: var(--accent-color)
               - operator: "default"
@@ -427,7 +421,7 @@ cards:
               action: call-service
               service: script.turn_on
               service_data:
-                entity_id: script.living_room_scene_cosy
+                entity_id: script.living_room_scene_movie
 
           - type: custom:button-card
             entity: input_select.living_room_scenes

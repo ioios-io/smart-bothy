@@ -49,6 +49,7 @@ button_card_templates:
 title: Bothy
 views:
   - !include home.yaml
+  - !include media.yaml
   - !include living_room.yaml
   - !include bedroom.yaml
   - !include circadian.yaml
